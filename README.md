@@ -1,6 +1,6 @@
-# qualitymanagement
+# 质量信息发布
 
-> A Vue.js project
+> ES6 + Vue + VueX + Vue-Router + ElementUI
 
 ## Build Setup
 

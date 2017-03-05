@@ -1,23 +1,26 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view></router-view>
+    <my-menu/>
+    <my-container/>
+    <el-footer/>
   </div>
 </template>
-
 <script>
+import MyMenu from './components/Menu';
+import MyContainer from './components/Container';
+import ElFooter from './components/Footer';
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    ElFooter,
+    MyMenu,
+    MyContainer
+  }
 }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style lang="less">
+body {
+  margin: 0;
+  width: 100%;
 }
 </style>
