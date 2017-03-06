@@ -5,16 +5,27 @@
         <el-menu-item :index="i.toString()">{{item}}</el-menu-item>
       </div>
     </el-menu>
+    <!-- <div class="bread">
+      <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/list/' }">列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/view/13' }">详情</el-breadcrumb-item>
+    </el-breadcrumb>
+    </div> -->
   </div>
 </template>
 <script>
-const routeList = ['/', '/list', '/view', '/add']
+const routeList = ['/', '/list/0', '/add']
 export default {
   name: 'my-menu',
   data() {
     return {
-      activeIndex: '',
-      list: ['首页', '查看列表', '查看详情', '新增']
+      list: ['首页', '查看列表',  '新增']
+    }
+  },
+  computed:{
+    activeIndex(){
+      return this.$store.state.activeIndex;
     }
   },
   methods: {
@@ -30,18 +41,19 @@ export default {
       case 'List':
         this.activeIndex = '1';
         break;
-      case 'View':
-        this.activeIndex = '2';
-        break;
       case 'Add':
-        this.activeIndex = '3';
+        this.activeIndex = '2';
         break;
     }
   }
 }
 </script>
-<style lang="less" scoped>
+<style lang="less">
 .el-menu-demo {
   border-radius: 0px;
 }
+// .bread{
+//   margin-top:20px;
+//   padding-left: 20px;
+// }
 </style>

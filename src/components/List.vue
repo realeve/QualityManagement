@@ -2,41 +2,53 @@
   <div class="welcome">
     <el-row>
       <el-col :span="24">
-        <div class=".welcome-center">
-          <div class="entry-box">
-            <div class="box-title clearfix">
-              <div class="float-left">{{title}}</div>
-            </div>
-            <div class="entries">
-              <div v-for="n of 25">
-                <div class="entry clearfix" @click="jump(n)">
-                  <div class="entry-screenshot float-left">
-                    <img class="entry-screenshot-image" src="https://dn-mhke0kuv.qbox.me/9b435ee9cf737862c7e0.png?imageView/1/w/120/h/120/q/100/format/png">
-                  </div>
-                  <div class="entry-info float-left">
-                    <div class="entry-title ellipsis">{{n}}.这是一段质量周段信息这是一段质量周段信息</div>
-                    <div class="entry-meta">
-                      <div class="action collection-action"><i class="el-icon-star-on"></i><span>424</span></div>
-                      <div class="action entry-username">张三</div>
-                      <div class="action"> ·</div>
-                      <div class="action">5天前</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+           <my-card :news="news"></my-card>
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
+import MyCard from './common/NewsCard';
+
 export default {
-  name: 'add',
+  name: 'list',
+  components:{
+    'my-card':MyCard
+  },
   data() {
     return {
-      title: '质量周报'
+      news:{
+        title: 'test1',
+        data: [{
+          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
+          title: '这是一段质量周段信息这是一段质量周段信息',
+          count: 421,
+          user: '张三',
+          datetime: '2017-03-06 09:23',
+          id: 211,url:'/view/211'
+        }, {
+          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
+          title: '这是一段质量周段信息这是一段质量周段信息',
+          count: 421,
+          user: '张三',
+          datetime: '2017-03-06 09:23',
+          id: 211,url:'/view/211'
+        }, {
+          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
+          title: '这是一段质量周段信息这是一段质量周段信息',
+          count: 421,
+          user: '张三',
+          datetime: '2017-03-06 09:23',
+          id: 211,url:'/view/211'
+        }, {
+          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
+          title: '这是一段质量周段信息这是一段质量周段信息',
+          count: 421,
+          user: '张三',
+          datetime: '2017-03-06 09:23',
+          id: 211,url:'/view/211'
+        }]
+      }
     }
   },
   methods: {

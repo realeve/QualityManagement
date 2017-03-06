@@ -27,14 +27,14 @@ export default {
   },
   computed: {
     value() {
-      return this.$store.state.addValue;
+      return this.$store.state.add;
     }
   }
 }
 </script>
 <style lang="less">
 .ql-editor {
-  min-height: 300px;
+  min-height: 200px;
   p {
     font-size: 16pt;
     // text-indent: 2em;

@@ -41,17 +41,17 @@
       <div class="card">
         <h3>2.问题描述</h3>
         <my-editor/>
-        <el-form-item class="submit">
+        <div class="submit">
           <el-button type="primary" @click="submitForm('value')">立即创建</el-button>
-          <el-button @click="resetForm('value')">重置</el-button>
-        </el-form-item>
+          <el-button @click="resetForm">重置</el-button>
+        </div>
       </div>
     </el-form>
   </div>
 </template>
 <script>
 import options from '../config/options';
-import MyEditor from './Editor';
+import MyEditor from './common/Editor';
 
 var HOST = 'http://localhost';
 
@@ -80,7 +80,7 @@ export default {
   },
   computed: {
     procId() {
-      var id = this.$store.state.addValue.proc;
+      var id = this.$store.state.add.proc;
       if (id == 0) {
         this.options.machine = [];
         return;
@@ -90,18 +90,18 @@ export default {
       return id;
     },
     value() {
-      return this.$store.state.addValue;
+      return this.$store.state.add;
     }
   },
   watch: {
     procId(id) {
-      this.$store.state.addValue.machine = '';
+      this.$store.state.add.machine = '';
       if (id) {
         this.loadMachineList(id);
       }
     },
     "value.cartno": function(val) {
-      this.$store.state.addValue.cartno = val.toUpperCase();
+      this.$store.state.add.cartno = val.toUpperCase();
     }
   },
   methods: {
@@ -154,7 +154,7 @@ export default {
       };
     },
     submitForm(formName) {
-      if (this.$store.state.addValue.content == '') {
+      if (this.$store.state.add.content == '') {
         this.$message.error('问题描述不能为空');
         return false;
       }
@@ -167,9 +167,16 @@ export default {
         }
       });
     },
-    resetForm(formName) {
-      this.$store.state.addValue.content = '';
-      this.$refs[formName].resetFields();
+    resetForm() {
+      this.$store.state.add={
+        prod: '',
+        proc: '',
+        machine: '',
+        operator: '',
+        cartno: '',
+        category: '',
+        content: ''
+      };
     }
   },
   mounted() {
@@ -193,8 +200,9 @@ h4 {
 }
 
 .submit {
-  float: right;
   .margin-top-20;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .card {

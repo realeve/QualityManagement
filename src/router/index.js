@@ -9,21 +9,21 @@ import List from '@/components/List';
 Vue.use(Router);
 
 export default new Router({
-	routes: [{
-		path: '/',
-		name: 'Main',
-		component: Main
-	}, {
-		path: '/list',
-		name: 'List',
-		component: List
-	}, {
-		path: '/add',
-		name: 'Add',
-		component: Add
-	}, {
-		path: '/view',
-		name: 'View',
-		component: View
-	}]
+  routes: [{
+    path: '/',
+    name: 'Main',
+    component: Main
+  }, {
+    path: '/list/:id',
+    name: 'List',
+    component: List
+  }, {
+    path: '/add',
+    name: 'Add',
+    component: Add
+  }, {
+    path: '/view/:id',
+    name: 'View',
+    component: View
+  }]
 });

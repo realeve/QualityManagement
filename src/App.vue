@@ -6,9 +6,9 @@
   </div>
 </template>
 <script>
-import MyMenu from './components/Menu';
-import MyContainer from './components/Container';
-import ElFooter from './components/Footer';
+import MyMenu from './components/common/Menu';
+import MyContainer from './components/common/Container';
+import ElFooter from './components/common/Footer';
 export default {
   name: 'app',
   components: {
@@ -18,7 +18,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped>
 body {
   margin: 0;
   width: 100%;

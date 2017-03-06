@@ -1,5 +1,8 @@
 var options = {
   proc: [{
+    value: '-1',
+    label: '印版/油墨'
+  }, {
     value: '0',
     label: '白纸数管'
   }, {
@@ -74,11 +77,23 @@ var options = {
     }]
   }],
   category: [{
-    value: '质量月度计划'
+    value: '质量问题发布'
   }, {
-    value: '异常品'
+    value: '工艺质量月度工作计划'
+  }, {
+    value: '机检月度工作计划'
   }, {
     value: '周例会决议'
+  }, {
+    value: '司务会材料'
+  }, {
+    value: '年度项目计划'
+  }, {
+    value: '机检维护'
+  }, {
+    value: '工艺质量通知'
+  }, {
+    value: '风险隐患排查'
   }]
 };
 
