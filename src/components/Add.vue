@@ -168,7 +168,7 @@ export default {
       });
     },
     resetForm() {
-      this.$store.state.add={
+      this.$store.state.add = {
         prod: '',
         proc: '',
         machine: '',
