@@ -1,4 +1,4 @@
-# 质量信息发布
+# Quality Info Publisher
 
 > ES6 + Vue + VueX + Vue-Router + ElementUI
 
