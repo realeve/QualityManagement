@@ -2,7 +2,7 @@
   <div class="welcome">
     <el-row>
       <el-col :span="24">
-        <my-card :news="news"></my-card>
+           <my-card :news="news"></my-card>
       </el-col>
     </el-row>
   </div>
@@ -12,12 +12,12 @@ import MyCard from './common/NewsCard';
 
 export default {
   name: 'list',
-  components: {
-    'my-card': MyCard
+  components:{
+    'my-card':MyCard
   },
   data() {
     return {
-      news: {
+      news:{
         title: 'test1',
         data: [{
           img: 'http://localhost/demo/avatar/Avatar_none.jpg',
@@ -25,32 +25,28 @@ export default {
           count: 421,
           user: '张三',
           datetime: '2017-03-06 09:23',
-          id: 211,
-          url: '/view/211'
+          id: 211,url:'/view/211'
         }, {
           img: 'http://localhost/demo/avatar/Avatar_none.jpg',
           title: '这是一段质量周段信息这是一段质量周段信息',
           count: 421,
           user: '张三',
           datetime: '2017-03-06 09:23',
-          id: 211,
-          url: '/view/211'
+          id: 211,url:'/view/211'
         }, {
           img: 'http://localhost/demo/avatar/Avatar_none.jpg',
           title: '这是一段质量周段信息这是一段质量周段信息',
           count: 421,
           user: '张三',
           datetime: '2017-03-06 09:23',
-          id: 211,
-          url: '/view/211'
+          id: 211,url:'/view/211'
         }, {
           img: 'http://localhost/demo/avatar/Avatar_none.jpg',
           title: '这是一段质量周段信息这是一段质量周段信息',
           count: 421,
           user: '张三',
           datetime: '2017-03-06 09:23',
-          id: 211,
-          url: '/view/211'
+          id: 211,url:'/view/211'
         }]
       }
     }

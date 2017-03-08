@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <div v-for="(item,i) in newsList">
         <el-col :span="12">
-          <my-card :news="item" :listId="i"></my-card>
+            <my-card :news="item" :listId="i"></my-card>
         </el-col>
       </div>
     </el-row>
@@ -17,12 +17,12 @@ import newsList from "../config/newsList";
 
 export default {
   name: 'main',
-  components: {
-    'my-card': MyCard
+  components:{
+    'my-card':MyCard
   },
   data() {
     return {
-      newsList: newsList.data
+      newsList:newsList.data
     }
   }
 }

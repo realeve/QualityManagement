@@ -12,7 +12,8 @@ const state = {
     operator: '',
     cartno: '',
     category: '',
-    content: ''
+    content: '',
+    title: ''
   },
   activeIndex: '',
   listId: ''
