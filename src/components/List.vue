@@ -2,52 +2,25 @@
   <div class="welcome">
     <el-row>
       <el-col :span="24">
-           <my-card :news="news"></my-card>
+        <my-card :news="news"></my-card>
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
 import MyCard from './common/NewsCard';
-
+import settings from '../config/settings';
+const HOST = settings.host;
 export default {
   name: 'list',
-  components:{
-    'my-card':MyCard
+  components: {
+    'my-card': MyCard
   },
   data() {
     return {
-      news:{
-        title: 'test1',
-        data: [{
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
-          title: '这是一段质量周段信息这是一段质量周段信息',
-          count: 421,
-          user: '张三',
-          datetime: '2017-03-06 09:23',
-          id: 211,url:'/view/211'
-        }, {
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
-          title: '这是一段质量周段信息这是一段质量周段信息',
-          count: 421,
-          user: '张三',
-          datetime: '2017-03-06 09:23',
-          id: 211,url:'/view/211'
-        }, {
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
-          title: '这是一段质量周段信息这是一段质量周段信息',
-          count: 421,
-          user: '张三',
-          datetime: '2017-03-06 09:23',
-          id: 211,url:'/view/211'
-        }, {
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg',
-          title: '这是一段质量周段信息这是一段质量周段信息',
-          count: 421,
-          user: '张三',
-          datetime: '2017-03-06 09:23',
-          id: 211,url:'/view/211'
-        }]
+      news: {
+        title: '',
+        data: []
       }
     }
   },
@@ -55,13 +28,33 @@ export default {
     jump(val) {
       this.$message.success('跳转到/#/view/' + val);
     }
+  },
+  mounted() {
+    this.title = this.$route.params.category;
+    var url = HOST + '/DataInterface/Api';
+    this.$http.jsonp(url, {
+      params: {
+        ID: 325,
+        M: 0,
+        listid: this.$route.params.category
+      }
+    }).then(res => {
+      var data = res.data.data;
+      var avatar;
+      //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
+      this.news.data = data.map(item => {
+        avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
+        return Object.assign(item, {
+          img: HOST + '/demo/avatar/' + avatar + '.jpg',
+          url: '/view/' + item.id
+        })
+      });
+    });
   }
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/*@import "../assets/css/welcome.css";*/
-
 .welcome {
   width: 100%;
 }

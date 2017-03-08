@@ -5,26 +5,21 @@
         <el-menu-item :index="i.toString()">{{item}}</el-menu-item>
       </div>
     </el-menu>
-    <!-- <div class="bread">
-      <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/list/' }">列表</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/view/13' }">详情</el-breadcrumb-item>
-    </el-breadcrumb>
-    </div> -->
   </div>
 </template>
 <script>
-const routeList = ['/', '/list/0', '/add']
+import options from '../../config/options';
+var defaultList = options.category[0].value;
+const routeList = ['/', '/list/' + defaultList, '/add']
 export default {
   name: 'my-menu',
   data() {
     return {
-      list: ['首页', '查看列表',  '新增']
+      list: ['首页', '查看列表', '新增']
     }
   },
-  computed:{
-    activeIndex(){
+  computed: {
+    activeIndex() {
       return this.$store.state.activeIndex;
     }
   },
@@ -52,8 +47,4 @@ export default {
 .el-menu-demo {
   border-radius: 0px;
 }
-// .bread{
-//   margin-top:20px;
-//   padding-left: 20px;
-// }
 </style>

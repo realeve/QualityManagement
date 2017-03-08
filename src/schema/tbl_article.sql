@@ -27,7 +27,7 @@ CREATE TABLE [dbo].[tbl_article] (
 [proc] varchar(10) NULL ,
 [machine] varchar(20) NULL ,
 [operator] varchar(255) NULL ,
-[cartno] int NULL ,
+[cartno] varchar(20) NULL ,
 [category] varchar(20) NULL ,
 [content] varchar(MAX) NULL ,
 [status] int NULL DEFAULT ((0)) ,

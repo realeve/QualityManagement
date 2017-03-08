@@ -12,9 +12,9 @@ export default {
 .footer {
   text-align: center;
   padding-top: 5px;
-  // border-top: 1px solid #dde;
-  color: #99a9bf;
+  //border-top: 1px solid #dde;
+  color: #4f5052;
   font-size: 10pt;
-  margin-top: 50px;
+  margin-top: 10px;
 }
 </style>
