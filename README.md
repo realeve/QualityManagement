@@ -1,4 +1,4 @@
-# 质量信息发布
+# quality manager website
 
 > ES6 + Vue + VueX + Vue-Router + ElementUI
 
