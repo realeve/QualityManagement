@@ -53,212 +53,212 @@
   </div>
 </template>
 <script>
-import options from '../config/options';
-import MyEditor from './common/Editor';
-import settings from '../config/settings';
-import util from '../config/util';
-const HOST = settings.host;
-export default {
-  name: 'add',
-  components: {
-    'my-editor': MyEditor
-  },
-  data() {
-    return {
-      options: options,
-      rules: {
-        operator: [{
-          required: true,
-          type: 'array',
-          message: '请选择操作人员',
-          trigger: 'blur'
-        }],
-        category: [{
-          required: true,
-          message: '请选择文章分类',
-          trigger: 'blur'
-        }],
-        tite: [{
-          required: true,
-          message: '文章标题不能为空',
-          trigger: 'blur'
-        }]
-      }
-    }
-  },
-  computed: {
-    procId() {
-      var id = this.$store.state.add.proc;
-      if (id < 1) {
-        this.options.machine = [];
-        id = -1;
-      } else if (id > 1) {
-        id--;
-      }
-      return id;
+  import options from '../config/options';
+  import MyEditor from './common/Editor';
+  import settings from '../config/settings';
+  import util from '../config/util';
+  const HOST = settings.host;
+  export default {
+    name: 'add',
+    components: {
+      'my-editor': MyEditor
     },
-    value() {
-      return this.$store.state.add;
-    },
-    procName() {
-      var id = parseInt(this.$store.state.add.proc);
-      return this.options.proc[id + 1].label;
-    }
-  },
-  watch: {
-    procId(id) {
-      this.$store.state.add.machine = '';
-      if (id) {
-        this.loadMachineList(id);
-      }
-    },
-    "value.cartno": function(val) {
-      this.$store.state.add.cartno = val.toUpperCase();
-    }
-  },
-  methods: {
-    loadProd() {
-      var url = HOST + '/DataInterface/Api';
-      this.$http.jsonp(url, {
-        params: {
-          ID: '35',
-          cache: 14400
+    data() {
+      return {
+        options: options,
+        rules: {
+          operator: [{
+            required: true,
+            type: 'array',
+            message: '请选择操作人员',
+            trigger: 'blur'
+          }],
+          category: [{
+            required: true,
+            message: '请选择文章分类',
+            trigger: 'blur'
+          }],
+          tite: [{
+            required: true,
+            message: '文章标题不能为空',
+            trigger: 'blur'
+          }]
         }
-      }).then(response => {
-        var data = response.data.data;
-        this.options.prod = data.map(item => {
-          return {
-            value: item[0],
-            label: item[1]
-          };
-        })
-      });
-    },
-    loadMachineList(id) {
-      var url = HOST + '/DataInterface/Api';
-      this.$http.jsonp(url, {
-        params: {
-          ID: '36',
-          p: id,
-          cache: 14400
-        }
-      }).then(response => {
-        var data = response.data.data;
-        this.options.machine = data.map(item => {
-          return {
-            value: item[1],
-            label: item[0]
-          };
-        })
-      });
-    },
-    querySearch(queryString, next) {
-      var machine = this.options.machine;
-      var results = queryString ? machine.filter(this.createFilter(queryString)) : machine;
-      // 调用 callback 返回建议列表的数据
-      next(results);
-    },
-    createFilter(queryString) {
-      return (result) => {
-        return (result.value.indexOf(queryString.toLowerCase()) === 0);
-      };
-    },
-    submitForm(formName) {
-      if (this.$store.state.add.content == '') {
-        this.$message.error('问题描述不能为空');
-        return false;
       }
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          var url = HOST + "/DataInterface/insert";
-          var params = {
-            tbl: 99,
-            tblname: 'tbl_article',
-            utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
-            uid: 16,//此处需增加用户登录结果
-            rec_time: util.getNow(1)
-          };
-
-          params = Object.assign(params, this.value);
-          params = Object.assign(params, {
-            proc: this.procName,
-            operator: this.value.operator.toString(),
-            content: util.parseHTML(this.value.content)
-          });
-          
-          //post CROS 需增加 emulateJSON:true
-          this.$http.post(url, params, {
-              emulateJSON: true
-            })
-            .then(response => {
-              var res = response.data;
-              if (res.type == 1) {
-                this.$message({
-                  message: '数据添加成功',
-                  type: 'success'
-                });
-              } else {
-                this.$message({
-                  message: '数据添加失败',
-                  type: 'error'
-                });
-              }
-            })
-            .catch(e => {
-              console.log(e);
-            })
-
-          //提交后重置数据
-          //this.resetForm();
-        } else {
-          this.$message.error('数据校验失败');
+    },
+    computed: {
+      procId() {
+        var id = this.$store.state.add.proc;
+        if (id < 1) {
+          this.options.machine = [];
+          id = -1;
+        } else if (id > 1) {
+          id--;
+        }
+        return id;
+      },
+      value() {
+        return this.$store.state.add;
+      },
+      procName() {
+        var id = parseInt(this.$store.state.add.proc);
+        return this.options.proc[id + 1].label;
+      }
+    },
+    watch: {
+      procId(id) {
+        this.$store.state.add.machine = '';
+        if (id) {
+          this.loadMachineList(id);
+        }
+      },
+      "value.cartno": function (val) {
+        this.$store.state.add.cartno = val.toUpperCase();
+      }
+    },
+    methods: {
+      loadProd() {
+        var url = HOST + '/DataInterface/Api';
+        this.$http.jsonp(url, {
+          params: {
+            ID: '35',
+            cache: 14400
+          }
+        }).then(response => {
+          var data = response.data.data;
+          this.options.prod = data.map(item => {
+            return {
+              value: item[0],
+              label: item[1]
+            };
+          })
+        });
+      },
+      loadMachineList(id) {
+        var url = HOST + '/DataInterface/Api';
+        this.$http.jsonp(url, {
+          params: {
+            ID: '36',
+            p: id,
+            cache: 14400
+          }
+        }).then(response => {
+          var data = response.data.data;
+          this.options.machine = data.map(item => {
+            return {
+              value: item[1],
+              label: item[0]
+            };
+          })
+        });
+      },
+      querySearch(queryString, next) {
+        var machine = this.options.machine;
+        var results = queryString ? machine.filter(this.createFilter(queryString)) : machine;
+        // 调用 callback 返回建议列表的数据
+        next(results);
+      },
+      createFilter(queryString) {
+        return (result) => {
+          return (result.value.indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+      submitForm(formName) {
+        if (this.$store.state.add.content == '') {
+          this.$message.error('问题描述不能为空');
           return false;
         }
-      });
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var url = settings.api.insert;
+            var params = {
+              tblname: 'tbl_article',
+              utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
+              uid: this.$store.state.user.id, //此处需增加用户登录结果
+              rec_time: util.getNow(1)
+            };
+            params = Object.assign(params, this.value);
+            params = Object.assign(params, {
+              proc: this.procName,
+              operator: this.value.operator.toString(),
+              content: util.parseHtml(this.value.content)
+            });
+
+            //post CROS 需增加 emulateJSON:true
+            this.$http.post(url, params, {
+                emulateJSON: true
+              })
+              .then(response => {
+                var res = response.data;
+                if (res.type == 1) {
+                  this.$message({
+                    message: '数据添加成功',
+                    type: 'success'
+                  });
+                  //提交后重置数据
+                  this.resetForm();
+                } else {
+                  this.$message({
+                    message: '数据添加失败',
+                    type: 'error'
+                  });
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              })
+
+          } else {
+            this.$message.error('数据校验失败');
+            return false;
+          }
+        });
+      },
+      resetForm() {
+        this.$store.state.add = {
+          prod: '',
+          proc: '',
+          machine: '',
+          operator: '',
+          cartno: '',
+          category: '',
+          content: '',
+          title: ''
+        };
+      }
     },
-    resetForm() {
-      this.$store.state.add = {
-        prod: '',
-        proc: '',
-        machine: '',
-        operator: '',
-        cartno: '',
-        category: '',
-        content: '',
-        title: ''
-      };
+    mounted() {
+      this.loadProd();
     }
-  },
-  mounted() {
-    this.loadProd();
   }
-}
+
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-h3,
-h4 {
-  font-weight: 400;
-}
+  h3,
+  h4 {
+    font-weight: 400;
+  }
+  
+  .basic {
+    width: 460px;
+  }
+  
+  .margin-top-20 {
+    margin-top: 20px;
+  }
+  
+  .submit {
+    .margin-top-20;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .card {
+    .margin-top-20;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+  }
 
-.basic {
-  width: 460px;
-}
-
-.margin-top-20 {
-  margin-top: 20px;
-}
-
-.submit {
-  .margin-top-20;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.card {
-  .margin-top-20;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 4px;
-}
 </style>

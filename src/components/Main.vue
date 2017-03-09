@@ -2,7 +2,7 @@
   <div class="welcome">
     <el-row :gutter="20">
       <div v-for="item in newsList">
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :lg="8">
           <my-card :news="item"></my-card>
         </el-col>
       </div>
@@ -32,11 +32,9 @@ export default {
         more: '/list/' + title,
         data: []
       }
-      var url = HOST + '/DataInterface/Api';
-      this.$http.jsonp(url, {
+
+      this.$http.jsonp(settings.api.articleHome, {
         params: {
-          ID: 329,
-          M: 0,
           listid: title
         }
       }).then(res => {

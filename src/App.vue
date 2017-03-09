@@ -15,6 +15,19 @@ export default {
     ElFooter,
     MyMenu,
     MyContainer
+  },
+  methods:{
+    getUserInfo(){
+      this.$store.state.user={
+        id:16,
+        name:'develop',
+        username:'李宾',
+        avatar:'MTZsaWJpbg=='
+      }
+    }
+  },
+  mounted(){
+    this.getUserInfo();
   }
 }
 </script>

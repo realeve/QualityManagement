@@ -17,21 +17,28 @@
     </div>
     <h2 class="font-thin">评论</h2>
     <div class="card comment">
-      <div v-for="item in comment" class="entry">
-        <div class="user float-left center">
-          <img class="img-header" :src="item.img">
-        </div>
-        <div class="info">
-          <div v-html="item.content"></div>
-          <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.user}} 发表于 {{item.datetime}}</div>
+      <div v-if="noComment">
+        <p class="no-comment">
+          现在还没有人评论.
+        </p>
+      </div>
+      <div v-else>
+        <div v-for="item in comment" class="entry">
+          <div class="user float-left center">
+            <img class="img-header" :src="item.useravatar">
+          </div>
+          <div class="info">
+            <div v-html="item.content"></div>
+            <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
+          </div>
         </div>
       </div>
     </div>
     <h2 class="font-thin">留言</h2>
-    <div class="card">
+    <div class="card editor">
       <quill-editor :config="config" v-model="mycomment"></quill-editor>
       <div class="submit">
-        <el-button type="primary" @click="submit">提交</el-button>
+        <el-button type="primary" @click="postComment">提交</el-button>
       </div>
     </div>
   </div>
@@ -47,8 +54,8 @@
 
   var config = {
     placeholder: '在此处输入留言信息...',
-    //theme: 'bubble',
-    theme: 'snow',
+    theme: 'bubble',
+    //theme: 'snow',
   }
 
   export default {
@@ -60,38 +67,75 @@
       return {
         article: {},
         config,
-        comment: [{
-          user: '张三',
-          datetime: '2017-03-05 11:23:33',
-          content: '信息关联，同时提供相关生产和质量信息查询统计。基本功能：整合公司各类质量数据库，实现钞纸、印钞专业的信息关联，同时提供相关生产和质量信息查询统计。基本功能：整合公司各类质量数据库，实现钞纸、印',
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg'
-        }, {
-          user: '张四',
-          datetime: '2017-03-04 14:23:33',
-          content: 'sdfasdfasdfasdf',
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg'
-        }],
-        mycomment: ''
+        comment: [],
+        mycomment: '',
+        noComment: true
+      }
+    },
+    computed: {
+      user() {
+        return this.$store.state.user;
+      },
+      commentSettings() {
+        return {
+          article_id: this.$route.params.id,
+          username: this.user.username,
+          uid: this.user.id,
+          useravatar: HOST + '/demo/avatar/' + this.user.avatar + '.jpg'
+        };
       }
     },
     methods: {
-      submit() {
+      loadComment() {
+        var id = this.$route.params.id;
+        this.$http.jsonp(settings.api.commentDetail, {
+          params: {
+            aid: id
+          }
+        }).then(res => {
+          var obj = res.data;
+          if (obj.rows == 0) {
+            return;
+          }
+          this.noComment = false;
+          this.comment = obj.data;
+        });
+      },
+      postComment() {
         var comment = {
-          user: '张四',
-          datetime: util.getNow(1),
+          rec_time: util.getNow(1),
           content: util.parseHtml(this.mycomment),
-          img: 'http://localhost/demo/avatar/Avatar_none.jpg'
         };
-        this.comment.push(comment);
-        this.mycomment = '';
+
+        comment = Object.assign(comment, this.commentSettings);
+
+        var params = {
+          tblname: 'tbl_article_comment',
+          utf2gbk: ['username', 'content']
+        };
+
+        params = Object.assign(params, comment);
+
+        var url = settings.api.insert;
+        this.$http.post(url, params, {
+          emulateJSON: true
+        }).then(res => {
+          this.noComment = false;
+          this.comment.push(comment);
+          this.mycomment = '';
+        }).catch(e => {
+          console.log(e);
+          this.$message({
+            message: '发表评论失败，请刷新重试',
+            type: 'error'
+          });
+        })
       },
       loadArticle() {
         var id = this.$route.params.id;
         var url = HOST + '/DataInterface/Api';
-        this.$http.jsonp(url, {
+        this.$http.jsonp(settings.api.articleDetail, {
           params: {
-            ID: 330,
-            M: 0,
             aid: id
           }
         }).then(res => {
@@ -105,6 +149,7 @@
     },
     mounted() {
       this.loadArticle();
+      this.loadComment();
     }
   }
 
@@ -120,7 +165,7 @@
   }
   
   .article-contant {
-    margin: 30px;
+    margin: 60px 50px 10px 50px;
   }
   
   .font-thin {
@@ -136,14 +181,17 @@
     display: flex;
     justify-content: flex-end;
   }
-  
+  .ql-editor{
+      height:100px;
+      min-height:100px;
+    }
   .article {
     min-height: 300px;
     .margin-top-20;
     .title {
       .font-thin;
       text-align: center;
-      font-size: 40pt;
+      font-size: 30pt;
     }
     .sub-title {
       .font-thin;
@@ -178,7 +226,7 @@
   }
   
   .comment {
-    min-height: 200px;
+    min-height: 120px;
     height: 100%;
     .entry {
       width: 100%;

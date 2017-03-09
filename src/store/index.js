@@ -5,18 +5,23 @@ Vue.use(Vuex);
 
 //vuex中数据
 const state = {
-  add: {
-    prod: '',
-    proc: '',
-    machine: '',
-    operator: '',
-    cartno: '',
-    category: '',
-    content: '',
-    title: ''
-  },
-  activeIndex: '',
-  listId: ''
+    add: {
+        prod: '',
+        proc: '',
+        machine: '',
+        operator: '',
+        cartno: '',
+        category: '',
+        content: '',
+        title: ''
+    },
+    activeIndex: '',
+    listId: '',
+    user: {
+        name: '',
+        id: '',
+        avatar: ''
+    }
 };
 
 //同步事件
@@ -57,8 +62,8 @@ const state = {
 // };
 
 export default new Vuex.Store({
-  state,
-  // mutations,
-  // actions,
-  // getters
+    state,
+    // mutations,
+    // actions,
+    // getters
 });

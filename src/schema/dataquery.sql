@@ -6,3 +6,8 @@ SELECT top 5 a.id,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.r
 --文章详情
 SELECT a.*,isnull(b.fullName, '无') AS 'user',convert(varchar,rec_time,120) datetime FROM	dbo.tbl_article AS a LEFT JOIN tblUser b ON a.uid = b.id WHERE a.id=21
 --aid
+
+
+--评论列表
+SELECT a.comment_id,a.uid,a.username,convert(varchar,a.rec_time,120) rec_time,a.useravatar,a.content FROM dbo.tbl_article_comment AS a where article_id=14 order by comment_id
+--aid

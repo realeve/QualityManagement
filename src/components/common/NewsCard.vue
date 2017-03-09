@@ -44,6 +44,7 @@ export default {
 
 .welcome .entry-box {
   margin-top: 20px;
+  margin-bottom:0;
   border-radius: 4px;
 }
 
@@ -55,6 +56,6 @@ export default {
   cursor:pointer;
 }
 .entries{
-  min-height:400px;
+  min-height:420px;
 }
 </style>
