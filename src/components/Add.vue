@@ -163,6 +163,12 @@ export default {
         return (result.value.indexOf(queryString.toLowerCase()) === 0);
       };
     },
+    parseHTML(html){
+      //special chacters convert,see from http://stackoverflow.com/questions/19176024/how-to-escape-special-characters-in-building-a-json-string
+      html = JSON.stringify(html);      
+      //转换后应去除首尾引号
+      return html.slice(1,html.length-1);
+    },
     submitForm(formName) {
       if (this.$store.state.add.content == '') {
         this.$message.error('问题描述不能为空');
@@ -182,9 +188,11 @@ export default {
           params = Object.assign(params, this.value);
           params = Object.assign(params, {
             proc: this.procName,
-            operator: this.value.operator.toString()
+            operator: this.value.operator.toString(),
+            content: this.parseHTML(this.value.content)
           });
 
+          console.info(params.content);
           //post CROS 需增加 emulateJSON:true
           this.$http.post(url, params, {
               emulateJSON: true

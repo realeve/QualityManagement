@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="article-contant">
     <div class="card article">
-      <h2 class="title">{{article.title}}</h2>
+      <h1 class="title">{{article.title}}</h1>
       <h3 class="sub-title">
           {{article.user}}
           <span class="time">{{article.datetime}}</span>
@@ -12,7 +12,7 @@
       <div class="content" v-html="article.content"></div>
       <blockquote>本问题由 {{article.operator}} 确认
         <p>类型：{{article.category}}</p>
-          <p v-if="article.cartno">车号: <a target="_blank" :href="'./cart='+article.cartno">{{article.cartno}}</a></p> 
+        <p v-if="article.cartno">车号: <a target="_blank" :href="'./cart='+article.cartno">{{article.cartno}}</a></p>
       </blockquote>
     </div>
     <h2 class="font-thin">评论</h2>
@@ -83,14 +83,14 @@ export default {
       });
       this.mycomment = '';
     },
-    loadArticle(){
+    loadArticle() {
       var id = this.$route.params.id;
       var url = HOST + '/DataInterface/Api';
       this.$http.jsonp(url, {
         params: {
           ID: 326,
           M: 0,
-          aid:id
+          aid: id
         }
       }).then(res => {
         var obj = res.data;
@@ -101,7 +101,7 @@ export default {
       });
     }
   },
-  mounted(){
+  mounted() {
     this.loadArticle();
   }
 }
@@ -109,10 +109,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
 @text-color: #5e6d82;
+@vue-color: #42b983;
 .card {
   background-color: #fff;
-  padding: 20px;
+  padding: 20px 40px;
   border-radius: 4px;
+}
+
+.article-contant {
+  margin: 30px 50px;
 }
 
 .font-thin {
@@ -132,13 +137,14 @@ export default {
 .article {
   min-height: 300px;
   .margin-top-20;
-  .title,
-  {
+  .title {
     .font-thin;
     text-align: center;
+    font-size: 40pt;
   }
   .sub-title {
-    .title;
+    .font-thin;
+    text-align: center;
     font-size: 12pt;
     color: @text-color;
   }
@@ -156,8 +162,8 @@ export default {
   blockquote {
     color: @text-color;
     padding: 10px 30px 10px 10px;
-    border-left: 5px solid #aaa;
-    background-color: #eee;
+    border-left: 5px solid @vue-color;
+    background-color: #eff;
   }
   .desc {
     border-top: 1px dotted #eee;
