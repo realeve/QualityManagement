@@ -59,7 +59,7 @@ export default {
       })
     }
   },
-  mounted() {
+  created() {
     this.loadingData();
   }
 }

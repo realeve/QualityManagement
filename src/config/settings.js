@@ -6,11 +6,12 @@ export default {
     api: {
         //提交数据
         insert: host + "/DataInterface/insert",
-        //列表详情
-        articleList: url + 329 + '&M=0',
+
+        //文章列表详情
+        articleList: url + 332 + '&M=0&num=10',
 
         //主页模块
-        articleHome: url + 329 + '&M=0',
+        articleHome: url + 329 + '&M=0&num=5',
 
         //文章详情
         articleDetail: url + 330 + '&M=0',

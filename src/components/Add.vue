@@ -45,7 +45,8 @@
         </el-form-item>
         <my-editor/>
         <div class="submit">
-          <el-button type="primary" @click="submitForm('value')">立即创建</el-button>
+          <el-button type="primary" @click="submitForm()">立即创建</el-button>
+          <el-button @click="preview()">预览</el-button>
           <el-button @click="resetForm">重置</el-button>
         </div>
       </div>
@@ -163,57 +164,76 @@
           return (result.value.indexOf(queryString.toLowerCase()) === 0);
         };
       },
-      submitForm(formName) {
+      validData(formName = 'value') {
         if (this.$store.state.add.content == '') {
           this.$message.error('问题描述不能为空');
           return false;
         }
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            var url = settings.api.insert;
-            var params = {
-              tbl:99,
-              tblname: 'tbl_article',
-              utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
-              uid: this.$store.state.user.id, //此处需增加用户登录结果
-              rec_time: util.getNow(1)
-            };
-            params = Object.assign(params, this.value);
-            params = Object.assign(params, {
-              proc: this.procName,
-              operator: this.value.operator.toString(),
-              content: util.parseHtml(this.value.content)
-            });
-
-            //post CROS 需增加 emulateJSON:true
-            this.$http.post(url, params, {
-                emulateJSON: true
-              })
-              .then(response => {
-                var res = response.data;
-                if (res.type == 1) {
-                  this.$message({
-                    message: '数据添加成功',
-                    type: 'success'
-                  });
-                  //提交后重置数据
-                  this.resetForm();
-                } else {
-                  this.$message({
-                    message: '数据添加失败',
-                    type: 'error'
-                  });
-                }
-              })
-              .catch(e => {
-                console.log(e);
-              })
-
-          } else {
-            this.$message.error('数据校验失败');
-            return false;
-          }
+        var valid=false;
+        this.$refs[formName].validate(result => {
+          valid = result;
         });
+        return valid;
+      },
+      getParams() {
+
+        if (!this.validData()) {
+          return;
+        }
+
+        var params = {
+          tbl: 99,
+          tblname: 'tbl_article',
+          utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
+          uid: this.$store.state.user.id, //此处需增加用户登录结果
+          rec_time: util.getNow(1)
+        };
+        var operator =this.value.operator.toString();
+        params = Object.assign(params, this.value);
+        params = Object.assign(params, {
+          proc: this.procName,
+          operator,
+          content: util.parseHtml(this.value.content)
+        });
+        
+        this.$store.state.preview = params;
+        return true;
+      },
+      preview() {
+        if (!this.getParams()) {
+          return;
+        }
+        this.$store.state.previewMode = true;
+        this.$router.push('/view/preview');
+      },
+      submitForm() {
+        if (!this.getParams()) {
+          return;
+        }
+        var url = settings.api.insert;
+        //post CROS 需增加 emulateJSON:true
+        this.$http.post(url, this.$store.state.preview, {
+            emulateJSON: true
+          })
+          .then(response => {
+            var res = response.data;
+            if (res.type == 1) {
+              this.$message({
+                message: '数据添加成功',
+                type: 'success'
+              });
+              //提交后重置数据
+              this.resetForm();
+            } else {
+              this.$message({
+                message: '数据添加失败',
+                type: 'error'
+              });
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          })
       },
       resetForm() {
         this.$store.state.add = {
@@ -230,6 +250,7 @@
     },
     mounted() {
       this.loadProd();
+      this.$store.state.previewMode = false;
     }
   }
 

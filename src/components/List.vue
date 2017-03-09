@@ -21,36 +21,44 @@
         news: {
           title: '',
           data: []
-        }
+        },
+        curId: this.$store.state.articleId[this.$route.params.category]
       }
     },
     methods: {
       jump(val) {
         this.$message.success('跳转到/#/view/' + val);
+      },
+      loadListData(url,id) {
+        this.news.title = this.$route.params.category;
+        this.$http.jsonp(url, {
+          params: {
+            listid: this.$route.params.category,
+            aid: id
+          }
+        }).then(res => {
+          var obj = res.data;
+          if (!obj.rows) {
+            return;
+          }
+          var avatar;
+          //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
+          this.news.data = obj.data.map(item => {
+            avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
+            return Object.assign(item, {
+              img: HOST + '/demo/avatar/' + avatar + '.jpg',
+              url: '/view/' + item.id
+            })
+          });
+        });
       }
     },
-    mounted() {
-      this.news.title = this.$route.params.category;
-
-      this.$http.jsonp(settings.api.articleList, {
-        params: {
-          listid: this.$route.params.category
-        }
-      }).then(res => {
-        var obj = res.data;
-        if (!obj.rows) {
-          return;
-        }
-        var avatar;
-        //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
-        this.news.data = obj.data.map(item => {
-          avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
-          return Object.assign(item, {
-            img: HOST + '/demo/avatar/' + avatar + '.jpg',
-            url: '/view/' + item.id
-          })
-        });
-      });
+    mounted(){
+      if(typeof this.curId!='undefined'){
+        this.loadListData(settings.api.articleList,this.curId);
+      }else{
+        this.loadListData(settings.api.articleHome);
+      }      
     }
   }
 

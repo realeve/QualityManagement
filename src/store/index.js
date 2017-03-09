@@ -15,13 +15,20 @@ const state = {
         content: '',
         title: ''
     },
+    //文章预览数据
+    preview: '',
+    previewMode: false,
+
     activeIndex: '',
     listId: '',
     user: {
         name: '',
         id: '',
         avatar: ''
-    }
+    },
+    articleId: {
+
+    } //记录各分类的最大id
 };
 
 //同步事件

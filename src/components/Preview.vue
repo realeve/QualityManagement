@@ -1,7 +1,7 @@
 <template>
   <div class="article-contant">
     <div class="card article">
-      <h1 class="title">{{article.title}}<span v-if="previewMode">(预览模式)</span></h1>
+      <h1 class="title">{{article.title}}</h1>
       <h3 class="sub-title">
         {{article.user}}
         <span class="time">{{article.datetime}}</span>
@@ -15,32 +15,30 @@
         <p v-if="article.cartno">车号: <a target="_blank" :href="'./cart='+article.cartno">{{article.cartno}}</a></p>
       </blockquote>
     </div>
-    <div v-if="!previewMode">
-      <h2 class="font-thin">评论</h2>
-      <div class="card comment">
-        <div v-if="noComment">
-          <p class="no-comment">
-            现在还没有人评论.
-          </p>
-        </div>
-        <div v-else>
-          <div v-for="item in comment" class="entry">
-            <div class="user float-left center">
-              <img class="img-header" :src="item.useravatar">
-            </div>
-            <div class="info">
-              <div v-html="item.content"></div>
-              <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
-            </div>
+    <h2 class="font-thin">评论</h2>
+    <div class="card comment">
+      <div v-if="noComment">
+        <p class="no-comment">
+          现在还没有人评论.
+        </p>
+      </div>
+      <div v-else>
+        <div v-for="item in comment" class="entry">
+          <div class="user float-left center">
+            <img class="img-header" :src="item.useravatar">
+          </div>
+          <div class="info">
+            <div v-html="item.content"></div>
+            <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
           </div>
         </div>
       </div>
-      <h2 class="font-thin">留言</h2>
-      <div class="card editor">
-        <quill-editor :config="config" v-model="mycomment"></quill-editor>
-        <div class="submit">
-          <el-button type="primary" @click="postComment">提交</el-button>
-        </div>
+    </div>
+    <h2 class="font-thin">留言</h2>
+    <div class="card editor">
+      <quill-editor :config="config" v-model="mycomment"></quill-editor>
+      <div class="submit">
+        <el-button type="primary" @click="postComment">提交</el-button>
       </div>
     </div>
   </div>
@@ -78,9 +76,6 @@
       user() {
         return this.$store.state.user;
       },
-      previewMode() {
-        return this.$store.state.previewMode;
-      },
       commentSettings() {
         return {
           article_id: this.$route.params.id,
@@ -115,7 +110,7 @@
         comment = Object.assign(comment, this.commentSettings);
 
         var params = {
-          tbl: 99,
+          tbl:99,
           tblname: 'tbl_article_comment',
           utf2gbk: ['username', 'content']
         };
@@ -154,12 +149,8 @@
       }
     },
     mounted() {
-      if(!this.previewMode){
-        this.loadArticle();
-        this.loadComment();
-      }else{
-        this.article = this.$store.state.preview;
-      }      
+      this.loadArticle();
+      this.loadComment();
     }
   }
 
@@ -191,12 +182,10 @@
     display: flex;
     justify-content: flex-end;
   }
-  
-  .ql-editor {
-    height: 100px;
-    min-height: 100px;
-  }
-  
+  .ql-editor{
+      height:100px;
+      min-height:100px;
+    }
   .article {
     min-height: 300px;
     .margin-top-20;
