@@ -5,4 +5,4 @@ SELECT top 5 a.id,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.r
 
 --文章详情
 SELECT a.*,isnull(b.fullName, '无') AS 'user',convert(varchar,rec_time,120) datetime FROM	dbo.tbl_article AS a LEFT JOIN tblUser b ON a.uid = b.id WHERE a.id=21
---id
+--aid

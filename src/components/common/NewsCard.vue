@@ -55,6 +55,6 @@ export default {
   cursor:pointer;
 }
 .entries{
-  min-height:480px;
+  min-height:400px;
 }
 </style>

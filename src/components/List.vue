@@ -34,15 +34,18 @@ export default {
     var url = HOST + '/DataInterface/Api';
     this.$http.jsonp(url, {
       params: {
-        ID: 325,
+        ID: 329,
         M: 0,
         listid: this.$route.params.category
       }
     }).then(res => {
-      var data = res.data.data;
+      var obj = res.data;
+      if(!obj.rows){
+        return;
+      }
       var avatar;
       //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
-      this.news.data = data.map(item => {
+      this.news.data = obj.data.map(item => {
         avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
         return Object.assign(item, {
           img: HOST + '/demo/avatar/' + avatar + '.jpg',
