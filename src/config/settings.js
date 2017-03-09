@@ -5,7 +5,7 @@ export default {
     url,
     api: {
         //提交数据
-        insert: host + "/DataInterface/insert?tbl=99",
+        insert: host + "/DataInterface/insert",
         //列表详情
         articleList: url + 329 + '&M=0',
 

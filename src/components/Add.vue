@@ -172,6 +172,7 @@
           if (valid) {
             var url = settings.api.insert;
             var params = {
+              tbl:99,
               tblname: 'tbl_article',
               utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
               uid: this.$store.state.user.id, //此处需增加用户登录结果

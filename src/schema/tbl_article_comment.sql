@@ -11,7 +11,7 @@ Target Server Type    : SQL Server
 Target Server Version : 105000
 File Encoding         : 65001
 
-Date: 2017-03-09 00:21:53
+Date: 2017-03-09 21:47:41
 */
 
 
@@ -23,10 +23,16 @@ GO
 CREATE TABLE [dbo].[tbl_article_comment] (
 [comment_id] int NOT NULL IDENTITY(1,1) ,
 [article_id] int NULL ,
-[uid] int NULL 
+[uid] int NULL ,
+[username] varchar(255) NULL ,
+[rec_time] datetime2(7) NULL ,
+[useravatar] varchar(255) NULL ,
+[content] varchar(MAX) NULL 
 )
 
 
+GO
+DBCC CHECKIDENT(N'[dbo].[tbl_article_comment]', RESEED, 12)
 GO
 
 -- ----------------------------

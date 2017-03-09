@@ -11,7 +11,7 @@ Target Server Type    : SQL Server
 Target Server Version : 105000
 File Encoding         : 65001
 
-Date: 2017-03-09 00:22:01
+Date: 2017-03-09 21:47:50
 */
 
 
@@ -27,7 +27,7 @@ CREATE TABLE [dbo].[tbl_article] (
 [proc] varchar(10) NULL ,
 [machine] varchar(20) NULL ,
 [operator] varchar(255) NULL ,
-[cartno] varchar(20) NULL ,
+[cartno] varchar(10) NULL ,
 [category] varchar(20) NULL ,
 [content] varchar(MAX) NULL ,
 [status] int NULL DEFAULT ((0)) ,
@@ -37,5 +37,5 @@ CREATE TABLE [dbo].[tbl_article] (
 
 
 GO
-DBCC CHECKIDENT(N'[dbo].[tbl_article]', RESEED, 14)
+DBCC CHECKIDENT(N'[dbo].[tbl_article]', RESEED, 52)
 GO

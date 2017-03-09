@@ -110,6 +110,7 @@
         comment = Object.assign(comment, this.commentSettings);
 
         var params = {
+          tbl:99,
           tblname: 'tbl_article_comment',
           utf2gbk: ['username', 'content']
         };
