@@ -34,7 +34,7 @@
         this.$http.jsonp(url, {
           params: {
             listid: this.$route.params.category,
-            aid: id
+            aid: parseInt(id)+1
           }
         }).then(res => {
           var obj = res.data;
