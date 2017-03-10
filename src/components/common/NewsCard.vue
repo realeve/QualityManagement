@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class=".welcome-center">
       <div class="entry-box">
         <div class="box-title clearfix">
           <div class="float-left">{{news.title}}</div>
@@ -25,7 +24,6 @@
             </div>
           </div>
         </div>
-      </div>
     </div>
     <div v-if="!news.more" class="center">
       <el-button
@@ -69,11 +67,9 @@
 </script>
 <style lang="less" scoped>
   .welcome .entry-box {
-    margin-top: 20px;
-    margin-bottom: 0;
     border-radius: 4px;
-  }
-  
+    margin-bottom:1.5em;
+  }  
   .entry-screenshot-image {
     border-radius: 50%;
   }
@@ -82,8 +78,8 @@
     cursor: pointer;
   }
   
-  .entries {
-    min-height: 420px;
-  }
+  // .entries {
+  //   min-height: 420px;
+  // }
 
 </style>

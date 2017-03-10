@@ -188,7 +188,9 @@
           uid: this.$store.state.user.id, //此处需增加用户登录结果
           rec_time: util.getNow(1)
         };
-        var operator =this.value.operator.toString();
+        
+        var operator = this.value.operator.toString();
+
         params = Object.assign(params, this.value);
         params = Object.assign(params, {
           proc: this.procName,
@@ -235,12 +237,13 @@
             console.log(e);
           })
       },
-      resetForm() {
+      resetForm(formName = 'value') {
+        //this.$refs[formName].resetFields();
         this.$store.state.add = {
           prod: '',
           proc: '',
           machine: '',
-          operator: '',
+          operator: [],
           cartno: '',
           category: '',
           content: '',

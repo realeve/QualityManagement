@@ -1,7 +1,7 @@
 <template>
   <div class="welcome">
     <el-row>
-      <el-col :span="24">
+      <el-col :span="24" class="list">
         <my-card :news="news"></my-card>
       </el-col>
     </el-row>
@@ -64,14 +64,13 @@
 
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  .welcome {
-    width: 100%;
-  }
-  
-  .welcome .entry-box {
+<style scoped lang="less">
+
+  .list{
+    width:100%;
     margin-top: 20px;
-    border-radius: 4px;
+    display: flex;
+    justify-content: center;
   }
   
   .entry-screenshot-image {
