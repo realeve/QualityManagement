@@ -7,7 +7,7 @@
         </el-col>
       </div>
     </el-row>-->
-    <div v-for="item in newsList"  class=".welcome-center">
+    <div v-for="item in newsList" class=".welcome-center">
       <my-card :news="item"></my-card>
     </div>
   </div>
@@ -57,12 +57,12 @@
         });
       },
       loadingData() {
-        var topic = options.category.map((item, i) => {
+        options.category.forEach((item, i) => {
           this.getNewsList(item.value, i);
         })
       }
     },
-    created() {
+    mounted() {
       this.loadingData();
     }
   }
@@ -80,7 +80,7 @@
     -o-column-gap: 20px;
     -webkit-column-gap: 20px;
     -moz-column-gap: 20px;
-    margin-top:20px;
+    margin-top: 20px;
   }
   
   .box {

@@ -30,7 +30,7 @@
     </div>
     <div v-if="!news.more" class="center">
       <el-button type="primary" @click="openFullScreen" v-loading.fullscreen.lock="fullscreenLoading">
-        显示整页加载，3 秒后消失(此处添加加载更多功能)
+        显示整页加载，1 秒后消失(此处添加加载更多功能)
       </el-button>
     </div>
   </div>
@@ -47,7 +47,7 @@
         this.fullscreenLoading = true;
         setTimeout(() => {
           this.fullscreenLoading = false;
-        }, 3000);
+        }, 1000);
       },
     },
     computed: {
