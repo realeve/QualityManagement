@@ -57,7 +57,7 @@
   const HOST = settings.host;
   import util from '../config/util';
 
-  var config = {
+  let config = {
     placeholder: '在此处输入留言信息...',
     theme: 'bubble',
     //theme: 'snow',
@@ -101,13 +101,13 @@
         this.$router.push('/add');
       },
       loadComment() {
-        var id = this.$route.params.id;
+        let id = this.$route.params.id;
         this.$http.jsonp(settings.api.commentDetail, {
           params: {
             aid: id
           }
         }).then(res => {
-          var obj = res.data;
+          let obj = res.data;
           if (obj.rows == 0) {
             return;
           }
@@ -116,14 +116,14 @@
         });
       },
       postComment() {
-        var comment = {
+        let comment = {
           rec_time: util.getNow(1),
           content: util.parseHtml(this.mycomment),
         };
 
         comment = Object.assign(comment, this.commentSettings);
 
-        var params = {
+        let params = {
           tbl: 99,
           tblname: 'tbl_article_comment',
           utf2gbk: ['username', 'content']
@@ -131,7 +131,7 @@
 
         params = Object.assign(params, comment);
 
-        var url = settings.api.insert;
+        let url = settings.api.insert;
         this.$http.post(url, params, {
           emulateJSON: true
         }).then(res => {
@@ -147,14 +147,14 @@
         })
       },
       loadArticle() {
-        var id = this.$route.params.id;
-        var url = HOST + '/DataInterface/Api';
+        let id = this.$route.params.id;
+        let url = HOST + '/DataInterface/Api';
         this.$http.jsonp(settings.api.articleDetail, {
           params: {
             aid: id
           }
         }).then(res => {
-          var obj = res.data;
+          let obj = res.data;
           if (obj.rows == 0) {
             return;
           }

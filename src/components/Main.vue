@@ -16,17 +16,18 @@
     components: {
       'my-card': MyCard
     },
-    data() {
-      return {
-        newsList: []
+    computed: {
+      newsList() {
+        return this.$store.state.mainList;
       }
     },
     methods: {
       getNewsList(title, id) {
-        var newsItem = {
+        let newsItem = {
           title,
           more: '/list/' + title,
-          data: []
+          data: [],
+          cateId:id
         }
 
         this.$http.jsonp(settings.api.articleHome, {
@@ -34,11 +35,12 @@
             listid: title
           }
         }).then(res => {
-          var obj = res.data;
+          let obj = res.data;
           if (obj.rows == 0) {
             return;
           }
-          var avatar;
+          let avatar;
+
           newsItem.data = obj.data.map(item => {
             avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
             return Object.assign(item, {
@@ -46,13 +48,18 @@
               url: '/view/' + item.id
             })
           });
-          this.newsList.push(newsItem);
+          this.$store.commit('refreshHomeNewsList',newsItem);
+          //this.newsList.push(newsItem);
         });
+
+
       },
       loadingData() {
-        options.category.forEach((item, i) => {
-          this.getNewsList(item.value, i);
-        })
+        if (this.newsList.length == 0) {
+          options.category.forEach((item, i) => {
+            this.getNewsList(item.value, i);
+          })
+        }
       }
     },
     mounted() {

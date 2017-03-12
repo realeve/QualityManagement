@@ -20,58 +20,81 @@
       return {
         news: {
           title: '',
+          empty: false,
+          isLoading: false,
           data: []
         }
-      }
-    },
-    computed: {
-      curId() {
-        return this.$store.state.articleId[this.$route.params.category];
       }
     },
     methods: {
       jump(val) {
         this.$message.success('跳转到/#/view/' + val);
       },
-      loadListData(url, id) {
-        this.news.title = this.$route.params.category;
+      loadListData(url, aid) {
+        this.news.isLoading = true;
         this.$http.jsonp(url, {
           params: {
             listid: this.$route.params.category,
-            aid: parseInt(id) + 1
+            aid
           }
         }).then(res => {
-          var obj = res.data;
+          this.news.isLoading = false;
+          let obj = res.data;
           if (!obj.rows) {
+            this.news.empty = true;
             return;
           }
-          var avatar;
+          this.news.empty = false;
+
+          let avatar;
+          let data = [];
+
           //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
-          obj.data.forEach(item => {
+          data = obj.data.map(item => {
             avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
-            this.news.data.push(Object.assign(item, {
+            return Object.assign(item, {
               img: HOST + '/demo/avatar/' + avatar + '.jpg',
               url: '/view/' + item.id
-            }));
+            });
+          });
+
+          this.news.data = [...this.news.data, ...data]
+
+          //保存当前新闻列表状态，防止在查看新闻后回退时列表数据为空;
+          this.$store.commit('refreshNewsList', {
+            title: this.news.title,
+            data
+          });
+
+          this.$store.commit('recordMaxListId', {
+            title: this.news.title,
+            id: obj.data[obj.data.length - 1].id
           });
         });
       },
       loadMore() {
-        if (typeof this.curId != 'undefined') {
-          this.loadListData(settings.api.articleList, this.curId);
+        if (this.news.isLoading) {
+          return;
+        }
+        console.info('数据载入中:');
+        let curId = this.$store.state.articleId[this.$route.params.category];
+        if (typeof curId != 'undefined') {
+          this.loadListData(settings.api.articleList, curId);
         } else {
           this.loadListData(settings.api.articleHome);
         }
-        console.log(123);
       }
     },
     mounted() {
-      //this.loadMore();
-      if (typeof this.curId != 'undefined') {
-        this.loadListData(settings.api.articleList, this.curId);
+
+      this.news.title = this.$route.params.category;
+      let newsData = this.$store.state.newsList[this.news.title];
+      if (typeof newsData == 'undefined') {
+        this.loadMore();
       } else {
-        this.loadListData(settings.api.articleHome);
+        this.news.data = newsData;
       }
+
     }
   }
 

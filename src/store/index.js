@@ -28,7 +28,14 @@ const state = {
     },
     articleId: {
 
-    } //记录各分类的最大id
+    }, //记录各分类的最大id
+
+    //文章二级列表数据缓存
+    newsList: {
+
+    },
+    //主页列表缓存
+    mainList: []
 };
 
 //同步事件
@@ -59,6 +66,18 @@ const mutations = {
     },
     recordMaxListId(state, param) {
         state.articleId[param.title] = param.id;
+    },
+    refreshNewsList(state, data) {
+        //文章二级列表数据
+        if (typeof state.newsList[data.title] == 'undefined') {
+            state.newsList[data.title] = data.data;
+        } else {
+            state.newsList[data.title] = state.newsList[data.title].concat(data.data);
+        }
+    },
+    refreshHomeNewsList(state, data) {
+        //更新主页文章数据
+        state.mainList = state.mainList.concat(data).sort((a, b) => a.cateId - b.cateId);
     }
 };
 

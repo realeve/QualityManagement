@@ -1,37 +1,35 @@
 <template>
-  <div>
-    <div class="entry-box">
-      <div class="box-title clearfix">
-        <div class="float-left">{{news.title}}</div>
-        <a v-if="news.more" class="pointer" @click="jump(news.more)">
-          <div class="float-right">更多</div>
-        </a>
-      </div>
-      <div class="entries">
-        <div v-for="item in news.data">
-          <div class="entry clearfix" @click="jump(item.url)">
-            <div class="entry-screenshot float-left">
-              <img class="entry-screenshot-image" :src="item.img">
-            </div>
-            <div class="entry-info float-left">
-              <div class="entry-title ellipsis">{{item.title}}</div>
-              <div class="entry-meta">
-                <div class="action entry-username">{{item.user}}</div>
-                <div class="action"> ·</div>
-                <div class="action">{{item.datetime}}</div>
-              </div>
+  <div class="entry-box" v-scroll="loadMore">
+    <div class="box-title clearfix">
+      <div class="float-left">{{news.title}}</div>
+      <a v-if="news.more" class="pointer" @click="jump(news.more)">
+        <div class="float-right">更多</div>
+      </a>
+    </div>
+    <div class="entries">
+      <div v-for="(item,i) in news.data">
+        <div class="entry clearfix" @click="jump(item.url)">
+          <div class="entry-screenshot float-left">
+            <img class="entry-screenshot-image" :src="item.img">
+          </div>
+          <div class="entry-info float-left">
+            <div class="entry-title ellipsis">{{i+1}}.{{item.title}}</div>
+            <div class="entry-meta">
+              <div class="action entry-username">{{item.user}}</div>
+              <div class="action"> ·</div>
+              <div class="action">{{item.datetime}}</div>
             </div>
           </div>
         </div>
-        <div v-show="empty" class="text-center">
-          已加载到最后
+      </div>
+
+      <div v-if="!news.more" class="text-center" @click="loadMore">
+        <div class="entry">
+          <div class="entry-info">
+            {{info}}
+          </div>
         </div>
       </div>
-    </div>
-    <div v-if="!news.more" class="center">
-      <el-button type="primary" @click="loadMore" v-loading.fullscreen.lock="isLoading">
-        载入更多
-      </el-button>
     </div>
   </div>
 </template>
@@ -39,37 +37,44 @@
   export default {
     name: 'my-card',
     props: ['news'],
+    directives: {
+      scroll: {
+        bind: function (el, binding) {
+          window.addEventListener('scroll', () => {
+            if (document.body.scrollTop + window.innerHeight >= el.clientHeight + 120) {
+              let next = binding.value;
+              next();
+            }
+          });
+        }
+      }
+    },
     methods: {
       jump(val) {
         this.$router.push(val);
       },
       loadMore() {
-        this.isLoading = true;
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 1000);
-        this.$emit('loadMore');
+        if (!this.news.empty) {
+          this.$emit('loadMore');
+        }
+        //  else {
+        //   this.$message({
+        //     message: '所有数据已加载完毕',
+        //     type: 'error'
+        //   });
+        // }
       },
     },
     computed: {
-      empty() {
-        return this.news.data.length < 1;
+      info() {
+        if (this.news.isLoading) {
+          return '加载中';
+        } else if (this.news.empty) {
+          return '数据已全部加载'
+        } else {
+          return '点击加载更多'
+        }
       }
-    },
-    data() {
-      return {
-        isLoading: false
-      }
-    },
-    mounted() {
-      if (this.empty) {
-        return;
-      }
-      this.$store.commit('recordMaxListId', {
-        title: this.news.title,
-        id: this.news.data[0].id
-      })
-      //this.$store.state.articleId[this.news.title] = this.news.data[0].id;
     }
   }
 

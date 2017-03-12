@@ -9,7 +9,7 @@ import {
   quillEditor
 } from 'vue-quill-editor'
 
-var config = {
+let config = {
   placeholder: '在此处输入问题描述...',
   //theme: 'bubble',
   theme: 'snow',
