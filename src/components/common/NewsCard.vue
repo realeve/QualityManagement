@@ -29,8 +29,8 @@
       </div>
     </div>
     <div v-if="!news.more" class="center">
-      <el-button type="primary" @click="openFullScreen" v-loading.fullscreen.lock="fullscreenLoading">
-        显示整页加载，1 秒后消失(此处添加加载更多功能)
+      <el-button type="primary" @click="loadMore" v-loading.fullscreen.lock="isLoading">
+        载入更多
       </el-button>
     </div>
   </div>
@@ -43,11 +43,12 @@
       jump(val) {
         this.$router.push(val);
       },
-      openFullScreen() {
-        this.fullscreenLoading = true;
+      loadMore() {
+        this.isLoading = true;
         setTimeout(() => {
-          this.fullscreenLoading = false;
+          this.isLoading = false;
         }, 1000);
+        this.$emit('loadMore');
       },
     },
     computed: {
@@ -57,15 +58,18 @@
     },
     data() {
       return {
-        fullscreenLoading: false
+        isLoading: false
       }
     },
     mounted() {
       if (this.empty) {
-        //无数据时不执行后续
         return;
       }
-      this.$store.state.articleId[this.news.title] = this.news.data[0].id;
+      this.$store.commit('recordMaxListId', {
+        title: this.news.title,
+        id: this.news.data[0].id
+      })
+      //this.$store.state.articleId[this.news.title] = this.news.data[0].id;
     }
   }
 
@@ -75,9 +79,11 @@
     border-radius: 4px;
     margin-bottom: 1.5em;
   }
-  .text-center{
-    text-align:center;
+  
+  .text-center {
+    text-align: center;
   }
+  
   .entry-screenshot-image {
     border-radius: 50%;
   }

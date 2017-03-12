@@ -2,7 +2,7 @@
   <div class="welcome">
     <el-row>
       <el-col :span="24" class="list">
-        <my-card :news="news"></my-card>
+        <my-card :news="news" @loadMore="loadMore"></my-card>
       </el-col>
     </el-row>
   </div>
@@ -21,20 +21,24 @@
         news: {
           title: '',
           data: []
-        },
-        curId: this.$store.state.articleId[this.$route.params.category]
+        }
+      }
+    },
+    computed: {
+      curId() {
+        return this.$store.state.articleId[this.$route.params.category];
       }
     },
     methods: {
       jump(val) {
         this.$message.success('跳转到/#/view/' + val);
       },
-      loadListData(url,id) {
+      loadListData(url, id) {
         this.news.title = this.$route.params.category;
         this.$http.jsonp(url, {
           params: {
             listid: this.$route.params.category,
-            aid: parseInt(id)+1
+            aid: parseInt(id) + 1
           }
         }).then(res => {
           var obj = res.data;
@@ -43,31 +47,39 @@
           }
           var avatar;
           //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
-          this.news.data = obj.data.map(item => {
+          obj.data.forEach(item => {
             avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
-            return Object.assign(item, {
+            this.news.data.push(Object.assign(item, {
               img: HOST + '/demo/avatar/' + avatar + '.jpg',
               url: '/view/' + item.id
-            })
+            }));
           });
         });
+      },
+      loadMore() {
+        if (typeof this.curId != 'undefined') {
+          this.loadListData(settings.api.articleList, this.curId);
+        } else {
+          this.loadListData(settings.api.articleHome);
+        }
+        console.log(123);
       }
     },
-    mounted(){
-      if(typeof this.curId!='undefined'){
-        this.loadListData(settings.api.articleList,this.curId);
-      }else{
+    mounted() {
+      //this.loadMore();
+      if (typeof this.curId != 'undefined') {
+        this.loadListData(settings.api.articleList, this.curId);
+      } else {
         this.loadListData(settings.api.articleHome);
-      }      
+      }
     }
   }
 
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-
-  .list{
-    width:100%;
+  .list {
+    width: 100%;
     margin-top: 20px;
     display: flex;
     justify-content: center;

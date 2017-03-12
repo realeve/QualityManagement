@@ -1,7 +1,7 @@
 <template>
   <div class="article-contant">
     <div class="card article">
-      <h1 class="title">{{article.title}}<span v-if="previewMode">(预览模式)</span></h1>
+      <h1 class="title">{{article.title}}</h1>
       <h3 class="sub-title">
         {{article.user}}
         <span class="time">{{article.datetime}}</span>
@@ -12,8 +12,11 @@
       <div class="content" v-html="article.content"></div>
       <blockquote>本问题由 {{article.operator}} 确认
         <p>类型：{{article.category}}</p>
-        <p v-if="article.cartno">车号: <a target="_blank" :href="'./cart='+article.cartno">{{article.cartno}}</a></p>
+        <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
       </blockquote>
+      <div v-if="previewMode" class="submit">
+        <el-button type="success" @click="closePreview">返回编辑</el-button>
+      </div>
     </div>
     <div v-if="!previewMode">
       <h2 class="font-thin">评论</h2>
@@ -71,7 +74,9 @@
         config,
         comment: [],
         mycomment: '',
-        noComment: true
+        noComment: true,
+        cartUrl: HOST + '/search/#'
+        //车号/轴号信息搜索接口
       }
     },
     computed: {
@@ -91,6 +96,10 @@
       }
     },
     methods: {
+      closePreview() {
+        this.$store.commit('enterPreview', false);
+        this.$router.push('/add');
+      },
       loadComment() {
         var id = this.$route.params.id;
         this.$http.jsonp(settings.api.commentDetail, {
@@ -154,12 +163,12 @@
       }
     },
     mounted() {
-      if(!this.previewMode){
+      if (!this.previewMode) {
         this.loadArticle();
         this.loadComment();
-      }else{
+      } else {
         this.article = this.$store.state.preview;
-      }      
+      }
     }
   }
 

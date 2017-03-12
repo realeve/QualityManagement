@@ -8,10 +8,10 @@ export default {
         insert: host + "/DataInterface/insert",
 
         //文章列表详情
-        articleList: url + 332 + '&M=0&num=10',
+        articleList: url + 332 + '&M=0',
 
         //主页模块
-        articleHome: url + 329 + '&M=0&num=5',
+        articleHome: url + 329 + '&M=0',
 
         //文章详情
         articleDetail: url + 330 + '&M=0',

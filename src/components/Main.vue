@@ -1,12 +1,5 @@
 <template>
   <div class="welcome">
-    <!--<el-row :gutter="20">
-      <div v-for="item in newsList">
-        <el-col :xs="24" :sm="12" :lg="8" class="containt">
-          <my-card :news="item"></my-card>
-        </el-col>
-      </div>
-    </el-row>-->
     <div v-for="item in newsList" class=".welcome-center">
       <my-card :news="item"></my-card>
     </div>

@@ -9,7 +9,7 @@ const state = {
         prod: '',
         proc: '',
         machine: '',
-        operator: '',
+        operator: [],
         cartno: '',
         category: '',
         content: '',
@@ -32,11 +32,35 @@ const state = {
 };
 
 //同步事件
-// const mutations = {
-//  back() {
-//    state.showList = true;
-//  }
-// };
+const mutations = {
+    resetAddInfo(state) {
+        state.add = {
+            prod: '',
+            proc: '',
+            machine: '',
+            operator: [],
+            cartno: '',
+            category: '',
+            content: '',
+            title: ''
+        };
+    },
+    enterPreview(state, val) {
+        state.previewMode = val;
+    },
+    setPreviewData(state, data) {
+        state.preview = data;
+    },
+    clearMacineInfo(state) {
+        state.add.machine = '';
+    },
+    convertCartno(state, val) {
+        state.add.cartno = val;
+    },
+    recordMaxListId(state, param) {
+        state.articleId[param.title] = param.id;
+    }
+};
 
 //计算属性
 // const getters = {
@@ -70,7 +94,7 @@ const state = {
 
 export default new Vuex.Store({
     state,
-    // mutations,
+    mutations,
     // actions,
     // getters
 });

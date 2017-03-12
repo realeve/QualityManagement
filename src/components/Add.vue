@@ -28,7 +28,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="车号/轴号" prop="cartno">
-            <el-input v-model="value.cartno" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
+            <el-input v-model="value.cartno" @input="capitalizeCartno" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
           </el-form-item>
         </div>
       </div>
@@ -83,13 +83,25 @@
             required: true,
             message: '文章标题不能为空',
             trigger: 'blur'
+          }],
+          cartno: [{
+            required: false,
+            trigger: 'blur',
+            validator(rule, value, callback) {
+              let cart = /^[1-9]\d{3}[A-Za-z]\d{3}$|^[1-9]\d{6}[A-Ca-c]$|^[1-9]\d{6}$/;
+              if (!cart.test(value)) {
+                callback(new Error('请输入正确的车号/轴号信息'));
+              }else{
+                callback();
+              }
+            }
           }]
         }
       }
     },
     computed: {
       procId() {
-        var id = this.$store.state.add.proc;
+        let id = this.$store.state.add.proc;
         if (id < 1) {
           this.options.machine = [];
           id = -1;
@@ -102,31 +114,33 @@
         return this.$store.state.add;
       },
       procName() {
-        var id = parseInt(this.$store.state.add.proc);
+        let id = parseInt(this.$store.state.add.proc);
         return this.options.proc[id + 1].label;
       }
     },
     watch: {
       procId(id) {
-        this.$store.state.add.machine = '';
+        this.$store.commit('clearMacineInfo');
         if (id) {
           this.loadMachineList(id);
         }
-      },
-      "value.cartno": function (val) {
-        this.$store.state.add.cartno = val.toUpperCase();
       }
     },
     methods: {
+      capitalizeCartno(str) {
+        let reg = new RegExp(/[a-zA-Z]|\d/);
+        let result = str.split('').filter(item => item.match(reg)).join('').toUpperCase();
+        this.$store.commit('convertCartno', result);
+      },
       loadProd() {
-        var url = HOST + '/DataInterface/Api';
+        let url = HOST + '/DataInterface/Api';
         this.$http.jsonp(url, {
           params: {
             ID: '35',
             cache: 14400
           }
         }).then(response => {
-          var data = response.data.data;
+          let data = response.data.data;
           this.options.prod = data.map(item => {
             return {
               value: item[0],
@@ -136,7 +150,7 @@
         });
       },
       loadMachineList(id) {
-        var url = HOST + '/DataInterface/Api';
+        let url = HOST + '/DataInterface/Api';
         this.$http.jsonp(url, {
           params: {
             ID: '36',
@@ -144,7 +158,7 @@
             cache: 14400
           }
         }).then(response => {
-          var data = response.data.data;
+          let data = response.data.data;
           this.options.machine = data.map(item => {
             return {
               value: item[1],
@@ -154,8 +168,8 @@
         });
       },
       querySearch(queryString, next) {
-        var machine = this.options.machine;
-        var results = queryString ? machine.filter(this.createFilter(queryString)) : machine;
+        let machine = this.options.machine;
+        let results = queryString ? machine.filter(this.createFilter(queryString)) : machine;
         // 调用 callback 返回建议列表的数据
         next(results);
       },
@@ -169,7 +183,8 @@
           this.$message.error('问题描述不能为空');
           return false;
         }
-        var valid=false;
+
+        let valid = false;
         this.$refs[formName].validate(result => {
           valid = result;
         });
@@ -181,15 +196,15 @@
           return;
         }
 
-        var params = {
+        let params = {
           tbl: 99,
           tblname: 'tbl_article',
           utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
           rec_time: util.getNow(1)
         };
-        
-        var operator = this.value.operator.toString();
+
+        let operator = this.value.operator.toString();
 
         params = Object.assign(params, this.value);
         params = Object.assign(params, {
@@ -197,28 +212,29 @@
           operator,
           content: util.parseHtml(this.value.content)
         });
-        
-        this.$store.state.preview = params;
+
+        this.$store.commit('setPreviewData', params);
         return true;
       },
       preview() {
         if (!this.getParams()) {
           return;
         }
-        this.$store.state.previewMode = true;
+        this.$store.commit('enterPreview', true);
+
         this.$router.push('/view/preview');
       },
       submitForm() {
         if (!this.getParams()) {
           return;
         }
-        var url = settings.api.insert;
+        let url = settings.api.insert;
         //post CROS 需增加 emulateJSON:true
         this.$http.post(url, this.$store.state.preview, {
             emulateJSON: true
           })
           .then(response => {
-            var res = response.data;
+            let res = response.data;
             if (res.type == 1) {
               this.$message({
                 message: '数据添加成功',
@@ -238,22 +254,12 @@
           })
       },
       resetForm(formName = 'value') {
-        //this.$refs[formName].resetFields();
-        this.$store.state.add = {
-          prod: '',
-          proc: '',
-          machine: '',
-          operator: [],
-          cartno: '',
-          category: '',
-          content: '',
-          title: ''
-        };
+        this.$store.commit('resetAddInfo');
       }
     },
     mounted() {
       this.loadProd();
-      this.$store.state.previewMode = false;
+      this.$store.commit('enterPreview', false);
     }
   }
 
