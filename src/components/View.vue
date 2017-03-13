@@ -19,11 +19,11 @@
       </div>
     </div>
     <div v-if="!previewMode">
-      <h2 class="font-thin">评论</h2>
+      <h2 class="font-thin">补充说明</h2>
       <div class="card comment">
         <div v-if="noComment">
           <p class="no-comment">
-            现在还没有人评论.
+            现在还没有人留言.
           </p>
         </div>
         <div v-else>
@@ -59,8 +59,8 @@
 
   let config = {
     placeholder: '在此处输入留言信息...',
-    theme: 'bubble',
-    //theme: 'snow',
+    //theme: 'bubble',
+    theme: 'snow',
   }
 
   export default {
@@ -76,7 +76,7 @@
         mycomment: '',
         noComment: true,
         cartUrl: HOST + '/search/#'
-        //车号/轴号信息搜索接口
+        // 车号/轴号信息搜索接口
       }
     },
     computed: {
@@ -164,10 +164,15 @@
     },
     mounted() {
       if (!this.previewMode) {
+        if ('preview' == this.$route.params.id) {
+          this.$router.push('/add');
+          return;
+        }
         this.loadArticle();
         this.loadComment();
       } else {
         this.article = this.$store.state.preview;
+        this.article.content = JSON.parse('"'+this.article.content+'"');
       }
     }
   }

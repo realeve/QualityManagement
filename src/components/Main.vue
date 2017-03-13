@@ -51,14 +51,13 @@
           this.$store.commit('refreshHomeNewsList',newsItem);
           //this.newsList.push(newsItem);
         });
-
-
       },
       loadingData() {
-        if (this.newsList.length == 0) {
+        if (this.$store.state.needRefreshMainList || this.newsList.length == 0) {
           options.category.forEach((item, i) => {
             this.getNewsList(item.value, i);
           })
+          this.$store.commit('refreshMainList',false);
         }
       }
     },

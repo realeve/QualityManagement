@@ -39,7 +39,7 @@
         </el-form-item>
         <el-form-item label="问题分类" prop="category">
           <el-select v-model="value.category" clearable placeholder="请选择问题分类">
-            <el-option v-for="item in options.category" :label="item.label" :value="item.value" :key="item.value">
+            <el-option v-for="(item,i) in options.category" :label="item.label" :value="item.value" :key="i">
             </el-option>
           </el-select>
         </el-form-item>
@@ -89,9 +89,9 @@
             trigger: 'blur',
             validator(rule, value, callback) {
               let cart = /^[1-9]\d{3}[A-Za-z]\d{3}$|^[1-9]\d{6}[A-Ca-c]$|^[1-9]\d{6}$/;
-              if (!cart.test(value)) {
+              if (value != '' && !cart.test(value)) {
                 callback(new Error('请输入正确的车号/轴号信息'));
-              }else{
+              } else {
                 callback();
               }
             }
@@ -115,6 +115,9 @@
       },
       procName() {
         let id = parseInt(this.$store.state.add.proc);
+        if (isNaN(id)) {
+          return '';
+        }
         return this.options.proc[id + 1].label;
       }
     },
@@ -248,6 +251,7 @@
                 type: 'error'
               });
             }
+            this.$store.commit('refreshMainList',true);
           })
           .catch(e => {
             console.log(e);
