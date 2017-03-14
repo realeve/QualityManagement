@@ -2189,7 +2189,8 @@ body {
 .content h2,
 .content h3,
 .content a,
-.content strong {
+.content strong,
+.attach {
     color: #42b983;
 }
 

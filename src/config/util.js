@@ -54,6 +54,53 @@ function parseHtml (html) {
   // 转换后应去除首尾引号
   return html.slice(1, html.length - 1)
 }
+
+function handleAttach (html) {
+  if (typeof html == 'undefined' || html == '') {
+    return ''
+  }
+  var arrAttach = html.match(/<img \b[^>]*>/g)
+  var linkStr
+  var i = 1
+  if (null == arrAttach) {
+    return html
+  }
+
+  // rar/txt/docx/xlsx/pptx/zip/audio 类型附件正常显示
+
+  function handleFileFormat (str) {
+    // rar
+    str = str.replace('href="data:;base64,UmFyI', ' download="附件.rar" href="data:application/x-rar-compressed;base64,UmFyI')
+
+    // txt
+    str = str.replace('href="data:text', ' download="附件.txt" href="data:text')
+
+    return str
+  }
+
+  arrAttach.map(item => {
+    if (item.includes('src="data:')) {
+      if (item.includes('src="data:audio/')) {
+        linkStr = item.replace('<img src=', '<audio controls="controls" autoplay="true" src=')
+        html = html.replace(item, linkStr)
+      } else if (!item.includes('src="data:image')) {
+        linkStr = item.replace('<img src="', '<a target="_blank" href="').replace('>', '><strong class="attach"> 附件' + i + ' </a></strong>')
+        linkStr = handleFileFormat(linkStr)
+        html = html.replace(item, linkStr)
+        i++
+      }
+    }
+  })
+  return html
+}
+function handleContent (data) {
+  data.map((item, i) => {
+    data[i].content = handleAttach(item.content)
+  })
+  return data
+}
 export default {
   getNow,
-parseHtml}
+  parseHtml,
+  handleContent,
+handleAttach}

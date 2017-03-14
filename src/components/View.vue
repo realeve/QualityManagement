@@ -57,10 +57,47 @@
   const HOST = settings.host;
   import util from '../config/util';
 
+  //存储评论临时数据，解决Vue无法全部观察的问题
+  //let commentHackArr=[];
+
   let config = {
     placeholder: '在此处输入留言信息...',
     //theme: 'bubble',
     theme: 'snow',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+        //['blockquote', 'code-block'],
+        ['blockquote'],
+        [{
+          'header': [1, 2, 3, 4, 5, 6, false]
+        }],
+        //[{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        [{
+          'list': 'ordered'
+        }, {
+          'list': 'bullet'
+        }],
+        //[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+        //[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+        //[{ 'direction': 'rtl' }],                         // text direction
+        [{
+          'size': ['small', false, 'large', 'huge']
+        }], // custom dropdown
+        [{
+          'color': []
+        }, {
+          'background': []
+        }], // dropdown with defaults from theme
+        //[{ 'font': [] }],
+        [{
+          'align': []
+        }],
+        ['clean'],
+        ['link', 'image'] // remove formatting button
+        // ['link', 'image', 'video']                         // link and image, video
+      ]
+    }
   }
 
   export default {
@@ -79,6 +116,23 @@
         // 车号/轴号信息搜索接口
       }
     },
+    // watch: {
+    //   comment() {
+    //     // 对 v-html中包含大量元素时无法正常显示的hack
+    //     // 当数据量过大时，push到被观测的数据后，observer无法全部接收数据
+    //     // 经测试，原因为  php.ini中mssql.textlimit/mssql.textsize被设置为 409600，导致接口输入长度被截取
+    //     // 重置为：40960000
+    //     this.$nextTick(() => {  
+    //       console.log(commentHackArr);        
+    //       commentHackArr.forEach(item => {
+    //         var el = document.querySelector('#comment'+item.comment_id);
+    //         if(el.innerHTML==''){
+    //           el.innerHTML = item.content;
+    //         }            
+    //       });
+    //     })
+    //   }
+    // },
     computed: {
       user() {
         return this.$store.state.user;
@@ -112,6 +166,9 @@
             return;
           }
           this.noComment = false;
+          // commentHackArr = util.handleContent(obj.data);
+          // console.log(commentHackArr);
+          obj.data = util.handleContent(obj.data);
           this.comment = obj.data;
         });
       },
@@ -136,6 +193,7 @@
           emulateJSON: true
         }).then(res => {
           this.noComment = false;
+          comment.content = util.handleAttach(this.mycomment);
           this.comment.push(comment);
           this.mycomment = '';
         }).catch(e => {
@@ -172,7 +230,7 @@
         this.loadComment();
       } else {
         this.article = this.$store.state.preview;
-        this.article.content = JSON.parse('"'+this.article.content+'"');
+        this.article.content = JSON.parse('"' + this.article.content + '"');
       }
     }
   }

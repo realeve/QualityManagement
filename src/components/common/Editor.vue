@@ -13,6 +13,19 @@ let config = {
   placeholder: '在此处输入问题描述...',
   //theme: 'bubble',
   theme: 'snow',
+    modules:{
+      toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            ['blockquote'],
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{ 'align': [] }],
+            ['clean'],      
+            ['link', 'image']                                       // remove formatting button
+          ]
+    }
 }
 
 // use
