@@ -51,6 +51,16 @@
         </div>
       </div>
     </el-form>
+
+    <div class="card">
+      <h3>附件管理</h3>
+      <el-upload class="upload-demo" drag multiple  :action="uploadUrl" :on-preview="handlePreview" :on-remove="handleRemove"
+        :file-list="fileList" :on-change="handleChange" :on-success="handleSuccess" list-type="picture">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+      </el-upload>
+    </div>
   </div>
 </template>
 <script>
@@ -96,7 +106,11 @@
               }
             }
           }]
-        }
+        },
+        uploadUrl:HOST+'/upload/upload.php',
+        fileList: [],
+        dialogImageUrl: '',
+        dialogVisible: false
       }
     },
     computed: {
@@ -130,6 +144,21 @@
       }
     },
     methods: {
+      handleSuccess(response, file, fileList){
+        delete response.status;    
+        delete response.msg;  
+        this.fileList.push(response);
+      },
+      handleRemove(file, fileList) {
+        console.log(file);
+        console.log('此处添加文件移除逻辑');
+      },
+      handlePreview(file) {
+        console.log(file);
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+        console.info('加入数据预览逻辑');
+      },
       capitalizeCartno(str) {
         let reg = new RegExp(/[a-zA-Z]|\d/);
         let result = str.split('').filter(item => item.match(reg)).join('').toUpperCase();
@@ -251,7 +280,7 @@
                 type: 'error'
               });
             }
-            this.$store.commit('refreshMainList',true);
+            this.$store.commit('refreshMainList', true);
           })
           .catch(e => {
             console.log(e);
