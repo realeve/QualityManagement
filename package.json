@@ -9,6 +9,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "aplayer": "^1.5.8",
     "element-ui": "^1.2.3",
     "vue": "^2.2.1",
     "vue-quill-editor": "^1.1.1",

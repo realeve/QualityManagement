@@ -18,6 +18,35 @@
         <el-button type="success" @click="closePreview">返回编辑</el-button>
       </div>
     </div>
+    <div v-show="attachList.length">
+      <h2 class="font-thin">附件列表</h2>
+      <div class="card attach">
+        <el-carousel indicator-position="outside" height="800px" v-if="attaches.image.length" arrow="always">
+          <el-carousel-item v-for="(item,i) in attaches.image" :key="i">
+            <img :src="item.url" :alt="item.name">
+          </el-carousel-item>
+        </el-carousel>
+
+        <div id="player3" class="aplayer"></div>
+
+        <!--div v-for="item in attaches.audio">
+          <audio :src="item.url" controls="controls"></audio>
+          <p>{{item.name}}</p>
+        </div-->
+
+        <div v-for="item in attaches.video">
+          <video :src="item.url" controls="controls"></video>
+          <p>{{item.name}}</p>
+        </div>
+
+        <ul class="attach-list">
+          <li class="el-upload el-upload--picture-card" v-for="(item,i) in attaches.other" :title="'点击下载 '+item.name">
+            <a :href="item.url" target="_blank" :title="'点击下载 '+item.name">附件{{i+1}}</a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
     <div v-if="!previewMode">
       <h2 class="font-thin">补充说明</h2>
       <div class="card comment">
@@ -58,6 +87,7 @@
   import util from '../config/util';
 
   // php.ini中mssql.textlimit/mssql.textsize被设置为 409600，导致接口输入长度被截取
+  import APlayer from 'APlayer';
 
   let config = {
     placeholder: '在此处输入留言信息...',
@@ -111,8 +141,9 @@
         comment: [],
         mycomment: '',
         noComment: true,
-        cartUrl: HOST + '/search/#'
+        cartUrl: HOST + '/search/#',
         // 车号/轴号信息搜索接口
+        attachList: []
       }
     },
     computed: {
@@ -129,6 +160,38 @@
           uid: this.user.id,
           useravatar: HOST + '/demo/avatar/' + this.user.avatar + '.jpg'
         };
+      },
+      attaches() {
+        //根据附件类型不同提供不同解析
+        var obj = {
+          image: [],
+          audio: [],
+          video: [],
+          other: []
+        }
+        this.attachList.forEach(item => {
+          var type = item.type;
+          var url = settings.uploadContent + item.url;
+          var item = {
+            url,
+            name: item.name
+          };
+          if (type.includes('image')) {
+            //图片
+            obj.image.push(item);
+          } else if (type.includes('audio')) {
+            //音频
+            obj.audio.push(item);
+          } else if (type.includes('video/mp4')) {
+            //视频
+            obj.video.push(item);
+          } else {
+            //文档 ('application/vnd.ms') PDF('pdf')以及其它文件，直接点击后跳转链接下载
+            obj.other.push(item);
+          }
+        })
+
+        return obj;
       }
     },
     methods: {
@@ -198,6 +261,20 @@
           }
           this.article = obj.data[0];
           this.article.content = util.handleAttach(this.article.content);
+          this.loadAttachList();
+        });
+      },
+      loadAttachList() {
+        this.$http.jsonp(settings.api.attachList, {
+          params: {
+            attachid: this.article.attach_list.replace(/,/g, "','")
+          }
+        }).then(res => {
+          let obj = res.data;
+          if (obj.rows == 0) {
+            return;
+          }
+          this.attachList = obj.data;
         });
       }
     },
@@ -213,7 +290,36 @@
         this.article = this.$store.state.preview;
         this.article.content = JSON.parse('"' + this.article.content + '"');
         this.article.content = util.handleAttach(this.article.content);
+        this.loadAttachList();
       }
+
+      var music = [{
+        title: '凉凉',
+        author: '测试',
+        url: 'http://localhost/upload/file/MTQ4OTU4OTMxMV84NTEwMTRf5YeJ5YeJ.mp3',
+        pic: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.jpg'
+      }, {
+        title: '凉凉2',
+        author: '测试2',
+        url: 'http://localhost/upload/file/MTQ4OTU4OTMxMV84NTEwMTRf5YeJ5YeJ.mp3',
+        pic: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.jpg'
+      }, {
+        title: '凉凉3',
+        author: '测试3',
+        url: 'http://localhost/upload/file/MTQ4OTU4OTMxMV84NTEwMTRf5YeJ5YeJ.mp3',
+        pic: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.jpg'
+      }];
+      var ap4 = new APlayer({
+        element: document.getElementById('player3'),
+        narrow: false,
+        autoplay: false,
+        showlrc: false,
+        mutex: true,
+        theme: '#ad7a86',
+        mode: 'random',
+        music
+      });
+      document.querySelector('.aplayer .aplayer-list').style.height = 32 * music.length + 'px';
     }
   }
 
@@ -249,6 +355,56 @@
   .ql-editor {
     height: 100px;
     min-height: 100px;
+  }
+  
+  .attach {
+    min-height: 100px;
+    .margin-top-20;
+    .attach-img {
+      max-width: 80%;
+      border: 0;
+      margin: 15px 0px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 4px solid rgba(255, 255, 255, 0.82);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    video {
+      border-radius: 4px;
+      margin: 15px 0px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      max-width: 100%;
+    }
+    @attach-box: 80px;
+    .attach-list {
+      li {
+        margin: 10px;
+      }
+      .el-upload--picture-card {
+        line-height: 82px;
+        width: @attach-box;
+        height: @attach-box;
+      }
+    }
+    .aplayer {
+      max-width: 600px;
+      margin: 20px 0;
+      margin-bottom: 60px;
+    }
+    .bg-success{
+      background-color:#13CE66;
+      a{
+        color:#fff;
+      }
+    }
+    .bg-warning{
+      background-color:#F7BA2A;
+    }
+    .bg-blue{
+      background-color:#20A0FF;
+      a{
+        color:#fff;
+      }    
+    }
   }
   
   .article {

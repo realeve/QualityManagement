@@ -1,22 +1,38 @@
 var host = 'http://localhost'
 var url = host + '/datainterface/api?ID='
 export default {
-  host,
-  url,
-  api: {
-    // 提交数据
-    insert: host + '/DataInterface/insert',
+    host,
+    url,
+    uploadContent: host + '/upload',
+    api: {
+        // POST
+        insert: host + '/DataInterface/insert',
 
-    // 文章列表详情
-    articleList: url + 332 + '&M=0',
+        // UPDATE
+        update: host + '/DataInterface/update',
 
-    // 主页模块
-    articleHome: url + 329 + '&M=0',
+        // DELETE (POST)
+        delete: host + '/DataInterface/delete',
 
-    // 文章详情
-    articleDetail: url + 330 + '&M=0',
+        // FILEUPLOAD (POST)
+        fileUpload: host + '/upload/upload.php',
 
-    // 文章评论
-    commentDetail: url + 331 + '&M=0'
-  }
+        //FILEDELETE (GET)
+        fileDelete: host + '/upload/upload.php?name=',
+
+        // 文章列表详情
+        articleList: url + 332 + '&M=0',
+
+        // 主页模块
+        articleHome: url + 329 + '&M=0',
+
+        // 文章详情
+        articleDetail: url + 330 + '&M=0',
+
+        // 文章评论
+        commentDetail: url + 331 + '&M=0',
+
+        //附件列表
+        attachList: url + 333 + '&M=0'
+    }
 }

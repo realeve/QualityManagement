@@ -54,12 +54,16 @@
 
     <div class="card">
       <h3>附件管理</h3>
-      <el-upload class="upload-demo" drag multiple  :action="uploadUrl" :on-preview="handlePreview" :on-remove="handleRemove"
-        :file-list="fileList" :on-change="handleChange" :on-success="handleSuccess" list-type="picture">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+      <el-upload multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" list-type="picture-card"
+        :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
+        <i class="el-icon-plus"></i>
       </el-upload>
+      <div class="margin-top-20">
+        <div class="el-upload__tip" slot="tip">文件大小请勿超过100MB，图片文件点击列表预览</div>
+      </div>
+      <el-dialog v-model="dialogVisible" size="tiny">
+        <img width="100%" :src="dialogImageUrl" alt="">
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -107,7 +111,7 @@
             }
           }]
         },
-        uploadUrl:HOST+'/upload/upload.php',
+        uploadUrl: settings.api.fileUpload,
         fileList: [],
         dialogImageUrl: '',
         dialogVisible: false
@@ -133,6 +137,9 @@
           return '';
         }
         return this.options.proc[id + 1].label;
+      },
+      attachList() {
+        return this.fileList.map(item => item.attach_id).join(',');
       }
     },
     watch: {
@@ -144,20 +151,89 @@
       }
     },
     methods: {
-      handleSuccess(response, file, fileList){
-        delete response.status;    
-        delete response.msg;  
-        this.fileList.push(response);
+      validFile(file) {
+        //const isJPG = file.type === 'image/jpeg';
+        const isLt20M = file.size / 1024 / 1024 < 100;
+        if (!isLt20M) {
+          this.$message.error('上传头像图片大小不能超过 20MB!');
+        }
+        return isLt20M;
       },
-      handleRemove(file, fileList) {
-        console.log(file);
-        console.log('此处添加文件移除逻辑');
+      handleSuccess(response, file) {
+        delete response.status;
+        delete response.msg;
+
+        //添加数据后将附件信息存储至数据库
+        let params = {
+          tbl: 99,
+          tblname: 'tbl_article_attach',
+          utf2gbk: ['name'],
+          rec_time: util.getNow(1),
+          uid: this.$store.state.user.id
+        };
+        params = Object.assign(params, response);
+
+        let url = settings.api.insert;
+
+        this.$http.post(url, params, {
+            emulateJSON: true
+          })
+          .then(res => {
+            res = res.data;
+            if (res.type == 1) {
+              response.attach_id = res.id;
+              response.url = HOST + '/upload' + response.url;
+              this.fileList.push(response);
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          })
+
+      },
+      handleRemove(file) {
+        this.fileList.forEach((item, i) => {
+          if (item.uid == file.uid) {
+
+            //删除数据后，从数据库中删除信息
+            let params = {
+              tbl: 99,
+              tblname: 'tbl_article_attach',
+              id: item.attach_id
+            };
+
+            let url = settings.api.delete;
+            this.$http.post(url, params, {
+                emulateJSON: true
+              })
+              .then(res => {
+                res = res.data;
+                if (res.type == 1) {
+                  this.fileList.splice(i, 1);
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              })
+
+            this.$http.jsonp(settings.api.fileDelete + item.url.split('/upload')[1])
+              .then(res => {
+                console.info(item.name + '删除成功');
+              })
+              .catch(e => {
+                console.log(e);
+              })
+          }
+        });
       },
       handlePreview(file) {
         console.log(file);
-        this.dialogImageUrl = file.url;
-        this.dialogVisible = true;
-        console.info('加入数据预览逻辑');
+        this.fileList.forEach((item, i) => {
+          if (item.uid == file.uid) {
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+          }
+        });
       },
       capitalizeCartno(str) {
         let reg = new RegExp(/[a-zA-Z]|\d/);
@@ -233,7 +309,8 @@
           tblname: 'tbl_article',
           utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
-          rec_time: util.getNow(1)
+          rec_time: util.getNow(1),
+          attach_list: this.attachList
         };
 
         let operator = this.value.operator.toString();
@@ -256,6 +333,29 @@
 
         this.$router.push('/view/preview');
       },
+      updateAttachArticleId(article_id) {
+        //更新附件中对应的文章id
+        let url = settings.api.update;
+        let params = {
+          tbl: 99,
+          tblname: 'tbl_article_attach',
+          article_id
+        };
+
+        this.attachList.split(',').map(id => {
+          params.id = id;
+          this.$http.jsonp(url, {
+              params
+            })
+            .then(res => {
+              console.info('附件信息更新成功');
+            })
+            .catch(e => {
+              console.log(e);
+            })
+        });
+
+      },
       submitForm() {
         if (!this.getParams()) {
           return;
@@ -272,6 +372,7 @@
                 message: '数据添加成功',
                 type: 'success'
               });
+              this.updateAttachArticleId(res.id);
               //提交后重置数据
               this.resetForm();
             } else {
@@ -288,6 +389,7 @@
       },
       resetForm(formName = 'value') {
         this.$store.commit('resetAddInfo');
+        this.fileList = [];
       }
     },
     mounted() {
