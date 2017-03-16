@@ -33,6 +33,9 @@ export default {
         commentDetail: url + 331 + '&M=0',
 
         //附件列表
-        attachList: url + 333 + '&M=0'
+        attachList: url + 333 + '&M=0',
+
+        //媒体列表
+        mediaList: url + 334 + '&M=0'
     }
 }

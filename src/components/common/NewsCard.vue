@@ -1,5 +1,6 @@
 <template>
-  <div class="entry-box" v-scroll="loadMore">
+  <!--div class="entry-box" v-scroll="loadMore"-->
+  <div class="entry-box" v-infinite-scroll="loadMore" infinite-scroll-disabled="news.isLoading" infinite-scroll-distance="10">
     <div class="box-title clearfix">
       <div class="float-left">{{news.title}}</div>
       <a v-if="news.more" class="pointer" @click="jump(news.more)">
@@ -23,13 +24,12 @@
         </div>
       </div>
 
-      <div v-if="!news.more" class="text-center" @click="loadMore">
-        <div class="entry">
-          <div class="entry-info">
-            {{info}}
-          </div>
+      <div v-if="!news.more" @click="loadMore" class="entry">
+        <div class="text-center">
+          {{info}}
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -37,18 +37,18 @@
   export default {
     name: 'my-card',
     props: ['news'],
-    directives: {
-      scroll: {
-        bind: function (el, binding) {
-          window.addEventListener('scroll', () => {
-            if (document.body.scrollTop + window.innerHeight >= el.clientHeight + 120) {
-              let next = binding.value;
-              next();
-            }
-          });
-        }
-      }
-    },
+    // directives: {
+    //   scroll: {
+    //     bind: function (el, binding) {
+    //       window.addEventListener('scroll', () => {
+    //         if (document.body.scrollTop + window.innerHeight >= el.clientHeight + 120) {
+    //           let next = binding.value;
+    //           next();
+    //         }
+    //       });
+    //     }
+    //   }
+    // },
     methods: {
       jump(val) {
         this.$router.push(val);
@@ -62,11 +62,11 @@
     computed: {
       info() {
         if (this.news.isLoading) {
-          return '加载中';
+          return '正在加载...';
         } else if (this.news.empty) {
-          return '数据已全部加载'
+          return '加载完毕'
         } else {
-          return '点击加载更多'
+          return '点击载入更多'
         }
       }
     }
@@ -94,4 +94,5 @@
   .pointer {
     cursor: pointer;
   }
+
 </style>

@@ -9,7 +9,7 @@
       </div>
 
       <div v-else>
-        <el-upload multiple drag :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType"
+        <el-upload multiple drag :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList"
       :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -129,5 +129,9 @@
       }
     }
   }
-
 </script>
+<style>
+  .el-upload-dragger{
+    width:280px;
+  }
+</style>

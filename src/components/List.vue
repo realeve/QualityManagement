@@ -31,7 +31,6 @@
         this.$message.success('跳转到/#/view/' + val);
       },
       loadListData(url, aid) {
-        this.news.isLoading = true;
         this.$http.jsonp(url, {
           params: {
             listid: this.$route.params.category,
@@ -70,15 +69,19 @@
             title: this.news.title,
             id: obj.data[obj.data.length - 1].id
           });
-        });
+        }).catch(e=>{
+          this.news.isLoading = false;
+          console.info(e);
+        })
       },
       loadMore() {
-        if (this.news.isLoading) {
-          return;
+        if(this.news.isLoading){
+          return
         }
-        console.info('数据载入中:');
+        this.news.isLoading = true;
         let curId = this.$store.state.articleId[this.$route.params.category];
         if (typeof curId != 'undefined') {
+          console.info('数据载入中,当前文章id:',curId);
           this.loadListData(settings.api.articleList, curId);
         } else {
           this.loadListData(settings.api.articleHome);

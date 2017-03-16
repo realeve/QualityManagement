@@ -20,3 +20,8 @@ SELECT top 10 a.id,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.
 --附件列表
 SELECT * FROM tbl_article_attach where id in ('23','24','25')
 --attachid
+
+
+--媒体库 by uid
+SELECT a.id,a.name,a.type,a.url FROM tbl_article_attach a where a.uid = 16 order by a.id,a.type
+--uid

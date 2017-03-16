@@ -304,7 +304,7 @@
   }
 
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped lang="less">
   @text-color: #5e6d82;
   @vue-color: #42b983;
@@ -315,7 +315,7 @@
   }
   
   .article-contant {
-    margin: 60px 50px 10px 50px;
+    margin: 20px 0;
   }
   
   .font-thin {

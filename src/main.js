@@ -8,6 +8,10 @@ import store from './store'
 import VueResource from 'vue-resource'
 Vue.use(VueResource)
 
+//see detail here: https://github.com/ElemeFE/vue-infinite-scroll
+import infiniteScroll from 'vue-infinite-scroll'
+Vue.use(infiniteScroll)
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 Vue.use(ElementUI)
@@ -16,11 +20,11 @@ Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  store,
-  template: '<App/>',
-  components: {
-    App
-  }
+    el: '#app',
+    router,
+    store,
+    template: '<App/>',
+    components: {
+        App
+    }
 })

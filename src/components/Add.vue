@@ -86,7 +86,7 @@
             message: '请选择文章分类',
             trigger: 'blur'
           }],
-          tite: [{
+          title: [{
             required: true,
             message: '文章标题不能为空',
             trigger: 'blur'
@@ -320,7 +320,7 @@
   }
   
   .basic {
-    width: 460px;
+    width: 280px;
   }
   
   .margin-top-20 {

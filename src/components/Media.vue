@@ -1,9 +1,11 @@
 <template>
-  <div class="card">
+  <div class="content">
     <el-row>
       <el-col :md="16" :sm="24" :xs="24">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="图片" name="image">图片</el-tab-pane>
+          <el-tab-pane label="图片" name="image">
+            <media-grid/>
+          </el-tab-pane>
           <el-tab-pane label="音频" name="audio">音频</el-tab-pane>
           <el-tab-pane label="视频" name="video">视频</el-tab-pane>
           <el-tab-pane label="其它" name="other">其它</el-tab-pane>
@@ -21,13 +23,17 @@
 <script>
   import options from '../config/options';
   import Attach from './common/Attach';
+  import MediaGrid from './common/MediaGrid';
+
   import settings from '../config/settings';
   import util from '../config/util';
   const HOST = settings.host;
+
   export default {
     name: 'media',
     components: {
-      Attach
+      Attach,
+      MediaGrid
     },
     data() {
       return {
@@ -59,7 +65,6 @@
               console.log(e);
             })
         });
-
       },
     },
     mounted() {
@@ -74,11 +79,12 @@
     margin-top: 20px;
   }
 
-  .card {
+  .content {
     .margin-top-20;
     background-color: #fff;
     padding: 20px;
     border-radius: 4px;
+    min-height:600px;
   }
 
   h3{
@@ -86,10 +92,10 @@
   }
 
   .el-upload-dragger{
-    width:300px;
+    width:260px;
   }
 
   .upload{
-    margin-left:30px;
+    margin-left:20px;
   }
 </style>
