@@ -54,29 +54,22 @@
 
     <div class="card">
       <h3>附件管理</h3>
-      <el-upload multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" list-type="picture-card"
-        :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
-        <i class="el-icon-plus"></i>
-      </el-upload>
-      <div class="margin-top-20">
-        <div class="el-upload__tip" slot="tip">文件大小请勿超过100MB，图片文件点击列表预览</div>
-      </div>
-      <el-dialog v-model="dialogVisible" size="tiny">
-        <img width="100%" :src="dialogImageUrl" alt="">
-      </el-dialog>
+      <attach :listType="'picture-card'"/>
     </div>
   </div>
 </template>
 <script>
   import options from '../config/options';
   import MyEditor from './common/Editor';
+  import Attach from './common/Attach';
   import settings from '../config/settings';
   import util from '../config/util';
   const HOST = settings.host;
   export default {
     name: 'add',
     components: {
-      'my-editor': MyEditor
+      MyEditor,
+      Attach
     },
     data() {
       return {
@@ -110,11 +103,7 @@
               }
             }
           }]
-        },
-        uploadUrl: settings.api.fileUpload,
-        fileList: [],
-        dialogImageUrl: '',
-        dialogVisible: false
+        }
       }
     },
     computed: {
@@ -138,8 +127,8 @@
         }
         return this.options.proc[id + 1].label;
       },
-      attachList() {
-        return this.fileList.map(item => item.attach_id).join(',');
+      attachList(){
+        return this.$store.state.fileList.map(item => item.attach_id).join(',');
       }
     },
     watch: {
@@ -158,82 +147,6 @@
           this.$message.error('上传头像图片大小不能超过 20MB!');
         }
         return isLt20M;
-      },
-      handleSuccess(response, file) {
-        delete response.status;
-        delete response.msg;
-
-        //添加数据后将附件信息存储至数据库
-        let params = {
-          tbl: 99,
-          tblname: 'tbl_article_attach',
-          utf2gbk: ['name'],
-          rec_time: util.getNow(1),
-          uid: this.$store.state.user.id
-        };
-        params = Object.assign(params, response);
-
-        let url = settings.api.insert;
-
-        this.$http.post(url, params, {
-            emulateJSON: true
-          })
-          .then(res => {
-            res = res.data;
-            if (res.type == 1) {
-              response.attach_id = res.id;
-              response.url = HOST + '/upload' + response.url;
-              this.fileList.push(response);
-            }
-          })
-          .catch(e => {
-            console.log(e);
-          })
-
-      },
-      handleRemove(file) {
-        this.fileList.forEach((item, i) => {
-          if (item.uid == file.uid) {
-
-            //删除数据后，从数据库中删除信息
-            let params = {
-              tbl: 99,
-              tblname: 'tbl_article_attach',
-              id: item.attach_id
-            };
-
-            let url = settings.api.delete;
-            this.$http.post(url, params, {
-                emulateJSON: true
-              })
-              .then(res => {
-                res = res.data;
-                if (res.type == 1) {
-                  this.fileList.splice(i, 1);
-                }
-              })
-              .catch(e => {
-                console.log(e);
-              })
-
-            this.$http.jsonp(settings.api.fileDelete + item.url.split('/upload')[1])
-              .then(res => {
-                console.info(item.name + '删除成功');
-              })
-              .catch(e => {
-                console.log(e);
-              })
-          }
-        });
-      },
-      handlePreview(file) {
-        console.log(file);
-        this.fileList.forEach((item, i) => {
-          if (item.uid == file.uid) {
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
-          }
-        });
       },
       capitalizeCartno(str) {
         let reg = new RegExp(/[a-zA-Z]|\d/);
@@ -389,7 +302,7 @@
       },
       resetForm(formName = 'value') {
         this.$store.commit('resetAddInfo');
-        this.fileList = [];
+        this.$store.commit('clearFileList');
       }
     },
     mounted() {

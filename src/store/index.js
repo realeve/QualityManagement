@@ -36,7 +36,10 @@ const state = {
   },
   // 主页列表缓存
   mainList: [],
-  needRefreshMainList: false
+  needRefreshMainList: false,
+
+  //附件文件列表
+  fileList:[]
 }
 
 // 同步事件
@@ -85,6 +88,15 @@ const mutations = {
   refreshHomeNewsList(state, data) {
     // 更新主页文章数据
     state.mainList = state.mainList.concat(data).sort((a, b) => a.cateId - b.cateId)
+  },
+  clearFileList(){
+    state.fileList=[];
+  },
+  removeFileItem(state,id){
+    state.fileList.splice(id, 1);
+  },
+  addFileItem(state,item){
+    state.fileList.push(item);
   }
 }
 

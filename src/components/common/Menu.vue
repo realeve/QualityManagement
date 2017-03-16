@@ -10,12 +10,12 @@
 <script>
 import options from '../../config/options';
 let defaultList = options.category[0].value;
-const routeList = ['/', '/list/' + defaultList, '/add']
+const routeList = ['/', '/list/' + defaultList, '/add','media']
 export default {
   name: 'my-menu',
   data() {
     return {
-      list: ['首页', '查看列表', '新增']
+      list: ['首页', '查看列表', '新增','媒体库']
     }
   },
   computed: {
@@ -38,6 +38,9 @@ export default {
         break;
       case 'Add':
         this.activeIndex = '2';
+        break;
+      case 'Media':
+        this.activeIndex = '3';
         break;
     }
   }

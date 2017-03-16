@@ -5,6 +5,7 @@ import Main from '@/components/Main'
 import Add from '@/components/Add'
 import View from '@/components/View'
 import List from '@/components/List'
+import Media from '@/components/Media'
 
 Vue.use(Router)
 
@@ -40,5 +41,9 @@ export default new Router({
     path: '/view/:id',
     name: 'View',
     component: View
+  }, {
+    path: '/media',
+    name: 'Media',
+    component: Media
   }]
 })

@@ -57,12 +57,6 @@
         if (!this.news.empty) {
           this.$emit('loadMore');
         }
-        //  else {
-        //   this.$message({
-        //     message: '所有数据已加载完毕',
-        //     type: 'error'
-        //   });
-        // }
       },
     },
     computed: {
@@ -100,9 +94,4 @@
   .pointer {
     cursor: pointer;
   }
-  
-  // .entries {
-  //   min-height: 420px;
-  // }
-
 </style>

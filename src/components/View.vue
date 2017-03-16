@@ -21,22 +21,21 @@
     <div v-show="attachList.length">
       <h2 class="font-thin">附件列表</h2>
       <div class="card attach">
-        <el-carousel indicator-position="outside" height="800px" v-if="attaches.image.length" arrow="always">
+
+        <el-carousel indicator-position="inside" height="500px" v-if="attaches.image.length" arrow="always">
           <el-carousel-item v-for="(item,i) in attaches.image" :key="i">
             <img :src="item.url" :alt="item.name">
           </el-carousel-item>
         </el-carousel>
 
-        <div id="player3" class="aplayer"></div>
+        <div class="center margin-top-20">
+          <my-player :music="musicList" />
+        </div>
 
-        <!--div v-for="item in attaches.audio">
-          <audio :src="item.url" controls="controls"></audio>
-          <p>{{item.name}}</p>
-        </div-->
-
-        <div v-for="item in attaches.video">
-          <video :src="item.url" controls="controls"></video>
-          <p>{{item.name}}</p>
+        <div class="center margin-top-20">
+          <div v-for="item in attaches.video">
+            <video :src="item.url" controls="controls"></video>
+          </div>
         </div>
 
         <ul class="attach-list">
@@ -85,9 +84,9 @@
   import settings from '../config/settings';
   const HOST = settings.host;
   import util from '../config/util';
+  import MyPlayer from './common/Player';
 
   // php.ini中mssql.textlimit/mssql.textsize被设置为 409600，导致接口输入长度被截取
-  import APlayer from 'APlayer';
 
   let config = {
     placeholder: '在此处输入留言信息...',
@@ -132,7 +131,8 @@
   export default {
     name: 'main',
     components: {
-      quillEditor
+      quillEditor,
+      MyPlayer
     },
     data() {
       return {
@@ -143,7 +143,8 @@
         noComment: true,
         cartUrl: HOST + '/search/#',
         // 车号/轴号信息搜索接口
-        attachList: []
+        attachList: [],
+        musicList: []
       }
     },
     computed: {
@@ -165,10 +166,11 @@
         //根据附件类型不同提供不同解析
         var obj = {
           image: [],
-          audio: [],
           video: [],
+          audio: [],
           other: []
         }
+
         this.attachList.forEach(item => {
           var type = item.type;
           var url = settings.uploadContent + item.url;
@@ -189,8 +191,14 @@
             //文档 ('application/vnd.ms') PDF('pdf')以及其它文件，直接点击后跳转链接下载
             obj.other.push(item);
           }
+        });
+        this.musicList = obj.audio.map(item => {
+          return {
+            title: item.name.split('.')[0],
+            author: '未知艺术家',
+            url: item.url
+          }
         })
-
         return obj;
       }
     },
@@ -292,34 +300,6 @@
         this.article.content = util.handleAttach(this.article.content);
         this.loadAttachList();
       }
-
-      var music = [{
-        title: '凉凉',
-        author: '测试',
-        url: 'http://localhost/upload/file/MTQ4OTU4OTMxMV84NTEwMTRf5YeJ5YeJ.mp3',
-        pic: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.jpg'
-      }, {
-        title: '凉凉2',
-        author: '测试2',
-        url: 'http://localhost/upload/file/MTQ4OTU4OTMxMV84NTEwMTRf5YeJ5YeJ.mp3',
-        pic: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.jpg'
-      }, {
-        title: '凉凉3',
-        author: '测试3',
-        url: 'http://localhost/upload/file/MTQ4OTU4OTMxMV84NTEwMTRf5YeJ5YeJ.mp3',
-        pic: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.jpg'
-      }];
-      var ap4 = new APlayer({
-        element: document.getElementById('player3'),
-        narrow: false,
-        autoplay: false,
-        showlrc: false,
-        mutex: true,
-        theme: '#ad7a86',
-        mode: 'random',
-        music
-      });
-      document.querySelector('.aplayer .aplayer-list').style.height = 32 * music.length + 'px';
     }
   }
 
@@ -360,6 +340,10 @@
   .attach {
     min-height: 100px;
     .margin-top-20;
+    .center {
+      display: flex;
+      justify-content: center;
+    }
     .attach-img {
       max-width: 80%;
       border: 0;
@@ -370,7 +354,6 @@
     }
     video {
       border-radius: 4px;
-      margin: 15px 0px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 100%;
     }
@@ -385,25 +368,20 @@
         height: @attach-box;
       }
     }
-    .aplayer {
-      max-width: 600px;
-      margin: 20px 0;
-      margin-bottom: 60px;
-    }
-    .bg-success{
-      background-color:#13CE66;
-      a{
-        color:#fff;
+    .bg-success {
+      background-color: #13CE66;
+      a {
+        color: #fff;
       }
     }
-    .bg-warning{
-      background-color:#F7BA2A;
+    .bg-warning {
+      background-color: #F7BA2A;
     }
-    .bg-blue{
-      background-color:#20A0FF;
-      a{
-        color:#fff;
-      }    
+    .bg-blue {
+      background-color: #20A0FF;
+      a {
+        color: #fff;
+      }
     }
   }
   
