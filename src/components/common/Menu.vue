@@ -10,7 +10,7 @@
 <script>
 import options from '../../config/options';
 let defaultList = options.category[0].value;
-const routeList = ['/', '/list/' + defaultList, '/add','media']
+const routeList = ['/', '/list/' + defaultList, '/add','/media']
 export default {
   name: 'my-menu',
   data() {

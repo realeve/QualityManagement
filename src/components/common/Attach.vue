@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="listType=='picture-card'" class="margin-top-20">
-      <el-upload :show-file-list="!hideList" multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType"
+      <el-upload multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType"
         :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
         <i class="el-icon-plus"></i>
         <div class="el-upload__tip" slot="tip">文件大小请勿超过100MB，图片文件点击列表预览</div>
@@ -9,7 +9,7 @@
     </div>
 
     <div v-else>
-      <el-upload :show-file-list="!hideList" multiple drag :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList"
+      <el-upload multiple drag :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList"
         :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -29,7 +29,7 @@
   const HOST = settings.host;
   export default {
     name: 'attach',
-    props: ['listType', 'hideList'],
+    props: ['listType'],
     data() {
       return {
         uploadUrl: settings.api.fileUpload,
@@ -89,7 +89,9 @@
                 id: res.id,
                 url: response.url.split('/upload')[1],
                 type: response.type,
-                name: response.name
+                name: response.name,
+                width:response.width,
+                height:response.height
               }
             }
           })

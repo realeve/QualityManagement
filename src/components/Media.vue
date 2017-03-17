@@ -2,31 +2,26 @@
   <div class="content">
     <el-row>
       <el-col :md="16" :sm="24" :xs="24">
-        <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="图片" name="image">
-            <media-grid :type="'image'"/>
+        <el-tabs v-model="activeName">
+          <el-tab-pane v-for="tab in tabList" :label="tab.label" :name="tab.value" :key="tab.value">
+            <media-gallery :type="tab.value" />
           </el-tab-pane>
-          <el-tab-pane label="音频" name="audio">            
-            <media-grid :type="'audio'"/>
-          </el-tab-pane>
-          <el-tab-pane label="视频" name="video">          
-            <media-grid :type="'video'"/></el-tab-pane>
-          <el-tab-pane label="其它" name="other">其它</el-tab-pane>
-        </el-tabs>      
+        </el-tabs>
       </el-col>
       <el-col :md="8" :sm="24" :xs="24">
         <div class="upload">
           <h3>素材上传</h3>
-          <attach :listType="'picture'" :hideList="true"/>
-        </div>   
+          <attach :listType="'picture'" />
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
+
 <script>
   import options from '../config/options';
   import Attach from './common/Attach';
-  import MediaGrid from './common/MediaGrid';
+  import MediaGallery from './common/MediaGallery';
 
   import settings from '../config/settings';
   import util from '../config/util';
@@ -36,68 +31,80 @@
     name: 'media',
     components: {
       Attach,
-      MediaGrid
+      MediaGallery
     },
     data() {
       return {
-          activeName:'image'
+        activeName: 'image',
+        tabList: options.mediaList
+      }
+    },
+    computed: {
+      user() {
+        return this.$store.state.user;
+      },
+      mediaList: {
+        get() {
+          return this.$store.state.mediaList;
+        },
+        set(val) {
+          this.$store.commit('updateMediaList', val);
         }
+      }
+    },
+    watch: {
+      user() {
+        //图像列表为异步结果，需要在下个周期载入数据
+        this.$nextTick(() => {
+          this.initData();
+        });
+      }
     },
     methods: {
-       handleClick(tab, event) {
-        console.log(tab, event);
-      },
-      updateAttachArticleId(article_id) {
-        //更新附件中对应的文章id
-        let url = settings.api.update;
-        let params = {
-          tblname: 'tbl_article_attach',
-          article_id
-        };
-
-        this.attachList.split(',').map(id => {
-          params.id = id;
-          this.$http.jsonp(url, {
-              params
-            })
-            .then(res => {
-              console.info('附件信息更新成功');
-            })
-            .catch(e => {
-              console.log(e);
-            })
-        });
-      },
-    },
-    mounted() {
-
+      initData() {
+        this.$http.jsonp(settings.api.mediaList, {
+            params: {
+              uid: this.user.id
+            }
+          })
+          .then(res => {
+            let obj = res.data;
+            if (obj.rows == 0) {
+              return;
+            }
+            this.mediaList = obj.data;
+          })
+          .catch(e => {
+            console.log(e);
+          })
+      }
     }
   }
 
 </script>
 <style lang="less" scoped>
- 
   .margin-top-20 {
     margin-top: 20px;
   }
-
+  
   .content {
     .margin-top-20;
     background-color: #fff;
     padding: 20px;
     border-radius: 4px;
-    min-height:600px;
+    min-height: 600px;
+  }
+  
+  h3 {
+    font-weight: 300;
+  }
+  
+  .el-upload-dragger {
+    width: 260px;
+  }
+  
+  .upload {
+    margin-left: 20px;
   }
 
-  h3{
-    font-weight:300;
-  }
-
-  .el-upload-dragger{
-    width:260px;
-  }
-
-  .upload{
-    margin-left:20px;
-  }
 </style>

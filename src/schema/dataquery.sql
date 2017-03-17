@@ -23,5 +23,5 @@ SELECT * FROM tbl_article_attach where id in ('23','24','25')
 
 
 --媒体库 by uid
-SELECT a.id,a.name,a.type,a.url FROM tbl_article_attach a where a.uid = 16 order by a.id,a.type
+SELECT a.id,a.name,a.type,a.url,a.width,a.height FROM tbl_article_attach a where a.uid = ? order by a.id desc
 --uid
