@@ -4,17 +4,20 @@
       <el-col :md="16" :sm="24" :xs="24">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="图片" name="image">
-            <media-grid/>
+            <media-grid :type="'image'"/>
           </el-tab-pane>
-          <el-tab-pane label="音频" name="audio">音频</el-tab-pane>
-          <el-tab-pane label="视频" name="video">视频</el-tab-pane>
+          <el-tab-pane label="音频" name="audio">            
+            <media-grid :type="'audio'"/>
+          </el-tab-pane>
+          <el-tab-pane label="视频" name="video">          
+            <media-grid :type="'video'"/></el-tab-pane>
           <el-tab-pane label="其它" name="other">其它</el-tab-pane>
         </el-tabs>      
       </el-col>
       <el-col :md="8" :sm="24" :xs="24">
         <div class="upload">
           <h3>素材上传</h3>
-          <attach :listType="'picture'"/>
+          <attach :listType="'picture'" :hideList="true"/>
         </div>   
       </el-col>
     </el-row>
@@ -48,7 +51,6 @@
         //更新附件中对应的文章id
         let url = settings.api.update;
         let params = {
-          tbl: 99,
           tblname: 'tbl_article_attach',
           article_id
         };

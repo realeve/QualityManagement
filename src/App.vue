@@ -18,12 +18,13 @@
     },
     methods: {
       getUserInfo() {
-        this.$store.state.user = {
+        var value = {
           id: 16,
           name: 'develop',
           username: '李宾',
           avatar: 'MTZsaWJpbg=='
-        }
+        };
+        this.$store.commit('getUserInfo', value);
       }
     },
     mounted() {

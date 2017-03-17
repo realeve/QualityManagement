@@ -18,7 +18,7 @@ export default {
         fileUpload: host + '/upload/upload.php',
 
         //FILEDELETE (GET)
-        fileDelete: host + '/upload/upload.php?name=',
+        fileDelete: host + '/upload/upload.php',
 
         // 文章列表详情
         articleList: url + 332 + '&M=0',

@@ -218,7 +218,6 @@
         }
 
         let params = {
-          tbl: 99,
           tblname: 'tbl_article',
           utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
@@ -250,7 +249,6 @@
         //更新附件中对应的文章id
         let url = settings.api.update;
         let params = {
-          tbl: 99,
           tblname: 'tbl_article_attach',
           article_id
         };
