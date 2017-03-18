@@ -3,9 +3,7 @@
   <div class="entry-box" v-infinite-scroll="loadMore" infinite-scroll-disabled="news.isLoading" infinite-scroll-distance="10">
     <div class="box-title clearfix">
       <div class="float-left">{{news.title}}</div>
-      <a v-if="news.more" class="pointer" @click="jump(news.more)">
-        <div class="float-right">更多</div>
-      </a>
+      <router-link v-if="news.more" class="pointer" :to="news.more"><div class="float-right">更多</div></router-link>
     </div>
     <div class="entries">
       <div v-for="(item,i) in news.data">
@@ -37,21 +35,9 @@
   export default {
     name: 'my-card',
     props: ['news'],
-    // directives: {
-    //   scroll: {
-    //     bind: function (el, binding) {
-    //       window.addEventListener('scroll', () => {
-    //         if (document.body.scrollTop + window.innerHeight >= el.clientHeight + 120) {
-    //           let next = binding.value;
-    //           next();
-    //         }
-    //       });
-    //     }
-    //   }
-    // },
     methods: {
-      jump(val) {
-        this.$router.push(val);
+      jump(url){
+          this.$router.push(url);
       },
       loadMore() {
         if (!this.news.empty) {

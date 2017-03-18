@@ -78,6 +78,11 @@
             console.log(e);
           })
       }
+    },
+    created(){
+      if(typeof this.user.id !='undefined'){
+          this.initData();        
+      }
     }
   }
 

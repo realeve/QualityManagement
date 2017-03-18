@@ -107,7 +107,20 @@ var options = {
     }, {
         label: '其它',
         value: 'other'
-    }]
+    }],
+    menu: [{
+        label: '首页',
+        value: '/'
+    }, {
+        label: '列表',
+        value: '/list'
+    }, {
+        label: '新增',
+        value: '/add'
+    }, {
+        label: '媒体库',
+        value: '/media'
+    }, ]
 }
 
 export default options

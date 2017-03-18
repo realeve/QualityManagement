@@ -26,6 +26,23 @@
         }
       }
     },
+    computed: {
+      category() {
+        return this.$route.params.category;
+      }
+    },
+    watch: {
+      category(val) {
+        this.news.title = val;
+        let newsData = this.$store.state.newsList[val];
+  
+        if (typeof newsData == 'undefined') {
+          this.loadMore();
+        } else {
+          this.news.data = newsData;
+        }
+      }
+    },
     methods: {
       jump(val) {
         this.$message.success('跳转到/#/view/' + val);
@@ -39,8 +56,11 @@
         }).then(res => {
           this.news.isLoading = false;
           let obj = res.data;
-          if (!obj.rows) {
+          if (0 == obj.rows) {
             this.news.empty = true;
+            if(typeof aid == 'undefined'){
+              this.news.data = [];
+            }
             return;
           }
           this.news.empty = false;
@@ -61,43 +81,32 @@
 
           //保存当前新闻列表状态，防止在查看新闻后回退时列表数据为空;
           this.$store.commit('refreshNewsList', {
-            title: this.news.title,
+            title: this.category,
             data
           });
 
           this.$store.commit('recordMaxListId', {
-            title: this.news.title,
+            title: this.category,
             id: obj.data[obj.data.length - 1].id
           });
-        }).catch(e=>{
+        }).catch(e => {
           this.news.isLoading = false;
           console.info(e);
         })
       },
       loadMore() {
-        if(this.news.isLoading){
+        if (this.news.isLoading) {
           return
         }
         this.news.isLoading = true;
-        let curId = this.$store.state.articleId[this.$route.params.category];
+        let curId = this.$store.state.articleId[this.category];
         if (typeof curId != 'undefined') {
-          console.info('数据载入中,当前文章id:',curId);
+          console.info('数据载入中,当前文章id:', curId);
           this.loadListData(settings.api.articleList, curId);
         } else {
           this.loadListData(settings.api.articleHome);
         }
       }
-    },
-    mounted() {
-
-      this.news.title = this.$route.params.category;
-      let newsData = this.$store.state.newsList[this.news.title];
-      if (typeof newsData == 'undefined') {
-        this.loadMore();
-      } else {
-        this.news.data = newsData;
-      }
-
     }
   }
 
