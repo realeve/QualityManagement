@@ -306,6 +306,7 @@
     mounted() {
       this.loadProd();
       this.$store.commit('enterPreview', false);
+      this.$store.commit('clearFileList');
     }
   }
 

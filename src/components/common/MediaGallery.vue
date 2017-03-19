@@ -6,7 +6,7 @@
         <waterfall-slot v-for="(item, index) in mediaItem" :width="item.width" :height="item.height" :order="index" :key="item.index"
           move-class="item-move">
           <div class="item" :index="item.index">
-            <img :src="mediaContent+item.url">
+            <img :src="mediaContent+item.url.replace('image/','image/thumb_')">
             <div class="content-wrap">
               <div class="entry-title">
                 <div class="mask">
@@ -52,7 +52,17 @@
     </ul>
 
     <el-dialog :title="dialog.name" v-model="dialog.visible" :size="dialogSize">
-      <img v-if="type=='image'" width="100%" :src="dialog.url" alt="">
+      <div v-if="type=='image'">
+        <img width="100%" :src="dialog.url" alt="">
+        <div class="margin-top-10">
+          <el-radio-group v-model="dialogSize">
+            <el-radio :label="'tiny'">小图</el-radio>
+            <el-radio :label="'small'">中图</el-radio>
+            <el-radio :label="'large'">大图</el-radio>
+            <el-radio :label="'full'">原图</el-radio>
+          </el-radio-group>
+        </div>
+      </div>
       <audio ref="audio" v-else-if="type=='audio'" :src="dialog.url" controls></audio>
     </el-dialog>
   </div>
@@ -164,8 +174,8 @@
           return;
         }
         this.dialog.url = this.mediaContent + item.url;
-        this.dialog.visible = true;
         this.dialog.name = item.name;
+        this.dialog.visible = true;
       },
       deleteMedia(item) {
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -271,6 +281,12 @@
   @video-height: 180px;
   @video-width: @video-height * 16 / 9;
   @video-mask-height: @video-height - 32;
+  .margin-top-10{
+    margin-top:10px;
+  }
+  .el-dialog__body{
+    padding:10px 20px;
+  }
   .el-upload-list--picture-card {
     .el-upload-list__item {
       border-radius: 4px;

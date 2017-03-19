@@ -32,15 +32,8 @@
       }
     },
     watch: {
-      category(val) {
-        this.news.title = val;
-        let newsData = this.$store.state.newsList[val];
-  
-        if (typeof newsData == 'undefined') {
-          this.loadMore();
-        } else {
-          this.news.data = newsData;
-        }
+      category() {
+        this.initData();
       }
     },
     methods: {
@@ -106,7 +99,20 @@
         } else {
           this.loadListData(settings.api.articleHome);
         }
+      },
+      initData(){
+          this.news.title = this.category;
+        let newsData = this.$store.state.newsList[this.category];
+  
+        if (typeof newsData == 'undefined') {
+          this.loadMore();
+        } else {
+          this.news.data = newsData;
+        }
       }
+    },
+    mounted(){
+      this.initData();
     }
   }
 

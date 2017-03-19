@@ -1,19 +1,20 @@
 <template>
   <div>
     <div v-if="listType=='picture-card'" class="margin-top-20">
-      <el-upload multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType"
-        :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
+      <el-upload multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType" :on-success="handleSuccess"
+        :before-upload="validFile" :on-preview="handlePreview">
         <i class="el-icon-plus"></i>
         <div class="el-upload__tip" slot="tip">文件大小请勿超过100MB，图片文件点击列表预览</div>
       </el-upload>
     </div>
 
     <div v-else>
-      <el-upload multiple drag :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList"
-        :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
+      <el-upload multiple drag :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :on-success="handleSuccess"
+        :before-upload="validFile" :on-preview="handlePreview">
         <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__text">将文件拖到此处<br>或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">文件大小请勿超过100MB</div>
+        <div class="el-upload__tip" slot="tip"><a href="javascript:;" @click="clearList">点击此处清空列表</a></div>
       </el-upload>
     </div>
 
@@ -52,15 +53,28 @@
       }
     },
     methods: {
+      clearList(){        
+        this.$store.commit('clearFileList');
+      },
       validFile(file) {
         //const isJPG = file.type === 'image/jpeg';
         const isLt20M = file.size / 1024 / 1024 < 100;
         if (!isLt20M) {
-          this.$message.error('上传头像图片大小不能超过 20MB!');
+          this.$message.error('上传头像图片大小不能超过 100MB!');
         }
         return isLt20M;
       },
       handleSuccess(response, file) {
+
+        if (typeof response.name == 'undefined') {
+          this.$message({
+            type: 'warning',
+            message: '文件上传出错'
+          });
+          console.info(response);
+          return;
+        }
+
         delete response.status;
         delete response.msg;
 
@@ -90,8 +104,8 @@
                 url: response.url.split('/upload')[1],
                 type: response.type,
                 name: response.name,
-                width:response.width,
-                height:response.height
+                width: response.width,
+                height: response.height
               }
             }
           })
@@ -152,8 +166,8 @@
 
 </script>
 <style>
-  .el-upload-dragger {
-    width: 280px;
+  .el-upload .el-upload-dragger {
+    width: 180px;
   }
 
 </style>
