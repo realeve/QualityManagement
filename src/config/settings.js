@@ -36,6 +36,9 @@ export default {
         attachList: url + 333 + '&M=0',
 
         //媒体列表
-        mediaList: url + 334 + '&M=0'
+        mediaList: url + 334 + '&M=0',
+
+        //素材库载入更多:
+        mediaLoadMore: url + 335 + '&M=0&cache=10'
     }
 }

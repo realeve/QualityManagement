@@ -54,7 +54,7 @@ let mutations = {
     addFileItem(state, item) {
         state.fileList.push(item)
     },
-    getUserInfo(state, value) {
+    setUserInfo(state, value) {
         state.user = value
     },
     updateLatestFile(state, value) {
@@ -62,6 +62,9 @@ let mutations = {
     },
     updateMediaList(state, value) {
         state.mediaList = value
+    },
+    setMediaActiveName(state, val) {
+        state.activeName = val;
     }
 }
 

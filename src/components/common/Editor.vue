@@ -23,7 +23,7 @@ let config = {
             [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
             [{ 'align': [] }],
             ['clean'],      
-            ['link', 'image']                                       // remove formatting button
+            ['link']                                       // remove formatting button
           ]
     }
 }

@@ -4,7 +4,7 @@
       <el-col :md="20" :sm="24" :xs="24">
         <el-tabs v-model="activeName">
           <el-tab-pane v-for="tab in tabList" :label="tab.label" :name="tab.value" :key="tab.value">
-            <media-gallery :type="tab.value" />
+            <media-gallery :type="tab.value"/>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -35,54 +35,21 @@
     },
     data() {
       return {
-        activeName: 'image',
-        tabList: options.mediaList
+        tabList: options.mediaList        
       }
     },
-    computed: {
-      user() {
-        return this.$store.state.user;
-      },
-      mediaList: {
-        get() {
-          return this.$store.state.mediaList;
+    computed:{
+      activeName:{
+        get(){
+          return this.$store.state.activeName;
         },
-        set(val) {
-          this.$store.commit('updateMediaList', val);
+        set(val){
+          this.$store.commit('setMediaActiveName',val);
         }
       }
     },
-    watch: {
-      user() {
-        //图像列表为异步结果，需要在下个周期载入数据
-        this.$nextTick(() => {
-          this.initData();
-        });
-      }
-    },
-    methods: {
-      initData() {
-        this.$http.jsonp(settings.api.mediaList, {
-            params: {
-              uid: this.user.id
-            }
-          })
-          .then(res => {
-            let obj = res.data;
-            if (obj.rows == 0) {
-              return;
-            }
-            this.mediaList = obj.data;
-          })
-          .catch(e => {
-            console.log(e);
-          })
-      }
-    },
     created(){
-      if(typeof this.user.id !='undefined'){
-          this.initData();        
-      }
+      this.activeName = 'image';
     }
   }
 
@@ -103,9 +70,8 @@
   h3 {
     font-weight: 300;
   }
-    
+  
   .upload {
     margin-left: 20px;
-  }
-
+  } 
 </style>

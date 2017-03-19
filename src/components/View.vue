@@ -66,11 +66,14 @@
           </div>
         </div>
       </div>
-      <h2 class="font-thin">留言</h2>
-      <div class="card editor">
-        <quill-editor :config="config" v-model="mycomment"></quill-editor>
-        <div class="submit">
-          <el-button type="primary" @click="postComment">提交</el-button>
+
+      <div v-show="user.id!=''">
+        <h2 class="font-thin">留言</h2>
+        <div class="card editor">
+          <quill-editor :config="config" v-model="mycomment"></quill-editor>
+          <div class="submit">
+            <el-button type="primary" @click="postComment">提交</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -122,7 +125,7 @@
           'align': []
         }],
         ['clean'],
-        ['link', 'image'] // remove formatting button
+        ['link'] // remove formatting button
         // ['link', 'image', 'video']                         // link and image, video
       ]
     }

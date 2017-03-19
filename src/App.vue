@@ -24,7 +24,7 @@
           username: '李宾',
           avatar: 'MTZsaWJpbg=='
         };
-        this.$store.commit('getUserInfo', value);
+        this.$store.commit('setUserInfo', value);
       }
     },
     mounted() {

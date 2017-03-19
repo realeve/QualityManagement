@@ -108,6 +108,7 @@ var options = {
         label: '其它',
         value: 'other'
     }],
+    mediaLoadingNums: 10,
     menu: [{
         label: '首页',
         value: '/'

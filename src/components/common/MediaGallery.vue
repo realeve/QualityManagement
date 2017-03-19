@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <!--div v-scroll="loadMore"-->
+  <div v-infinite-scroll="loadMore" infinite-scroll-disabled="status.value" infinite-scroll-distance="100">
     <div v-if="type=='image'">
       <waterfall class="waterfall" :line="'h'" :line-gap="200" :min-line-gap="150" :max-line-gap="250" :single-max-width="250"
-        :watch="mediaItem" ref="waterfall">
+        :watch="mediaItem" ref="waterfall" @reflowed="reflowed">
         <waterfall-slot v-for="(item, index) in mediaItem" :width="item.width" :height="item.height" :order="index" :key="item.index"
           move-class="item-move">
           <div class="item" :index="item.index">
@@ -11,14 +12,14 @@
               <div class="entry-title">
                 <div class="mask">
                   <span @click="previewImg(item)">
-                        <i class="el-icon-view"></i>
-                    </span>
+                          <i class="el-icon-view"></i>
+                      </span>
                   <span @click="editName(item)">
-                        <i class="el-icon-edit"></i>
-                      </span>
+                          <i class="el-icon-edit"></i>
+                        </span>
                   <span @click="deleteMedia(item)">
-                        <i class="el-icon-delete2"></i>
-                      </span>
+                          <i class="el-icon-delete2"></i>
+                        </span>
                   <p class="pic-name">{{item.name}}</p>
                 </div>
               </div>
@@ -65,6 +66,8 @@
       </div>
       <audio ref="audio" v-else-if="type=='audio'" :src="dialog.url" controls></audio>
     </el-dialog>
+
+    <p class="loading-status">{{status.text}}</p>
   </div>
 </template>
 <script>
@@ -75,6 +78,8 @@
 
   import Waterfall from 'vue-waterfall/lib/waterfall';
   import WaterfallSlot from 'vue-waterfall/lib/waterfall-slot';
+
+  let _ = require('lodash');
 
   export default {
     name: 'media-gallery',
@@ -88,14 +93,37 @@
         },
         dialogSize: 'small',
         mediaContent: HOST + '/upload',
-        isVideoPlayed: false
+        isVideoPlayed: false,
+        status: {
+          value: false,
+          text: '初始化...'
+        },
+        maxId: '',
+
       }
     },
     components: {
       Waterfall,
       WaterfallSlot
     },
+    /*directives: {
+      //自定义滚动刷新事件
+      scroll: {
+        bind: function (el, binding) {
+          window.addEventListener('scroll', () => {
+            if (el.clientHeight && document.documentElement.scrollTop + window.innerHeight > el.clientHeight +
+              200) {
+              let next = binding.value;
+              next();
+            }
+          });
+        }
+      }
+    },*/
     computed: {
+      user() {
+        return this.$store.state.user;
+      },
       mediaList: {
         get() {
           return this.$store.state.mediaList;
@@ -106,7 +134,7 @@
       },
       mediaItem() {
         return this.mediaList.filter(item => {
-          if (this.getFileTypeByAttr(item) == this.type) {
+          if (item.type == this.type) {
             return this.getSizeByItem(item);
           }
         });
@@ -129,12 +157,16 @@
       },
       dialogSize() {
         return this.type == 'video' ? 'large' : 'small';
+      },
+      activeName() {
+        return this.$store.state.activeName;
       }
     },
     watch: {
       latestFile(val) {
         //attach控件中增加数据时刷新列表
-        if (this.type == this.getFileTypeByAttr(val)) {
+        val.type = this.getFileTypeByAttr(val);
+        if (this.type == val.type) {
           //需判断文件类型以自动推送至对应插件列表，否则将多次刷新该方法
           this.mediaList = [val, ...this.mediaList];
         }
@@ -146,17 +178,29 @@
             audio.pause();
           }
         }
-
+      },
+      user(val) {
+        this.status.value = false;
+      },
+      activeName() {
+        if (this.isActive()) {
+          this.init();
+          //this.loadMore();
+        }
       }
     },
+    created(){
+      this.init();
+    },
     methods: {
-      getSizeByItem(item) {
-        if (item.width) {
-          let ratio = (item.height / item.width);
-          item.width = 400;
-          item.height = (400 * ratio).toFixed(0);
-        }
-        return item;
+      init() {
+        this.status.value = false;
+        this.mediaList = [];
+        this.maxId = '';
+        this.loadMore();
+      },
+      isActive() {
+        return this.type == this.$store.state.activeName;
       },
       getFileTypeByAttr(attr) {
         let type = 'other';
@@ -168,6 +212,76 @@
           type = 'video';
         }
         return type;
+      },
+      fetchData(api, maxid = 0) {
+
+        if(this.status.value){
+          console.info('data is loading...');
+          return;
+        }
+
+        if (this.user.id == '') {
+          this.status.value = false;
+          this.status.text = '用户信息尚未读取';
+          return;
+        }
+        
+        this.status.value = true;
+        this.status.text = '正在加载...';
+
+        this.$http.jsonp(api, {
+            params: {
+              uid: this.user.id,
+              type: this.type,
+              maxid
+            }
+          })
+          .then(res => {
+
+            let obj = res.data;
+            if (obj.rows < options.mediaLoadingNums) {
+              this.status.value = true;
+              this.status.text = '';
+              if (obj.rows == 0) {
+                return;
+              }
+            }
+            this.mediaList = [...this.mediaList, ...obj.data];
+            this.maxId = obj.data[obj.rows - 1].id;
+            console.info('当前资源id:', this.type, '=', this.maxId);
+            if (maxid == 0) {
+              //初始加载时，手动重置状态，防止reflowed事件不触发.
+              this.status.value = false;
+            }
+          })
+          .catch(e => {
+            //this.status.value = false;
+            this.status.text = '数据载入出现错误';
+            console.log(e);
+          })
+      },
+      reflowed: function () {
+        this.status.value = false;
+      },
+      loadMore() {
+        if (!this.isActive()) {
+          return;
+        }
+        console.info('触发下拉刷新');
+
+        if (this.maxId == '') {
+          this.fetchData(settings.api.mediaList);
+        } else {
+          this.fetchData(settings.api.mediaLoadMore, this.maxId);
+        }
+      },
+      getSizeByItem(item) {
+        if (item.width) {
+          let ratio = (item.height / item.width);
+          item.width = 400;
+          item.height = (400 * ratio).toFixed(0);
+        }
+        return item;
       },
       previewImg(item) {
         if (this.type == 'other') {
@@ -281,12 +395,14 @@
   @video-height: 180px;
   @video-width: @video-height * 16 / 9;
   @video-mask-height: @video-height - 32;
-  .margin-top-10{
-    margin-top:10px;
+  .margin-top-10 {
+    margin-top: 10px;
   }
-  .el-dialog__body{
-    padding:10px 20px;
+  
+  .el-dialog__body {
+    padding: 10px 20px;
   }
+  
   .el-upload-list--picture-card {
     .el-upload-list__item {
       border-radius: 4px;
@@ -297,7 +413,6 @@
     .audio-on {
       -webkit-animation: change 2s linear infinite;
     }
-
     @-webkit-keyframes change {
       0% {
         -webkit-transform: rotate(0deg);
@@ -312,7 +427,6 @@
     .audio {
       border-radius: 50%;
     }
-
     .video {
       width: @video-width;
       height: @video-height;
@@ -400,13 +514,20 @@
       color: #fff;
       background: rgba(0, 0, 0, 0.8);
     }
-    .wf-transition {
-      transition: opacity .3s ease;
-      -webkit-transition: opacity .3s ease;
+    .wf-enter-active,
+    wp-leave {
+      transition: opacity 1.3s ease;
+      -webkit-transition: opacity 1.3s ease;
     }
-    .wf-enter {
+    .wf-enter,
+    .wp-leave-active {
       opacity: 0;
     }
+  }
+  
+  .loading-status {
+    text-align: center;
+    margin-bottom: 0;
   }
 
 </style>
