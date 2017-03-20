@@ -34,9 +34,9 @@
 
     <ul v-else class="el-upload-list el-upload-list--picture-card">
       <li v-for="item in mediaItem" class="el-upload-list__item" :class="classList" :key="item.id">
-        <img v-if="type=='audio'" :src="'static/music.jpg'" class="el-upload-list__item-thumbnail">
+        <img v-if="type=='audio'" :src="'static/music.webp'" class="el-upload-list__item-thumbnail">
         <video v-else-if="type=='video'" :ref="'video'+item.id" preload="meta" :src="mediaContent+item.url" controls class="el-upload-list__item-thumbnail"></video>
-        <img v-else :src="'static/document.jpg'" class="el-upload-list__item-thumbnail">
+        <img v-else :src="'static/document.webp'" class="el-upload-list__item-thumbnail">
         <el-tooltip class="item" effect="dark" placement="top">
           <span slot="content">{{item.name}}</span>
           <span class="el-upload-list__item-actions" :class="videoMaskClass">
@@ -151,6 +151,9 @@
       },
       activeName() {
         return this.$store.state.activeName;
+      },
+      isActive() {
+        return this.type == this.activeName;
       }
     },
     watch: {
@@ -174,15 +177,12 @@
         this.status.value = false;
       },
       activeName() {
-        if (this.isActive()) {
-          this.loadMore();
+        if (this.isActive) {
         }
+          this.loadMore();
       }
     },
     methods: {
-      isActive() {
-        return this.type == this.$store.state.activeName;
-      },
       add2Attach(item) {
         this.$store.commit('addFileItem', item);
       },
@@ -254,12 +254,12 @@
           })
       },
       reflowed: function () {
-        if (this.isActive()) {
+        if (this.isActive && this.status.value) {
           this.status.value = false;
         }
       },
       loadMore() {
-        if (!this.isActive()) {
+        if (!this.isActive) {
           return;
         }
         console.info('触发下拉刷新');

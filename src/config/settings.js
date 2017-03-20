@@ -39,6 +39,15 @@ export default {
         mediaList: url + 334 + '&M=0',
 
         //素材库载入更多:
-        mediaLoadMore: url + 335 + '&M=0&cache=10'
+        mediaLoadMore: url + 335 + '&M=0&cache=10',
+
+        //登录模块-用户列表
+        userList: url + 336 + '&M=0',
+
+        //md5 encrypt
+        md5: host + '/datainterface/md5',
+
+        //login
+        login: url + 165 + '&M=0'
     }
 }

@@ -27,7 +27,9 @@ SELECT * FROM tbl_article_attach where id in ('23','24','25')
 --uid,type
 
 --媒体库载入更多
-
-
-	SELECT top 15 a.id,a.name,(case when substring(a.type,8,4)='webp' then 'image' when substring(a.type,1,5)='audio' then 'audio' when substring(a.type,1,5)='video' then 'video' else 'other' end) type,a.url,a.width,a.height FROM tbl_article_attach a where a.uid = ? and (case when substring(a.type,8,4)='webp' then 'image' when substring(a.type,1,5)='audio' then 'audio' when substring(a.type,1,5)='video' then 'video' else 'other' end)=? and id<? order by a.id desc
+SELECT top 15 a.id,a.name,(case when substring(a.type,8,4)='webp' then 'image' when substring(a.type,1,5)='audio' then 'audio' when substring(a.type,1,5)='video' then 'video' else 'other' end) type,a.url,a.width,a.height FROM tbl_article_attach a where a.uid = ? and (case when substring(a.type,8,4)='webp' then 'image' when substring(a.type,1,5)='audio' then 'audio' when substring(a.type,1,5)='video' then 'video' else 'other' end)=? and id<? order by a.id desc
 --uid,type,maxid
+
+--用户列表
+SELECT a.ID id,a.UserName name,a.FullName username,a.set_avatar avatar FROM tblUser a order by id
+

@@ -21,7 +21,6 @@
     <div v-show="attachList.length">
       <h2 class="font-thin">附件列表</h2>
       <div class="card attach">
-
         <el-carousel indicator-position="inside" height="500px" v-if="attaches.image.length" arrow="always">
           <el-carousel-item v-for="(item,i) in attaches.image" :key="i">
             <img :src="item.url" :alt="item.name">
@@ -162,7 +161,7 @@
           article_id: this.$route.params.id,
           username: this.user.username,
           uid: this.user.id,
-          useravatar: HOST + '/demo/avatar/' + this.user.avatar + '.jpg'
+          useravatar: this.user.avatar
         };
       },
       attaches() {
