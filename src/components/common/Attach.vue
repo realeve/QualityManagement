@@ -117,8 +117,11 @@
       handleRemove(file) {
         this.$store.state.fileList.forEach((item, i) => {
           if (item.uid == file.uid) {
+            //仅移除列表中信息，文件删除逻辑放到媒体库中管理
+            this.$store.commit('removeFileItem', i);
+
             //删除数据后，从数据库中删除信息
-            let params = {
+            /*let params = {
               tblname: 'tbl_article_attach',
               id: item.attach_id
             };
@@ -148,7 +151,7 @@
               })
               .catch(e => {
                 console.log(e);
-              })
+              })*/
           }
         });
       },

@@ -127,8 +127,16 @@
         }
         return this.options.proc[id + 1].label;
       },
-      attachList(){
+      attachList() {
         return this.$store.state.fileList.map(item => item.attach_id).join(',');
+      },
+      fileList: {
+        get() {
+          return this.$store.state.fileList;
+        },
+        set(val) {
+          return this.$store.commit('setFileList', val);
+        }
       }
     },
     watch: {
@@ -301,12 +309,26 @@
       resetForm(formName = 'value') {
         this.$store.commit('resetAddInfo');
         this.$store.commit('clearFileList');
+      },
+      convertFromMedia() {
+        if (this.fileList.length) {
+          this.fileList = this.fileList.map(item => {
+            if (typeof item.id != 'undefined') {
+              item.attach_id = item.id;
+              delete item.id;
+              item.url = settings.uploadContent + item.url;
+            }
+            return item;
+          });
+          console.log(this.fileList,this.attachList);
+        }
       }
     },
     mounted() {
       this.loadProd();
       this.$store.commit('enterPreview', false);
-      this.$store.commit('clearFileList');
+      this.convertFromMedia();
+      //this.$store.commit('clearFileList');
     }
   }
 

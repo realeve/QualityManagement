@@ -23,9 +23,7 @@
       </div>
 
       <div v-if="!news.more" @click="loadMore" class="entry">
-        <div class="text-center">
-          {{info}}
-        </div>
+        <div class="text-center" v-html="info"></div>
       </div>
 
     </div>
@@ -48,7 +46,7 @@
     computed: {
       info() {
         if (this.news.isLoading) {
-          return '正在加载...';
+          return '<i class="el-icon-loading"></i> 正在加载...';
         } else if (this.news.empty) {
           return '加载完毕'
         } else {

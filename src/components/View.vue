@@ -40,7 +40,7 @@
 
         <ul class="attach-list">
           <li class="el-upload el-upload--picture-card" v-for="(item,i) in attaches.other" :title="'点击下载 '+item.name">
-            <a :href="item.url" target="_blank" :title="'点击下载 '+item.name">附件{{i+1}}</a>
+            <a :href="item.url" target="_blank" :title="'点击下载 '+item.name"><i class="el-icon-document"></i>附件{{i+1}}</a>
           </li>
         </ul>
 

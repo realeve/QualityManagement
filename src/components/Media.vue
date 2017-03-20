@@ -11,7 +11,7 @@
       <el-col :md="4" :sm="24" :xs="24">
         <div class="upload">
           <h3>素材上传</h3>
-          <attach :listType="'picture'" />
+          <attach :listType="'picture'"/>
         </div>
       </el-col>
     </el-row>
