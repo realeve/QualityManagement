@@ -79,7 +79,7 @@
     -o-column-gap: 20px;
     -webkit-column-gap: 20px;
     -moz-column-gap: 20px;
-    margin-top: 20px;
+    //margin: 20px;
   }
   
   .box {

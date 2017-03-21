@@ -60,7 +60,7 @@
   }
   
   .content {
-    .margin-top-20;
+    //.margin-top-20;
     background-color: #fff;
     padding: 20px;
     border-radius: 4px;

@@ -11,7 +11,7 @@ Target Server Type    : SQL Server
 Target Server Version : 105000
 File Encoding         : 65001
 
-Date: 2017-03-16 01:18:14
+Date: 2017-03-22 00:15:56
 */
 
 
@@ -33,10 +33,15 @@ CREATE TABLE [dbo].[tbl_article] (
 [status] int NULL DEFAULT ((0)) ,
 [uid] int NULL ,
 [rec_time] datetime2(7) NULL ,
-[attach_list] varchar(MAX) NULL 
+[attach_list] varchar(MAX) NULL ,
+[status_username] varchar(20) NULL ,
+[status_rectime] datetime2(7) NULL ,
+[reward] float(53) NULL ,
+[reward_status] int NULL ,
+[reward_user] varchar(15) NULL 
 )
 
 
 GO
-DBCC CHECKIDENT(N'[dbo].[tbl_article]', RESEED, 110)
+DBCC CHECKIDENT(N'[dbo].[tbl_article]', RESEED, 121)
 GO

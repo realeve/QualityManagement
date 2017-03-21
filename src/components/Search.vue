@@ -87,14 +87,32 @@
         selectDateRange,
         news: {
           title: '搜索结果',
-          empty: true,
+          empty: '',
           isLoading: false,
           data: [],
           showCategory: true
         },
-        searchResult: [],
         loadMoreCounter: 0,
         pagePerNum: 5
+      }
+    },
+    computed: {
+      initStatus(){
+        let status = false;
+        if(typeof this.searchResult == 'undefined'){
+          status = true;
+        }else if(this.searchResult.length==0){
+          status = true;
+        }
+        return status;
+      },
+      searchResult: {
+        get() {
+          return this.$store.state.searchResult;
+        },
+        set(val) {
+          this.$store.commit('setSearchResult', val);
+        }
       }
     },
     watch: {
@@ -103,12 +121,19 @@
         this.form.tend = JSON.stringify(val[1]).split('T')[0].replace('"', '').replace(/-/g, '');
       },
       searchResult(val) {
+        this.init(val);
+      }
+    },
+    created() {
+      this.init(this.searchResult);
+      this.news.empty = this.initStatus;
+    },
+    methods: {
+      init(val) {
         this.news.isLoading = false;
         this.news.data = val.slice(0, this.pagePerNum);
         this.loadMoreCounter = 1;
-      }
-    },
-    methods: {
+      },
       getSearchStr() {
         // 此处需注意单引号的使用，传数据库参数中通过 ?匹配
         let str = `%${this.form.key}%`;
@@ -158,7 +183,7 @@
         }).then(res => {
           if (res.data.rows == 0) {
             this.news.empty = true;
-            this.searchResult =[];
+            this.searchResult = [];
             return;
           }
           let avatar;

@@ -39,7 +39,7 @@
         list: options.menu,
         category: options.category,
         activeIndex: '0',
-        host:settings.host
+        host: settings.host
       }
     },
     computed: {
@@ -73,7 +73,7 @@
   .el-menu-demo {
     border-radius: 0px;
   }
-  
+
   .user-info {
     color: #fff;
     height: 60px;

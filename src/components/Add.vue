@@ -301,6 +301,7 @@
               });
             }
             this.$store.commit('refreshMainList', true);
+            window.localStorage.setItem('editor', '');   
           })
           .catch(e => {
             console.log(e);
@@ -359,6 +360,10 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 4px;
+  }
+
+  .card:nth-child(1){
+    margin-top:0;
   }
 
 </style>

@@ -50,10 +50,23 @@
         set(value) {
           this.$store.commit('updateLatestFile', value);
         }
+      },
+      needAdd2Editor() {
+        return this.$route.name == 'Add';
+      },
+      editorContent: {
+        get() {
+          return this.$store.state.add.content;
+        },
+        set(content) {
+          this.$store.commit('setArticleInfo', {
+            content
+          });
+        }
       }
     },
     methods: {
-      clearList(){        
+      clearList() {
         this.$store.commit('clearFileList');
       },
       validFile(file) {
@@ -158,11 +171,26 @@
       handlePreview(file) {
         this.$store.state.fileList.forEach((item, i) => {
           if (item.uid == file.uid) {
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
-            this.dialogName = file.name;
+            if (this.needAdd2Editor && (file.type == 'image' || file.type == 'images/webp')) {
+              this.addImg2Editor({
+                file,
+                idx: i
+              })
+            } else {
+              this.dialogImageUrl = file.url;
+              this.dialogVisible = true;
+              this.dialogName = file.name;
+            }
           }
         });
+      },
+      addImg2Editor({
+        file,
+        idx
+      }) {
+        let img = `<img src="${file.url}"/>`;
+        this.editorContent += img;
+        this.$store.commit('removeFileItem', idx);
       }
     }
   }

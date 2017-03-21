@@ -4,7 +4,7 @@
     <div class="box-title clearfix">
       <div class="float-left">{{news.title}}</div>
       <router-link v-if="news.more" class="pointer" :to="news.more">
-        <div class="float-right">更多</div>
+        <div class="float-right more">更多</div>
       </router-link>
     </div>
     <div class="entries">
@@ -16,30 +16,29 @@
           <div class="entry-info float-left">
             <template v-if="item.datetime > now">
               <el-badge value="新" class="item">
-                <div class="entry-title ellipsis">
-                  {{i+1}}.<span v-show="showCategory">『{{item.category}}』—— </span>{{item.title}}
-                  <el-tag type="danger" v-if="0 == item.status">未完成</el-tag>
+                <div class="entry-title">
+                <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
                 </div>
               </el-badge>
             </template>
             <template v-else>
-              <div class="entry-title ellipsis">
-                {{i+1}}.<span v-show="news.showCategory">『{{item.category}}』—— </span>{{item.title}}
-                <el-tag type="danger" v-if="0 == item.status">未完成</el-tag>
+              <div class="entry-title">
+                <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>                
               </div>
             </template>
-            
+
             <div class="entry-meta">
               <div class="action entry-username">{{item.user}}</div>
               <div class="action"> ·</div>
               <div class="action">{{item.datetime}}</div>
+              <div class="action"><el-tag type="danger" v-if="0 == item.status">未完成</el-tag></div>
             </div>
           </div>
         </div>
       </div>
 
       <div v-if="!news.more" @click="loadMore" class="entry">
-        <div class="text-center" v-html="info"></div>
+        <div class="loading-info" v-html="info"></div>
       </div>
 
     </div>
@@ -51,8 +50,11 @@
     name: 'my-card',
     props: ['news'],
     computed: {
-      now(){
-        return  util.getNow(6);
+      showCategory() {
+        return typeof this.news.showCategory == 'undefined' ? false : this.news.showCategory;
+      },
+      now() {
+        return util.getNow(6);
       },
       info() {
         if (this.news.isLoading) {
@@ -81,12 +83,16 @@
   .welcome .entry-box {
     border-radius: 4px;
     margin-bottom: 1.5em;
-    .box-title{
-      font-size: 1.2em;
+    .box-title {
+      font-size: 1.4em;
+    }
+    .more {
+      font-size: 12pt;
     }
   }
 
-  .text-center {
+  .loading-info {
+    padding: 15px 0;
     text-align: center;
   }
 
@@ -94,9 +100,9 @@
     border-radius: 50%;
   }
 
-  // .list .entry-box {
-  //   width: 800px;
-  // }
+  .list .entry-box {
+    padding: 30px 100px;
+  }
 
   .pointer {
     cursor: pointer;

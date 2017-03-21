@@ -23,6 +23,19 @@
         <el-switch v-model="status" on-color="#13ce66" off-color="#ff4949" on-text="已关闭" off-text="未关闭" :width="72" @change="closeArticle">
         </el-switch>
       </div>
+      <div v-if="showDonate" class="donate">
+        <div class="verify-reward">
+          <el-button v-if="shouldReward && article.reward==''" type="danger" size="large" @click="donate">发起奖励</el-button>
+        </div>
+        <template v-if="article.reward">
+          <div class="verify-reward">
+            <el-button v-if="shouldVerify && article.reward_status==0" type="danger" size="large" @click="passDonate(1)">通过奖励</el-button>
+            <el-button v-if="shouldVerify && article.reward_status==0" type="warning" size="large" @click="passDonate(-1)">拒绝通过</el-button>
+          </div>
+          <p v-show="article.reward_status>0 || (article.reward_status>-1 && shouldVerify)">本文由{{article.reward_user}}发起了
+            <el-tag type="danger">￥{{article.reward}}</el-tag> 元的奖励</p>
+        </template>
+      </div>
     </div>
     <div v-show="attachList.length">
       <h2 class="font-thin">附件列表</h2>
@@ -33,7 +46,7 @@
           </el-carousel-item>
         </el-carousel>
 
-        <div class="center margin-top-20">
+        <div v-if="musicList.length" class="center margin-top-20">
           <my-player :music="musicList" />
         </div>
 
@@ -162,6 +175,9 @@
       }
     },
     computed: {
+      showDonate() {
+        return this.article.category == '风险隐患排查';
+      },
       status_time() {
         return ('' + this.article.status_rectime).substr(0, 16);
       },
@@ -220,9 +236,89 @@
           }
         })
         return obj;
+      },
+      shouldReward() {
+        return settings.rewardUsers.includes(this.user.username);
+      },
+      shouldVerify() {
+        return settings.verifyUsers.includes(this.user.username);
       }
     },
     methods: {
+      verifyDonate(val) {
+        var params = {
+          tblname: 'tbl_article',
+          id: this.article.id,
+          reward_status: val
+        };
+        return this.$http.jsonp(settings.api.update, {
+          params
+        });
+      },
+      updateDonateInfo(reward) {
+        var params = {
+          tblname: 'tbl_article',
+          id: this.article.id,
+          reward_status: 0,
+          utf2gbk: ['reward_user'],
+          reward_user: this.user.username,
+          reward
+        };
+        return this.$http.jsonp(settings.api.update, {
+          params
+        });
+      },
+      passDonate(val) {
+        let tip = {};
+        if (val == 1) {
+          tip.text = '该操作将通过该奖励申请，是否继续？';
+          tip.title = '通过奖励'
+        } else {
+          tip.text = '该操作将拒绝该奖励申请，是否继续？';
+          tip.title = '拒绝奖励'
+        }
+        this.$confirm(tip.text, tip.title, {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+          .then(() => this.verifyDonate(val))
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '操作成功'
+            });
+            this.article.reward_status = val;
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      },
+      donate() {
+        var curValue;
+        this.$prompt('请输入奖励金额', '金额', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+          })
+          .then(({
+            value
+          }) => {
+            this.updateDonateInfo(value);
+            curValue = value;
+          })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '赞赏成功,金额:￥' + curValue
+            });
+            this.article.reward_user = this.user.username;
+            this.article.reward = curValue;
+            this.article.reward_status = 0;
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      },
       changeArticleStatus(status) {
         var params = {
           tblname: 'tbl_article',
@@ -267,9 +363,9 @@
           this.article.status = tip.status;
 
           this.$store.commit('refreshMainList', true);
-          this.$store.commit('updateneedRefreshNewsList',{
-            category:this.article.category,
-            value:true
+          this.$store.commit('updateneedRefreshNewsList', {
+            category: this.article.category,
+            value: true
           })
           this.article.status_username = this.user.username;
           this.article.status_rectime = util.getNow();
@@ -357,22 +453,25 @@
           }
           this.attachList = obj.data;
         });
+      },
+      init() {
+        if (!this.previewMode) {
+          if ('preview' == this.$route.params.id) {
+            this.$router.push('/add');
+            return;
+          }
+          this.loadArticle();
+          this.loadComment();
+        } else {
+          this.article = this.$store.state.preview;
+          this.article.content = JSON.parse('"' + this.article.content + '"');
+          this.article.content = util.handleAttach(this.article.content);
+          this.loadAttachList();
+        }
       }
     },
     mounted() {
-      if (!this.previewMode) {
-        if ('preview' == this.$route.params.id) {
-          this.$router.push('/add');
-          return;
-        }
-        this.loadArticle();
-        this.loadComment();
-      } else {
-        this.article = this.$store.state.preview;
-        this.article.content = JSON.parse('"' + this.article.content + '"');
-        this.article.content = util.handleAttach(this.article.content);
-        this.loadAttachList();
-      }
+      this.init();
     }
   }
 
@@ -410,6 +509,19 @@
     .margin-top-20;
     display: flex;
     justify-content: flex-end;
+  }
+
+  .donate {
+    width: 100%;
+    .verify-reward {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    p {
+      text-align: center;
+      font-size: 0.9em;
+    }
   }
 
   .ql-editor {
@@ -466,8 +578,7 @@
   }
 
   .article {
-    min-height: 300px;
-    .margin-top-20;
+    min-height: 300px; //.margin-top-20;
     .title {
       .font-thin;
       text-align: center;
@@ -489,7 +600,10 @@
       border-top: 1px dotted #eee;
       padding: 20px 30px;
       padding-bottom: 10px;
+      max-width: 100%;
+      font-size: 1.3em;
     }
+
     blockquote {
       color: @text-color;
       padding: 10px 30px 10px 10px;

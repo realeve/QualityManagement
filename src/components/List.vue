@@ -43,7 +43,7 @@
       loadListData(url, aid) {
         this.$http.jsonp(url, {
           params: {
-            listid: this.$route.params.category,
+            listid: this.category,
             aid
           }
         }).then(res => {
@@ -120,7 +120,7 @@
 <style scoped lang="less">
   .list {
     width: 100%;
-    margin-top: 20px;
+    //margin-top: 20px;
     display: flex;
     justify-content: center;
   }

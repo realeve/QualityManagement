@@ -43,7 +43,7 @@
             <span @click="add2Attach(item)">
               <i class="el-icon-document"></i>
             </span>
-            <span v-show="type!='video'" @click="previewImg(item)">
+          <span v-show="type!='video'" @click="previewImg(item)">
               <a v-if="type=='other'" target="_blank" :href="mediaContent+item.url"><i class="el-icon-view"></i></a>
               <i v-else class="el-icon-view"></i>
             </span>
@@ -112,20 +112,21 @@
         mediaItem: []
       }
     },
-    /*directives: {
-      //自定义滚动刷新事件
-      scroll: {
-        bind: function (el, binding) {
-          window.addEventListener('scroll', () => {
-            if (el.clientHeight && document.documentElement.scrollTop + window.innerHeight > el.clientHeight +
-              200) {
-              let next = binding.value;
-              next();
-            }
-          });
-        }
-      }
-    },*/
+    // directives: {
+    //   //自定义滚动刷新事件
+    //   scroll: {
+    //     bind: function (el, binding) {
+    //       window.addEventListener('scroll', () => {
+    //         if (el.clientHeight && document.documentElement.scrollTop + window.innerHeight > el.clientHeight +
+    //           200) {
+    //           let next = binding.value;
+    //           next();
+    //         }
+    //       });
+    //     }
+    //   }
+    // },
+
     computed: {
       user() {
         return this.$store.state.user;
@@ -135,7 +136,6 @@
       },
       classList() {
         return {
-          image: this.type == 'image',
           audio: this.type == 'audio',
           video: this.type == 'video'
         }
@@ -145,9 +145,6 @@
           audio: this.type == 'audio',
           'video-mask': this.type == 'video'
         }
-      },
-      dialogSize() {
-        return this.type == 'video' ? 'large' : 'small';
       },
       activeName() {
         return this.$store.state.activeName;
@@ -173,13 +170,15 @@
           }
         }
       },
-      user(val) {
+      user(val, oldVal) {
+        if (oldVal.id != '') {
+          this.mediaItem = [];
+        }
         this.status.value = false;
       },
       activeName() {
-        if (this.isActive) {
-        }
-          this.loadMore();
+        if (this.isActive) {}
+        this.loadMore();
       }
     },
     methods: {
@@ -187,13 +186,15 @@
         this.$store.commit('addFileItem', item);
       },
       getFileTypeByAttr(attr) {
-        let type = 'other';
+        let type;
         if (attr.type.includes('image')) {
           type = 'image';
         } else if (attr.type.includes('audio')) {
           type = 'audio';
         } else if (attr.type.includes('video')) {
           type = 'video';
+        } else {
+          type = 'other';
         }
         return type;
       },
@@ -234,7 +235,6 @@
             obj.data = obj.data.map(item => this.getSizeByItem(item));
             if (this.maxId == '') {
               //页面加载时重置数据
-              console.log('页面重置，原数据量:', this.mediaItem.length);
               this.mediaItem = obj.data;
             } else {
               this.mediaItem = [...this.mediaItem, ...obj.data];
@@ -242,14 +242,15 @@
 
             this.maxId = obj.data[obj.rows - 1].id;
             console.info('当前资源id:', this.type, '=', this.maxId);
-            // if (maxid == 0) {
-            //   //初始加载时，手动重置状态，防止reflowed事件不触发.
-            //   this.status.value = false;
-            // }
+            
+            //image采用 reflowed触发回调，其它类型手动重置状态
+            if (this.type != 'image') {
+              this.status.value = false;
+            }
           })
           .catch(e => {
             //this.status.value = false;
-            this.status.text = '数据载入出现错误';
+            this.status.text = '数据载入出错';
             console.log(e);
           })
       },
@@ -398,11 +399,11 @@
   .margin-top-10 {
     margin-top: 10px;
   }
-  
+
   .el-dialog__body {
     padding: 10px 20px;
   }
-  
+
   .el-upload-list--picture-card {
     .el-upload-list__item {
       border-radius: 4px;
@@ -435,11 +436,11 @@
       height: @video-mask-height;
     }
   }
-  
+
   .el-dialog audio {
     width: 100%;
   }
-  
+
   .waterfall {
     .item {
       position: absolute;
@@ -524,7 +525,7 @@
       opacity: 0;
     }
   }
-  
+
   .loading-status {
     text-align: center;
     margin-bottom: 0;

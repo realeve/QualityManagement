@@ -2229,10 +2229,14 @@ body {
     font-size: 14px;
 }
 
-.article-contant img,.entry img ,.ql-editor img{
+.article-contant img,
+.entry img,
+.ql-editor img,
+.content img {
     border: 0;
     max-width: 100%;
-    margin: 15px 0px;
+    display: flex;
+    margin: 15px auto;
     background: rgba(255, 255, 255, 0.12);
     border: 4px solid rgba(255, 255, 255, 0.82);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
