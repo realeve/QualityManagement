@@ -82,7 +82,7 @@
     },
     mounted() {
       let content = window.localStorage.getItem('editor');
-      if (typeof content != 'undefined' && content.length && this.value.content.length < 10) {
+      if (typeof content != 'undefined'  && this.value.content) {
         this.value.content = content;
       }
     }

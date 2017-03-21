@@ -312,7 +312,7 @@
         this.$store.commit('clearFileList');
       },
       convertFromMedia() {
-        if (this.fileList.length) {
+        if (typeof this.fileList!='undefined' && this.fileList.length) {
           this.fileList = this.fileList.map(item => {
             if (typeof item.id != 'undefined') {
               item.attach_id = item.id;
