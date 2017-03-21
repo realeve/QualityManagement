@@ -121,7 +121,10 @@ var options = {
     }, {
         label: '媒体库',
         value: '/media'
-    }, ]
+    },  {
+        label: '搜索',
+        value: '/search'
+    }]
 }
 
 export default options

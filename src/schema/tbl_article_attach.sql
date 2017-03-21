@@ -1,7 +1,7 @@
 /*
 Navicat SQL Server Data Transfer
 
-Source Server         : MS SQLServer
+Source Server         : MS SQL
 Source Server Version : 105000
 Source Host           : localhost:1433
 Source Database       : QuaCenter
@@ -11,30 +11,34 @@ Target Server Type    : SQL Server
 Target Server Version : 105000
 File Encoding         : 65001
 
-Date: 2017-03-18 03:07:17
+Date: 2017-03-21 13:34:46
 */
 
 
 -- ----------------------------
--- Table structure for tbl_article_attach
+-- Table structure for tbl_article
 -- ----------------------------
-DROP TABLE [dbo].[tbl_article_attach]
+DROP TABLE [dbo].[tbl_article]
 GO
-CREATE TABLE [dbo].[tbl_article_attach] (
+CREATE TABLE [dbo].[tbl_article] (
 [id] int NOT NULL IDENTITY(1,1) ,
-[name] varchar(255) NULL ,
-[type] varchar(255) NULL ,
-[url] varchar(MAX) NULL ,
-[size] float(53) NULL ,
-[rec_time] datetime2(7) NULL ,
-[article_id] int NULL ,
-[comment_id] int NULL ,
+[title] varchar(255) NULL ,
+[prod] varchar(10) NULL ,
+[proc] varchar(10) NULL ,
+[machine] varchar(20) NULL ,
+[operator] varchar(255) NULL ,
+[cartno] varchar(10) NULL ,
+[category] varchar(20) NULL ,
+[content] varchar(MAX) NULL ,
+[status] int NULL DEFAULT ((0)) ,
 [uid] int NULL ,
-[width] int NULL ,
-[height] int NULL 
+[rec_time] datetime2(7) NULL ,
+[attach_list] varchar(MAX) NULL ,
+[status_username] varchar(20) NULL ,
+[status_rectime] datetime2(7) NULL 
 )
 
 
 GO
-DBCC CHECKIDENT(N'[dbo].[tbl_article_attach]', RESEED, 52)
+DBCC CHECKIDENT(N'[dbo].[tbl_article]', RESEED, 81)
 GO

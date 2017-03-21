@@ -96,18 +96,18 @@
       },
       setAvatar: _.debounce(function () {
         let username = this.user.name;
-        if (username == '') {
-          this.user.avatar = '/static/Avatar_none.jpg';
+        if (username == '' || typeof this.userList == 'undefined') {
+          this.user.avatar = 'Avatar_none.jpg';
           return;
         }
-        
         let user = this.userList.filter(res => res.name.includes(username))[0];
 
         if (user && user.avatar) {
           this.user = Object.assign(this.user,user);
-          this.user.avatar = this.avatarContent + btoa(user.id + user.name) + '.jpg';          
+          this.user.avatar = this.avatarContent + btoa(user.id + user.name) + '.jpg';  
+          console.log(this.avatarContent);        
         } else if(this.user.avatar=='') {          
-          this.user.avatar = '/static/Avatar_none.jpg';
+          this.user.avatar = 'Avatar_none.jpg';
         }
       }, 300),
       init() {

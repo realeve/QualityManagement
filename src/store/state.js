@@ -20,7 +20,7 @@ const state = {
     id: '',
     avatar: '',
     username: '',
-    unLogin:true
+    unLogin: true
   },
   articleId: {
 

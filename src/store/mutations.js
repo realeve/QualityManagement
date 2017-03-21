@@ -46,7 +46,7 @@ let mutations = {
     state.mainList = state.mainList.concat(data).sort((a, b) => a.cateId - b.cateId)
   },
   setFileList(state, item) {
-    state.fileList = item;
+    state.fileList = item
   },
   clearFileList(state) {
     state.fileList = []
@@ -64,10 +64,10 @@ let mutations = {
     state.latestFile = value
   },
   setMediaActiveName(state, val) {
-    state.activeName = val;
+    state.activeName = val
   },
-  setUserInfo(state,val){
-    state.user = val;
+  setUserInfo(state, val) {
+    state.user = val
   }
 }
 

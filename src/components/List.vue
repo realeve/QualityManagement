@@ -51,7 +51,7 @@
           let obj = res.data;
           if (0 == obj.rows) {
             this.news.empty = true;
-            if(typeof aid == 'undefined'){
+            if (typeof aid == 'undefined') {
               this.news.data = [];
             }
             return;
@@ -93,25 +93,24 @@
         }
         this.news.isLoading = true;
         let curId = this.$store.state.articleId[this.category];
-        if (typeof curId != 'undefined') {
+        if (typeof curId == 'undefined') {
+          this.loadListData(settings.api.articleHome);
+        } else {
           console.info('数据载入中,当前文章id:', curId);
           this.loadListData(settings.api.articleList, curId);
-        } else {
-          this.loadListData(settings.api.articleHome);
         }
       },
-      initData(){
-          this.news.title = this.category;
+      initData() {
+        this.news.title = this.category;
         let newsData = this.$store.state.newsList[this.category];
-  
-        if (typeof newsData == 'undefined') {
-          this.loadMore();
-        } else {
+        this.loadMore();
+
+        if (typeof newsData == 'undefined') {} else {
           this.news.data = newsData;
         }
       }
     },
-    mounted(){
+    mounted() {
       this.initData();
     }
   }
@@ -125,7 +124,7 @@
     display: flex;
     justify-content: center;
   }
-  
+
   .entry-screenshot-image {
     border-radius: 50%;
   }

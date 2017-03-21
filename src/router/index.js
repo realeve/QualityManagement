@@ -6,6 +6,7 @@ import Add from '@/components/Add'
 import View from '@/components/View'
 import List from '@/components/List'
 import Media from '@/components/Media'
+import Search from '@/components/Search'
 
 Vue.use(Router)
 
@@ -45,5 +46,9 @@ export default new Router({
     path: '/media',
     name: 'Media',
     component: Media
+  }, {
+    path: '/search',
+    name: 'Search',
+    component: Search
   }]
 })

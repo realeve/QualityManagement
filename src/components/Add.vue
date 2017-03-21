@@ -73,7 +73,7 @@
     },
     data() {
       return {
-        options: options,
+        options,
         rules: {
           operator: [{
             required: true,

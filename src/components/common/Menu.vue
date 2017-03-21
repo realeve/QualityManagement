@@ -27,10 +27,7 @@
         </div>
       </el-col>
     </el-row>
-
-
   </div>
-
 </template>
 <script>
   import options from '../../config/options';

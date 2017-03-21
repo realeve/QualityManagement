@@ -1,5 +1,5 @@
 <template>
-  <div class="article-contant">
+  <div>
     <div class="card article">
       <h1 class="title">{{article.title}}</h1>
       <h3 class="sub-title">
@@ -13,9 +13,15 @@
       <blockquote>本问题由 {{article.operator}} 确认
         <p>类型：{{article.category}}</p>
         <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
+        <p v-show="article.status_username!=''">文章状态：{{article.status_username}} 于 {{status_time}}</p>
       </blockquote>
       <div v-if="previewMode" class="submit">
         <el-button type="success" @click="closePreview">返回编辑</el-button>
+      </div>
+      <div v-else class="article-status">
+        <span>文章状态</span>
+        <el-switch v-model="status" on-color="#13ce66" off-color="#ff4949" on-text="已关闭" off-text="未关闭" :width="72" @change="closeArticle">
+        </el-switch>
       </div>
     </div>
     <div v-show="attachList.length">
@@ -45,28 +51,29 @@
 
       </div>
     </div>
-    <div v-if="!previewMode">
-      <h2 class="font-thin">补充说明</h2>
-      <div class="card comment">
-        <div v-if="noComment">
-          <p class="no-comment">
-            现在还没有人留言.
-          </p>
-        </div>
-        <div v-else>
-          <div v-for="item in comment" class="entry">
-            <div class="user float-left center">
-              <img class="img-header" :src="item.useravatar">
-            </div>
-            <div class="info">
-              <div v-html="item.content"></div>
-              <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
+    <div v-show="!previewMode">
+      <div v-show="!noComment">
+        <h2 class="font-thin">补充说明</h2>
+        <div class="card comment">
+          <div v-if="noComment">
+            <p class="no-comment">
+              现在还没有人留言.
+            </p>
+          </div>
+          <div v-else>
+            <div v-for="item in comment" class="entry">
+              <div class="user float-left center">
+                <img class="img-header" :src="item.useravatar">
+              </div>
+              <div class="info">
+                <div v-html="item.content"></div>
+                <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div v-show="user.id!=''">
+      <template v-show="user.id!=''">
         <h2 class="font-thin">留言</h2>
         <div class="card editor">
           <quill-editor :config="config" v-model="mycomment"></quill-editor>
@@ -74,7 +81,7 @@
             <el-button type="primary" @click="postComment">提交</el-button>
           </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -149,7 +156,18 @@
         musicList: []
       }
     },
+    watch: {
+      "article.status" (val) {
+        let label = val ? '已关闭' : '未关闭';
+      }
+    },
     computed: {
+      status_time() {
+        return ('' + this.article.status_rectime).substr(0, 16);
+      },
+      status() {
+        return this.article.status != 0;
+      },
       user() {
         return this.$store.state.user;
       },
@@ -205,6 +223,60 @@
       }
     },
     methods: {
+      changeArticleStatus(status) {
+        var params = {
+          tblname: 'tbl_article',
+          id: this.article.id,
+          status,
+          utf2gbk: ['status_username'],
+          status_username: this.user.username,
+          status_rectime: util.getNow()
+        };
+        return this.$http.jsonp(settings.api.update, {
+          params
+        });
+      },
+      closeArticle() {
+        let tip;
+        if (this.status) {
+          tip = {
+            title: '此操作将文章重新置为未关闭状态, 是否继续?',
+            message: '打开成功!',
+            status: 0
+          };
+
+        } else {
+          tip = {
+            title: '是否关闭该文章?',
+            message: '关闭成功!',
+            status: 1
+          };
+        }
+
+        this.$confirm(tip.title, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          return this.changeArticleStatus(tip.status);
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: tip.message
+          });
+          this.article.status = tip.status;
+
+          this.$store.commit('refreshMainList', true);
+          this.$store.commit('updateneedRefreshNewsList',{
+            category:this.article.category,
+            value:true
+          })
+          this.article.status_username = this.user.username;
+          this.article.status_rectime = util.getNow();
+        }).catch(e => {
+          console.log(e);
+        });
+      },
       closePreview() {
         this.$store.commit('enterPreview', false);
         this.$router.push('/add');
@@ -311,33 +383,40 @@
   @vue-color: #42b983;
   .card {
     background-color: #fff;
-    padding: 20px 40px;
-    border-radius: 4px;
+    padding: 20px 40px; //border-radius: 4px;
   }
-  
-  .article-contant {
-    margin: 20px 0;
+
+  h2 {
+    padding: 0 30px;
   }
-  
+
   .font-thin {
     font-weight: 300;
   }
-  
+
+  .article-status {
+    display: flex;
+    justify-content: flex-end;
+    span {
+      padding-right: 7px;
+    }
+  }
+
   .margin-top-20 {
     margin-top: 20px;
   }
-  
+
   .submit {
     .margin-top-20;
     display: flex;
     justify-content: flex-end;
   }
-  
+
   .ql-editor {
     height: 100px;
     min-height: 100px;
   }
-  
+
   .attach {
     min-height: 100px;
     .margin-top-20;
@@ -385,7 +464,7 @@
       }
     }
   }
-  
+
   .article {
     min-height: 300px;
     .margin-top-20;
@@ -425,7 +504,7 @@
       }
     }
   }
-  
+
   .comment {
     min-height: 120px;
     height: 100%;
@@ -466,11 +545,11 @@
       font-style: italic;
     }
   }
-  
+
   .float-left {
     float: left;
   }
-  
+
   .float-right {
     float: right;
   }

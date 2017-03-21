@@ -1,5 +1,5 @@
 -- 新闻列表
-SELECT top 5 a.id,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM dbo.tbl_article AS a left join tblUser b on a.uid = b.id where category='?' order by rec_time desc
+SELECT top 5 a.id,a.status,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM dbo.tbl_article AS a left join tblUser b on a.uid = b.id where category='?' order by rec_time desc
 
 -- listid
 
@@ -14,7 +14,7 @@ SELECT a.comment_id,a.uid,a.username,convert(varchar,a.rec_time,120) rec_time,a.
 
 
 --数据分页
-SELECT top 10 a.id,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM tbl_article AS a left join tblUser b on a.uid = b.id where category ='机检月度工作计划' and a.id<'37' order by a.id desc
+SELECT top 10 a.id,a.status,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM tbl_article AS a left join tblUser b on a.uid = b.id where category ='机检月度工作计划' and a.id<'37' order by a.id desc
 
 
 --附件列表
@@ -33,3 +33,6 @@ SELECT top 15 a.id,a.name,(case when substring(a.type,8,4)='webp' then 'image' w
 --用户列表
 SELECT a.ID id,a.UserName name,a.FullName username,a.set_avatar avatar FROM tblUser a order by id
 
+--文章搜索
+SELECT a.id,a.status,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM dbo.tbl_article AS a left join tblUser b on a.uid = b.id where a.content LIKE ? order by a.id desc
+--key
