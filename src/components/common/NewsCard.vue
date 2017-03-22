@@ -8,34 +8,39 @@
       </router-link>
     </div>
     <div class="entries">
-      <div v-for="(item,i) in news.data">
-        <div class="entry clearfix" @click="jump(item.url)">
-          <div class="entry-screenshot float-left">
-            <img class="entry-screenshot-image" :src="item.img">
-          </div>
-          <div class="entry-info float-left">
-            <template v-if="item.datetime > now">
-              <el-badge value="新" class="item">
+       <!--enter-class="animated tada" enter-active-class="animated tada" leave-class="animated zoomOut" leave-active-class="animated zoomOut"-->
+      <transition-group name="fade" tag="div">
+        <div v-for="(item,i) in news.data" :key="item.id">
+          <div class="entry clearfix" @click="jump(item.url)">
+            <div class="entry-screenshot float-left">
+              <img class="entry-screenshot-image" :src="item.img">
+            </div>
+            <div class="entry-info float-left">
+              <template v-if="item.datetime > now">
+                <el-badge value="新" class="item">
+                  <div class="entry-title">
+                    <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
+                  </div>
+                </el-badge>
+              </template>
+              <template v-else>
                 <div class="entry-title">
-                <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
+                  <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
                 </div>
-              </el-badge>
-            </template>
-            <template v-else>
-              <div class="entry-title">
-                <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>                
-              </div>
-            </template>
+              </template>
 
-            <div class="entry-meta">
-              <div class="action entry-username">{{item.user}}</div>
-              <div class="action"> ·</div>
-              <div class="action">{{item.datetime}}</div>
-              <div class="action"><el-tag type="danger" v-if="0 == item.status">未完成</el-tag></div>
+              <div class="entry-meta">
+                <div class="action entry-username">{{item.user}}</div>
+                <div class="action"> ·</div>
+                <div class="action">{{item.datetime}}</div>
+                <div class="action">
+                  <el-tag type="danger" v-if="0 == item.status">未完成</el-tag>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </transition-group>
 
       <div v-if="!news.more" @click="loadMore" class="entry">
         <div class="loading-info" v-html="info"></div>
@@ -106,6 +111,19 @@
 
   .pointer {
     cursor: pointer;
+  }
+
+  .fade-enter-active,.fade-leave-active{
+    transition:all 1s;
+  }
+
+  .fade-move{
+    transition:transform 1s;
+  }
+
+  .fade-enter,.fade-leave-active{
+    opacity:0;
+    transform:translateY(-50px);
   }
 
 </style>

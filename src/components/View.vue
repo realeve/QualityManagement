@@ -13,7 +13,7 @@
       <blockquote>本问题由 {{article.operator}} 确认
         <p>类型：{{article.category}}</p>
         <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
-        <p v-show="article.status_username!=''">文章状态：{{article.status_username}} 于 {{status_time}}</p>
+        <p v-show="article.status_username!='' && !previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
       </blockquote>
       <div v-if="previewMode" class="submit">
         <el-button type="success" @click="closePreview">返回编辑</el-button>
@@ -245,6 +245,21 @@
       }
     },
     methods: {
+      receiver(mode = 'reward') {
+        let users;
+        if (mode == 'reward') {
+          users = settings.rtxInfo.reward.filter(item => item.name == item.reward_user);
+          users = users.id;
+        } else {
+          users = settings.rtxInfo.verify.map(item => item.id);
+        }
+
+        return users.join(',');
+      },
+      pushMsgByRtx(params) {
+        let url = settings.host + '/DataInterface/rtxPush'
+        return this.$http.jsonp(url, {params}).then(response => this.$message.success(response.data.msg))
+      },
       verifyDonate(val) {
         var params = {
           tblname: 'tbl_article',
@@ -289,6 +304,18 @@
               message: '操作成功'
             });
             this.article.reward_status = val;
+            let passInfo = val ? '已经通过' : '拒绝通过';
+
+            let msg =
+              `${this.$store.state.user.username}对[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}]的奖励申请${passInfo}`;
+            //反馈至奖励发起人员
+
+            this.pushMsgByRtx({
+              msg,
+              title: '质量信息平台',
+              delaytime: 0,
+              receiver: this.receiver()
+            });
           })
           .catch((e) => {
             console.log(e);
@@ -305,6 +332,16 @@
           }) => {
             this.updateDonateInfo(value);
             curValue = value;
+
+            let msg =
+              `${this.$store.state.user.username}发起了一项专项奖励,[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}]`;
+            //进入下一步审批流程
+            this.pushMsgByRtx({
+              msg,
+              title: '质量信息平台',
+              delaytime: 0,
+              receiver: this.receiver('verify')
+            });
           })
           .then(() => {
             this.$message({

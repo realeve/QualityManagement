@@ -19,8 +19,8 @@
           <el-form-item label="机台" prop="machine">
             <el-autocomplete class="inline-input" v-model="value.machine" :fetch-suggestions="querySearch" placeholder="请输入机台"></el-autocomplete>
           </el-form-item>
-          <el-form-item label="操作人员" prop="operator">
-            <el-select v-model="value.operator" multiple placeholder="请选择操作人员">
+          <el-form-item label="处理人员" prop="operator">
+            <el-select v-model="value.operator" multiple placeholder="请选择处理人员">
               <el-option-group v-for="group in options.operator" :label="group.label" :key="group.value">
                 <el-option v-for="item in group.options" :label="item.label" :value="item.value" :key="item.value">
                 </el-option>
@@ -54,7 +54,7 @@
 
     <div class="card">
       <h3>附件管理</h3>
-      <attach :listType="'picture-card'"/>
+      <attach :listType="'picture-card'" />
     </div>
   </div>
 </template>
@@ -148,6 +148,20 @@
       }
     },
     methods: {
+      pushMsgByRtx(params) {
+        let url = settings.host + '/DataInterface/rtxPush'
+        return this.$http.jsonp(url, {params}).then(response => this.$message.success(response.data.msg))
+      },
+      receiver(needPushPaperList = false){
+        let tech=settings.rtxInfo.technology.map(item=>item.id);
+        let imgVs = settings.rtxInfo.imgVs.map(item=>item.id);
+        let paper = settings.rtxInfo.paper.map(item=>item.id);
+        let users = [...tech,...imgVs];
+        if(needPushPaperList){
+          users = [...users,...paper];
+        }
+        return users.join(',');
+      },
       validFile(file) {
         //const isJPG = file.type === 'image/jpeg';
         const isLt20M = file.size / 1024 / 1024 < 100;
@@ -301,7 +315,20 @@
               });
             }
             this.$store.commit('refreshMainList', true);
-            window.localStorage.setItem('editor', '');   
+            window.localStorage.setItem('editor', '');
+          
+            let msg =
+              `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
+            
+            //如果标题中含有“纸”字样，推送给纸张工艺组
+            
+            this.pushMsgByRtx({
+              msg,
+              title:'质量信息平台',
+              delaytime:0,
+              receiver:this.receiver(this.$store.state.preview.title.includes('纸'))
+            });
+
           })
           .catch(e => {
             console.log(e);
@@ -312,7 +339,7 @@
         this.$store.commit('clearFileList');
       },
       convertFromMedia() {
-        if (typeof this.fileList!='undefined' && this.fileList.length) {
+        if (typeof this.fileList != 'undefined' && this.fileList.length) {
           this.fileList = this.fileList.map(item => {
             if (typeof item.id != 'undefined') {
               item.attach_id = item.id;
@@ -321,7 +348,6 @@
             }
             return item;
           });
-          console.log(this.fileList,this.attachList);
         }
       }
     },
@@ -340,21 +366,21 @@
   h4 {
     font-weight: 400;
   }
-  
+
   .basic {
     width: 280px;
   }
-  
+
   .margin-top-20 {
     margin-top: 20px;
   }
-  
+
   .submit {
     .margin-top-20;
     display: flex;
     justify-content: flex-end;
   }
-  
+
   .card {
     .margin-top-20;
     background-color: #fff;
@@ -362,8 +388,8 @@
     border-radius: 4px;
   }
 
-  .card:nth-child(1){
-    margin-top:0;
+  .card:nth-child(1) {
+    margin-top: 0;
   }
 
 </style>

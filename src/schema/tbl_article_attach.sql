@@ -11,34 +11,30 @@ Target Server Type    : SQL Server
 Target Server Version : 105000
 File Encoding         : 65001
 
-Date: 2017-03-21 13:34:46
+Date: 2017-03-22 14:23:58
 */
 
 
 -- ----------------------------
--- Table structure for tbl_article
+-- Table structure for tbl_article_attach
 -- ----------------------------
-DROP TABLE [dbo].[tbl_article]
+DROP TABLE [dbo].[tbl_article_attach]
 GO
-CREATE TABLE [dbo].[tbl_article] (
+CREATE TABLE [dbo].[tbl_article_attach] (
 [id] int NOT NULL IDENTITY(1,1) ,
-[title] varchar(255) NULL ,
-[prod] varchar(10) NULL ,
-[proc] varchar(10) NULL ,
-[machine] varchar(20) NULL ,
-[operator] varchar(255) NULL ,
-[cartno] varchar(10) NULL ,
-[category] varchar(20) NULL ,
-[content] varchar(MAX) NULL ,
-[status] int NULL DEFAULT ((0)) ,
-[uid] int NULL ,
+[name] varchar(255) NULL ,
+[type] varchar(255) NULL ,
+[url] varchar(MAX) NULL ,
+[size] float(53) NULL ,
 [rec_time] datetime2(7) NULL ,
-[attach_list] varchar(MAX) NULL ,
-[status_username] varchar(20) NULL ,
-[status_rectime] datetime2(7) NULL 
+[article_id] int NULL ,
+[comment_id] int NULL ,
+[uid] int NULL ,
+[width] int NULL ,
+[height] int NULL 
 )
 
 
 GO
-DBCC CHECKIDENT(N'[dbo].[tbl_article]', RESEED, 81)
+DBCC CHECKIDENT(N'[dbo].[tbl_article_attach]', RESEED, 202)
 GO

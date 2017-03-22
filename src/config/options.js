@@ -1,5 +1,8 @@
 var options = {
     proc: [{
+        value: '-2',
+        label: '钞纸'
+    },{
         value: '-1',
         label: '印版/油墨'
     }, {
@@ -30,7 +33,15 @@ var options = {
             value: '钟鸣'
         }, {
             value: '袁长虹'
+        },{
+            value: '张建军'
         }, {
+            value: '曹娅'
+        },{
+            value: '包诚'
+        },{
+            value: '陈姝婧'
+        },{
             value: '李丹'
         }, {
             value: '杨畅'
@@ -75,6 +86,15 @@ var options = {
         }, {
             value: '任礼科'
         }]
+    }, {
+        label: '钞纸工艺组',
+        options: [{
+            value: '陈晶'
+        }, {
+            value: '杜煜'
+        }, {
+            value: '赵锦良'
+        }]
     }],
     category: [{
         value: '质量问题发布'
@@ -108,7 +128,7 @@ var options = {
         label: '其它',
         value: 'other'
     }],
-    mediaLoadingNums: 10,
+    mediaLoadingNums: 25,
     menu: [{
         label: '首页',
         value: '/'

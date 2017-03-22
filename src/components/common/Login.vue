@@ -101,13 +101,11 @@
           return;
         }
         let user = this.userList.filter(res => res.name.includes(username))[0];
-
-        if (user && user.avatar) {
-          this.user = Object.assign(this.user,user);
+        this.user = Object.assign(this.user,user);
+        if (user && user.avatar == 1) {
           this.user.avatar = this.avatarContent + btoa(user.id + user.name) + '.jpg';  
-          console.log(this.avatarContent);        
-        } else if(this.user.avatar=='') {          
-          this.user.avatar = 'Avatar_none.jpg';
+        } else {          
+          this.user.avatar = this.avatarContent +'Avatar_none.jpg';
         }
       }, 300),
       init() {

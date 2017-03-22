@@ -6,7 +6,7 @@
         :watch="mediaItem" ref="waterfall" @reflowed="reflowed">
         <waterfall-slot v-for="(item, index) in mediaItem" :width="item.width" :height="item.height" :order="index" :key="item.index"
           move-class="item-move">
-          <div class="item" :index="item.index">
+          <div class="item animated fadeIn" :index="item.index">
             <img :src="mediaContent+item.url.replace('image/','image/thumb_')" />
             <div class="content-wrap">
               <div class="entry-title">
@@ -34,9 +34,9 @@
 
     <ul v-else class="el-upload-list el-upload-list--picture-card">
       <li v-for="item in mediaItem" class="el-upload-list__item" :class="classList" :key="item.id">
-        <img v-if="type=='audio'" :src="'static/music.webp'" class="el-upload-list__item-thumbnail">
+        <img v-if="type=='audio'" :src="'static/image/music.webp'" class="el-upload-list__item-thumbnail">
         <video v-else-if="type=='video'" :ref="'video'+item.id" preload="meta" :src="mediaContent+item.url" controls class="el-upload-list__item-thumbnail"></video>
-        <img v-else :src="'static/document.webp'" class="el-upload-list__item-thumbnail">
+        <img v-else :src="'static/image/document.webp'" class="el-upload-list__item-thumbnail">
         <el-tooltip class="item" effect="dark" placement="top">
           <span slot="content">{{item.name}}</span>
           <span class="el-upload-list__item-actions" :class="videoMaskClass">
