@@ -202,7 +202,7 @@
   }
 
 </script>
-<style scoped lang="less">
+<style scoped>
   .card {
     background-color: #fff;
     padding: 20px;

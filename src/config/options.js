@@ -2,7 +2,7 @@ var options = {
     proc: [{
         value: '-2',
         label: '钞纸'
-    },{
+    }, {
         value: '-1',
         label: '印版/油墨'
     }, {
@@ -33,15 +33,15 @@ var options = {
             value: '钟鸣'
         }, {
             value: '袁长虹'
-        },{
+        }, {
             value: '张建军'
         }, {
             value: '曹娅'
-        },{
+        }, {
             value: '包诚'
-        },{
+        }, {
             value: '陈姝婧'
-        },{
+        }, {
             value: '李丹'
         }, {
             value: '杨畅'
@@ -97,6 +97,8 @@ var options = {
         }]
     }],
     category: [{
+        value: '日常工作安排'
+    }, {
         value: '质量问题发布'
     }, {
         value: '工艺质量月度工作计划'
@@ -141,7 +143,7 @@ var options = {
     }, {
         label: '媒体库',
         value: '/media'
-    },  {
+    }, {
         label: '搜索',
         value: '/search'
     }]

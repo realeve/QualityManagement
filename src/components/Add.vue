@@ -351,7 +351,7 @@
         }
       }
     },
-    mounted() {
+    created() {
       this.loadProd();
       this.$store.commit('enterPreview', false);
       this.convertFromMedia();

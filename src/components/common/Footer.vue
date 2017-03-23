@@ -8,7 +8,7 @@ export default {
   name: 'el-footer'
 }
 </script>
-<style lang="less">
+<style scoped>
 .footer {
   text-align: center;
   //border-top: 1px solid #dde;

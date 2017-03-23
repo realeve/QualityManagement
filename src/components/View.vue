@@ -507,7 +507,7 @@
         }
       }
     },
-    mounted() {
+    activated() {
       this.init();
     }
   }

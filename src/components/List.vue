@@ -33,7 +33,10 @@
     },
     watch: {
       category() {
-        this.initData();
+        // 离开页面时会触发category变更操作，此处判断routeName属性是否为列表项
+        if(this.$route.name == 'List'){
+          this.initData();
+        }
       }
     },
     methods: {
@@ -61,7 +64,6 @@
           let avatar;
           let data = [];
 
-          //http://localhost/DataInterface/base64?src=http://localhost/demo/avatar/MTZsaWJpbg==.jpg
           data = obj.data.map(item => {
             avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
             return Object.assign(item, {
@@ -92,12 +94,12 @@
           return
         }
         this.news.isLoading = true;
-        let curId = this.$store.state.articleId[this.category];
-        if (typeof curId == 'undefined') {
-          this.loadListData(settings.api.articleHome);
-        } else {
+        let curId = this.$store.state.articleId[this.category];        
+        if (typeof curId != 'undefined') {
           console.info('数据载入中,当前文章id:', curId);
           this.loadListData(settings.api.articleList, curId);
+        } else {
+          this.loadListData(settings.api.articleHome);
         }
       },
       initData() {
@@ -105,19 +107,19 @@
         let newsData = this.$store.state.newsList[this.category];
         this.loadMore();
 
-        if (typeof newsData == 'undefined') {} else {
+        if (typeof newsData !== 'undefined'){
           this.news.data = newsData;
         }
       }
     },
-    mounted() {
+    activated() {
       this.initData();
     }
   }
 
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style scoped>
   .list {
     width: 100%;
     //margin-top: 20px;

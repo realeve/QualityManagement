@@ -196,9 +196,8 @@
   }
 
 </script>
-<style>
+<style scoped>
   .el-upload .el-upload-dragger {
     width: 180px;
   }
-
 </style>

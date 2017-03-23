@@ -1,6 +1,40 @@
 -- 新闻列表
 SELECT top 5 a.id,a.status,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM dbo.tbl_article AS a left join tblUser b on a.uid = b.id where category='?' order by rec_time desc
 
+-- 查询各类文章前10第记录  by 2017-03-23
+SELECT
+	*
+FROM
+	(
+		SELECT
+			row_number () OVER (
+				partition BY category
+				ORDER BY
+					a.id DESC
+			) rn,
+			a.id,
+			a.category,
+			a.status,
+			a.title,
+			isnull(b.fullName, '无') AS 'user',
+			CONVERT (VARCHAR, a.rec_time, 120) AS datetime,
+			b.set_avatar avatar,
+			CAST (b.id AS VARCHAR) + rtrim(b.UserName) AS avatarkey
+		FROM
+			dbo.tbl_article AS a
+		LEFT JOIN tblUser b ON a.uid = b.id
+	) T
+WHERE
+	rn <= 5
+
+-- 去除换行后:
+-- ID=411  TOP5
+SELECT * FROM ( SELECT row_number () OVER (  partition BY category  ORDER BY  a.id DESC ) rn, a.id, a.category, a.status, a.title, isnull(b.fullName, '无') AS 'user', CONVERT (VARCHAR, a.rec_time, 120) AS datetime, b.set_avatar avatar, CAST (b.id AS VARCHAR) + rtrim(b.UserName) AS avatarkey FROM dbo.tbl_article AS a LEFT JOIN tblUser b ON a.uid = b.id ) T WHERE rn <= 5
+
+
+
+
+
 -- listid
 
 --文章详情

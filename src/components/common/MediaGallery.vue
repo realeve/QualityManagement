@@ -150,7 +150,8 @@
         return this.$store.state.activeName;
       },
       isActive() {
-        return this.type == this.activeName;
+        //加入  keep-alive，防止在其它页面滚动时加载图片
+        return (this.$route.name=='Media') && this.type == this.activeName;
       }
     },
     watch: {
@@ -263,7 +264,6 @@
         if (!this.isActive) {
           return;
         }
-        console.info('触发下拉刷新');
 
         if (this.maxId == '') {
           this.fetchData(settings.api.mediaList);

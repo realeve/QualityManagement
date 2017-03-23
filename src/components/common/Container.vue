@@ -1,10 +1,8 @@
 <template>
   <div class="container">
-    <el-row>
-      <el-col :span="24">
-        <router-view></router-view>
-      </el-col>
-    </el-row>
+    <keep-alive>
+    <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 <script>
@@ -12,7 +10,7 @@ export default {
   name: 'my-container'
 }
 </script>
-<style lang="less" scoped>
+<style scoped>
 .container {
   width: 100%;
 }
