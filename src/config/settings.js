@@ -29,6 +29,10 @@ export default {
         // 主页各模块Top5，无请求参数，一次加载完成
         articleTop5: url + 411 + '&M=0',
 
+        myWorkList: url + 412 + '&M=0',
+
+        myWorkListByPage: url + 413 + '&M=0',
+
         // 文章详情330
         articleDetail: url + 403 + '&M=0',
 

@@ -121,7 +121,11 @@
     transition:transform 1s;
   }
 
-  .fade-enter,.fade-leave-active{
+  .fade-enter{
+    opacity:0;
+    transform:translateY(50px);
+  }
+  .fade-leave-active{
     opacity:0;
     transform:translateY(-50px);
   }

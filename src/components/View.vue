@@ -258,7 +258,9 @@
       },
       pushMsgByRtx(params) {
         let url = settings.host + '/DataInterface/rtxPush'
-        return this.$http.jsonp(url, {params}).then(response => this.$message.success(response.data.msg))
+        return this.$http.jsonp(url, {
+          params
+        }).then(response => this.$message.success(response.data.msg))
       },
       verifyDonate(val) {
         var params = {
@@ -312,7 +314,7 @@
 
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台',
+              title: '质量信息平台 ' + util.getNow(4),
               delaytime: 0,
               receiver: this.receiver()
             });
@@ -338,7 +340,7 @@
             //进入下一步审批流程
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台',
+              title: '质量信息平台 ' + util.getNow(4),
               delaytime: 0,
               receiver: this.receiver('verify')
             });
@@ -453,6 +455,9 @@
           comment.content = util.handleAttach(this.mycomment);
           this.comment.push(comment);
           this.mycomment = '';
+
+          this.rtxCommentStatus();
+
         }).catch(e => {
           console.log(e);
           this.$message({
@@ -460,6 +465,17 @@
             type: 'error'
           });
         })
+      },
+      // 腾讯通更新用户发送评论状态
+      rtxCommentStatus() {
+        let msg =
+          `${this.$store.state.user.username}对文章 [(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}] 添加了评论`;
+        this.pushMsgByRtx({
+          msg,
+          title: '质量信息平台 ' + util.getNow(4),
+          delaytime: 0,
+          receiver: util.getAllReceiver()
+        });
       },
       loadArticle() {
         let id = this.$route.params.id;

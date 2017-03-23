@@ -150,17 +150,9 @@
     methods: {
       pushMsgByRtx(params) {
         let url = settings.host + '/DataInterface/rtxPush'
-        return this.$http.jsonp(url, {params}).then(response => this.$message.success(response.data.msg))
-      },
-      receiver(needPushPaperList = false){
-        let tech=settings.rtxInfo.technology.map(item=>item.id);
-        let imgVs = settings.rtxInfo.imgVs.map(item=>item.id);
-        let paper = settings.rtxInfo.paper.map(item=>item.id);
-        let users = [...tech,...imgVs];
-        if(needPushPaperList){
-          users = [...users,...paper];
-        }
-        return users.join(',');
+        return this.$http.jsonp(url, {
+          params
+        }).then(response => this.$message.success(response.data.msg))
       },
       validFile(file) {
         //const isJPG = file.type === 'image/jpeg';
@@ -316,17 +308,17 @@
             }
             this.$store.commit('refreshMainList', true);
             window.localStorage.setItem('editor', '');
-          
+
             let msg =
               `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
-            
+
             //如果标题中含有“纸”字样，推送给纸张工艺组
-            
+
             this.pushMsgByRtx({
               msg,
-              title:'质量信息平台',
-              delaytime:0,
-              receiver:this.receiver(this.$store.state.preview.title.includes('纸'))
+              title: '质量信息平台 ' + util.getNow(4),
+              delaytime: 0,
+              receiver: util.getAllReceiver(this.$store.state.preview.title.includes('纸'))
             });
 
           })

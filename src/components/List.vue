@@ -29,12 +29,15 @@
     computed: {
       category() {
         return this.$route.params.category;
+      },
+      user() {
+        return this.$store.state.user.username;
       }
     },
     watch: {
       category() {
         // 离开页面时会触发category变更操作，此处判断routeName属性是否为列表项
-        if(this.$route.name == 'List'){
+        if (this.$route.name == 'List') {
           this.initData();
         }
       }
@@ -43,12 +46,22 @@
       jump(val) {
         this.$message.success('跳转到/#/view/' + val);
       },
-      loadListData(url, aid) {
-        this.$http.jsonp(url, {
-          params: {
+      loadListData(url, isMyWorkList, aid) {
+        let params;
+        if (isMyWorkList) {
+          params = {
+            user: '%' + this.user + '%',
+            aid
+          };
+        } else {
+          params = {
             listid: this.category,
             aid
-          }
+          };
+        }
+
+        this.$http.jsonp(url, {
+          params
         }).then(res => {
           this.news.isLoading = false;
           let obj = res.data;
@@ -79,7 +92,6 @@
             title: this.category,
             data
           });
-
           this.$store.commit('recordMaxListId', {
             title: this.category,
             id: obj.data[obj.data.length - 1].id
@@ -94,22 +106,36 @@
           return
         }
         this.news.isLoading = true;
-        let curId = this.$store.state.articleId[this.category];        
-        if (typeof curId != 'undefined') {
-          console.info('数据载入中,当前文章id:', curId);
-          this.loadListData(settings.api.articleList, curId);
-        } else {
-          this.loadListData(settings.api.articleHome);
+        let curId = this.$store.state.articleId[this.category];
+        let isFirstLoad = (typeof curId == 'undefined');
+
+        switch (this.news.title) {
+          case '我的工作列表':
+            if (isFirstLoad) {
+              this.loadListData(settings.api.myWorkList, true);
+              return;
+            }
+            this.loadListData(settings.api.myWorkListByPage, true, curId);
+            break;
+          default:
+            if (isFirstLoad) {
+              this.loadListData(settings.api.articleHome, false);
+              return;
+            }
+            this.loadListData(settings.api.articleList, false, curId);
+            break;
         }
+
       },
       initData() {
         this.news.title = this.category;
         let newsData = this.$store.state.newsList[this.category];
-        this.loadMore();
-
-        if (typeof newsData !== 'undefined'){
+        if (typeof newsData !== 'undefined') {
           this.news.data = newsData;
+        } else {
+          this.news.data = [];
         }
+        this.loadMore();
       }
     },
     activated() {
@@ -121,8 +147,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .list {
-    width: 100%;
-    //margin-top: 20px;
+    width: 100%; //margin-top: 20px;
     display: flex;
     justify-content: center;
   }

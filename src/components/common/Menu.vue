@@ -37,7 +37,9 @@
     data() {
       return {
         list: options.menu,
-        category: options.category,
+        category: [{
+          value: '我的工作列表'
+        }, ...options.category],
         activeIndex: '0',
         host: settings.host
       }
