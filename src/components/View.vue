@@ -425,6 +425,7 @@
         }).then(res => {
           let obj = res.data;
           if (obj.rows == 0) {
+            this.noComment = true;
             return;
           }
           this.noComment = false;
@@ -502,6 +503,7 @@
         }).then(res => {
           let obj = res.data;
           if (obj.rows == 0) {
+            this.attachList = [];
             return;
           }
           this.attachList = obj.data;
