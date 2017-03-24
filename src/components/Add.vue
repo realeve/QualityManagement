@@ -1,36 +1,44 @@
 <template>
   <div>
-    <el-form :model = "value" :rules="rules" ref="value" label-width="100px">
+    <el-form :model="value" :rules="rules" ref="value" label-width="100px">
       <div class="card">
-        <div class="basic">
-          <h3>基础信息</h3>
-          <el-form-item label="品种" prop="prod">
-            <el-select v-model="value.prod" clearable placeholder="请选择品种名称">
-              <el-option v-for="item in options.prod" :label="item.label" :value="item.label" :key="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="工序" prop="proc">
-            <el-select v-model="value.proc" clearable placeholder="请选择工序">
-              <el-option v-for="item in options.proc" :label="item.label" :value="item.value" :key="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="机台" prop="machine">
-            <el-autocomplete class="inline-input" v-model="value.machine" :fetch-suggestions="querySearch" placeholder="请输入机台"></el-autocomplete>
-          </el-form-item>
-          <el-form-item label="处理人员" prop="operator">
-            <el-select v-model="value.operator" multiple placeholder="请选择处理人员">
-              <el-option-group v-for="group in options.operator" :label="group.label" :key="group.value">
-                <el-option v-for="item in group.options" :label="item.label" :value="item.value" :key="item.value">
-                </el-option>
-              </el-option-group>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="车号/轴号" prop="cartno">
-            <el-input v-model="value.cartno" @input="capitalizeCartno" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
-          </el-form-item>
-        </div>
+        <el-row>
+          <el-col :md="10" :sm="24" :xs="24">
+            <div class="basic">
+              <h3>基础信息</h3>
+              <el-form-item label="品种" prop="prod">
+                <el-select v-model="value.prod" clearable placeholder="请选择品种名称">
+                  <el-option v-for="item in options.prod" :label="item.label" :value="item.label" :key="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="工序" prop="proc">
+                <el-select v-model="value.proc" clearable placeholder="请选择工序">
+                  <el-option v-for="item in options.proc" :label="item.label" :value="item.label" :key="item.label">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="机台" prop="machine">
+                <el-autocomplete class="inline-input" v-model="value.machine" :fetch-suggestions="querySearch" placeholder="请输入机台"></el-autocomplete>
+              </el-form-item>
+              <el-form-item label="处理人员" prop="operator">
+                <el-select v-model="value.operator"  multiple placeholder="请选择处理人员">
+                  <el-option-group v-for="group in options.operator" :label="group.label" :key="group.value">
+                    <el-option v-for="item in group.options" :label="item.label" :value="item.value" :key="item.value">
+                    </el-option>
+                  </el-option-group>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="车号/轴号" prop="cartno">
+                <el-input v-model="value.cartno" @input="capitalizeCartno" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :md="14" :sm="24" :xs="24">          
+              <h3>消息推送名单</h3>
+              <rtx-check/>
+          </el-col>
+        </el-row>
       </div>
       <div class="card">
         <h3>文章内容</h3>
@@ -62,6 +70,8 @@
   import options from '../config/options';
   import MyEditor from './common/Editor';
   import Attach from './common/Attach';
+  import RtxCheck from './common/RtxCheck'
+
   import settings from '../config/settings';
   import util from '../config/util';
   const HOST = settings.host;
@@ -69,7 +79,8 @@
     name: 'add',
     components: {
       MyEditor,
-      Attach
+      Attach,
+      RtxCheck
     },
     data() {
       return {
@@ -108,24 +119,32 @@
     },
     computed: {
       procId() {
-        let id = this.$store.state.add.proc;
-        if (id < 1) {
-          this.options.machine = [];
-          id = -1;
-        } else if (id > 1) {
-          id--;
+        let proc = this.$store.state.add.proc;
+        let id;
+        switch (proc) {
+          case '胶印':
+          case '凹印':
+            id = 1;
+            break;
+          case '印码':
+            id = 2;
+            break;
+          case '检封':
+            id = 3;
+            break;
+          default:
+            id = 0;
+            break;
         }
         return id;
       },
-      value() {
-        return this.$store.state.add;
-      },
-      procName() {
-        let id = parseInt(this.$store.state.add.proc);
-        if (isNaN(id)) {
-          return '';
+      value: {
+        get() {
+          return this.$store.state.add;
+        },
+        set(val) {
+          this.$store.commit('setAddInfo', val);
         }
-        return this.options.proc[id + 1].label;
       },
       attachList() {
         return this.$store.state.fileList.map(item => item.attach_id).join(',');
@@ -140,10 +159,14 @@
       }
     },
     watch: {
-      procId(id) {
-        this.$store.commit('clearMacineInfo');
-        if (id) {
+      procId(id, oldId) {
+        if (oldId == id) {
+          return; //胶凹共用一个id
+        }
+        if (id > 0) {
           this.loadMachineList(id);
+        } else {
+          this.options.machine = [];
         }
       }
     },
@@ -165,7 +188,7 @@
       capitalizeCartno(str) {
         let reg = new RegExp(/[a-zA-Z]|\d/);
         let result = str.split('').filter(item => item.match(reg)).join('').toUpperCase();
-        this.$store.commit('convertCartno', result);
+        this.value.cartno = result;
       },
       loadProd() {
         let url = HOST + '/DataInterface/Api';
@@ -243,7 +266,7 @@
 
         params = Object.assign(params, this.value);
         params = Object.assign(params, {
-          proc: this.procName,
+          proc: this.value.proc,
           operator,
           content: util.parseHtml(this.value.content)
         });
@@ -318,7 +341,7 @@
               msg,
               title: '质量信息平台',
               delaytime: 0,
-              receiver: util.getAllReceiver(this.$store.state.preview.title.includes('纸'))
+              receiver: this.$store.state.rtxlist.join(',')
             });
 
           })
@@ -327,7 +350,17 @@
           })
       },
       resetForm(formName = 'value') {
-        this.$store.commit('resetAddInfo');
+        //this.$store.commit('resetAddInfo');
+        this.value = {
+          prod: '',
+          proc: '',
+          machine: '',
+          operator: [],
+          cartno: '',
+          category: '',
+          content: '',
+          title: ''
+        }
         this.$store.commit('clearFileList');
       },
       convertFromMedia() {
@@ -359,9 +392,6 @@
     font-weight: 400;
   }
 
-  .basic {
-    width: 280px;
-  }
 
   .margin-top-20 {
     margin-top: 20px;
@@ -378,6 +408,9 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 4px;
+    .basic {
+      width: 290px;
+    }
   }
 
   .card:nth-child(1) {

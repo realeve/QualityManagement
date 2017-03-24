@@ -1,6 +1,6 @@
 <template>
   <div>
-    <quill-editor ref="myTextEditor" :config="config" v-model="value.content" @blur="onEditorBlur($event)" @change="onEditorChange($event)">
+    <quill-editor ref="myTextEditor" :config="config" v-model="value.content" @change="onEditorChange($event)">
     </quill-editor>
   </div>
 </template>
@@ -58,17 +58,12 @@
         get() {
           return this.$store.state.add;
         },
-        set(content) {
-          this.$store.commit('setArticleInfo', {
-            content
-          });
+        set(val) {
+          this.$store.commit('setAddInfo', val);
         }
       }
     },
     methods: {
-      onEditorBlur(editor) {
-        window.localStorage.setItem('editor', this.value.content);
-      },
       onEditorChange: _.throttle(function ({
         editor,
         html,
@@ -77,12 +72,12 @@
         if (html.length > 10000) {
           this.$message.info('文字长度达到10,000，建议分段发送文章.');
         }
-        window.localStorage.setItem('editor', html);      
-      }, 1000 * 10),
+        window.localStorage.setItem('editor', this.value.content);
+      }, 5 * 1000)
     },
     mounted() {
       let content = window.localStorage.getItem('editor');
-      if (typeof content != 'undefined'  && this.value.content) {
+      if (typeof content != 'undefined' && this.value.content == '') {
         this.value.content = content;
       }
     }
@@ -93,7 +88,7 @@
   .ql-editor {
     min-height: 200px;
     p {
-      font-size: 16pt; 
+      font-size: 16pt;
       text-indent: 2em;
       color: #333;
       font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;

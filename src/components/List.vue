@@ -102,7 +102,7 @@
         })
       },
       loadMore() {
-        if (this.news.isLoading) {
+        if (this.$route.name != 'List' || this.news.isLoading) {
           return
         }
         this.news.isLoading = true;

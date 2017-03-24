@@ -7,32 +7,17 @@ let mutations = {
             state.mainList = []
         }
     },
-    resetAddInfo(state) {
-        state.add = {
-            prod: '',
-            proc: '',
-            machine: '',
-            operator: [],
-            cartno: '',
-            category: '',
-            content: '',
-            title: ''
-        }
+    setAddInfo(state, val) {
+        state.add = val;
+    },
+    setRtxList(state, val) {
+        state.rtxlist = val;
     },
     enterPreview(state, val) {
         state.previewMode = val
     },
     setPreviewData(state, data) {
         state.preview = data
-    },
-    clearMacineInfo(state) {
-        state.add.machine = ''
-    },
-    convertCartno(state, val) {
-        state.add.cartno = val
-    },
-    setArticleInfo(state, val) {
-        Object.assign(state.add, val);
     },
     recordMaxListId(state, param) {
         state.articleId[param.title] = param.id

@@ -9,7 +9,9 @@ const state = {
         content: '',
         title: ''
     },
-    
+
+    rtxlist: [], //添加新数据库字段
+
     // 文章预览数据
     preview: '',
     previewMode: false,

@@ -91,7 +91,7 @@
         <div class="card editor">
           <quill-editor :config="config" v-model="mycomment"></quill-editor>
           <div class="submit">
-            <el-button type="primary" @click="postComment">提交</el-button>
+            <el-button type="primary" @click="postComment" :disabled="this.mycomment==''">提交</el-button>
           </div>
         </div>
         <div class="card">
@@ -166,7 +166,7 @@
         // 车号/轴号信息搜索接口
         attachList: [],
         musicList: [],
-        mycomment:''
+        mycomment: ''
       }
     },
     watch: {
@@ -245,7 +245,8 @@
       },
       fileList() {
         return this.$store.state.fileList;
-      }
+      },
+
     },
     methods: {
       receiver(mode = 'reward') {
@@ -330,7 +331,9 @@
         var curValue;
         this.$prompt('请输入奖励金额', '金额', {
             confirmButtonText: '确定',
-            cancelButtonText: '取消'
+            cancelButtonText: '取消',
+            inputPattern: /^(\d*\.)?\d+$/,
+            inputErrorMessage: '金额格式不正确'
           })
           .then(({
             value
@@ -445,20 +448,26 @@
           if ((file.type == 'image' || file.type == 'images/webp')) {
             str = `<img src="${url}"/>`;
           } else {
+            // pdf文件直接点击打开
+            let strPdf = file.url.includes('.pdf')?'': `download="${file.name}"`;
+
+            // 其它文件点击下载到本地,需保证服务器存储文件与服务文件不跨域
+            // the filename that you defined will be used only if the URI of the link has the same origin of the current page.
             str =
-              `<ul class="attach-list"><li class="attach-item"  title="'点击下载 '+${file.name}"><a href="${url}" target="_blank" title="'点击下载 '+${file.name}"><i class="el-icon-document"></i> 附件${i+1} —— ${file.name}</a></li></ul>`;
+              `<ul class="attach-list"><li class="attach-item"  title="'点击下载 '+${file.name}"><a href="${url}" ${strPdf} target="_blank" title="'点击下载 '+${file.name}"><i class="el-icon-document"></i> 附件${i+1} —— ${file.name}</a></li></ul>`;
           }
           return str;
         });
         return arrStr.join(',');
       },
       postComment() {
-        this.mycomment = '<div>' + this.mycomment + this.getCommentAttach() + '</div>';
+        this.mycomment += this.getCommentAttach();
+        
         let comment = {
           rec_time: util.getNow(1),
           content: util.parseHtml(this.mycomment),
         };
-        
+
         comment = Object.assign(comment, this.commentSettings);
 
         let params = {
@@ -473,13 +482,13 @@
           emulateJSON: true
         }).then(res => {
           this.noComment = false;
-          comment.content = this.mycomment;// util.handleAttach
+          comment.content = this.mycomment; // util.handleAttach
           this.comment.push(comment);
-          console.log(comment);
+          
           this.mycomment = '';
 
           this.rtxCommentStatus();
-
+          this.$store.commit('clearFileList');
         }).catch(e => {
           console.log(e);
           this.$message({
@@ -496,7 +505,7 @@
           msg,
           title: '质量信息平台',
           delaytime: 0,
-          receiver: util.getAllReceiver()
+          receiver: this.$store.state.rtxlist.join(',')
         });
       },
       loadArticle() {
