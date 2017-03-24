@@ -9,6 +9,7 @@ const state = {
         content: '',
         title: ''
     },
+    
     // 文章预览数据
     preview: '',
     previewMode: false,

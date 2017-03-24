@@ -19,13 +19,13 @@
               <template v-if="item.datetime > now">
                 <el-badge value="新" class="item">
                   <div class="entry-title">
-                    <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
+                    <span>{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
                   </div>
                 </el-badge>
               </template>
               <template v-else>
                 <div class="entry-title">
-                  <span class="ellipsis">{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
+                  <span>{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
                 </div>
               </template>
 

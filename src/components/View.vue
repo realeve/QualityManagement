@@ -57,8 +57,8 @@
         </div>
 
         <ul class="attach-list">
-          <li class="el-upload el-upload--picture-card" v-for="(item,i) in attaches.other" :title="'点击下载 '+item.name">
-            <a :href="item.url" target="_blank" :title="'点击下载 '+item.name"><i class="el-icon-document"></i>附件{{i+1}}</a>
+          <li class="attach-item" v-for="(item,i) in attaches.other" :title="'点击下载 '+item.name">
+            <a :href="item.url" target="_blank" :title="'点击下载 '+item.name"><i class="el-icon-document"></i> 附件{{i+1}} —— {{item.name}}</a>
           </li>
         </ul>
 
@@ -94,7 +94,12 @@
             <el-button type="primary" @click="postComment">提交</el-button>
           </div>
         </div>
+        <div class="card">
+          <h3>附件管理</h3>
+          <attach :listType="'picture-card'" />
+        </div>
       </template>
+
     </div>
   </div>
 </template>
@@ -102,6 +107,7 @@
   import {
     quillEditor
   } from 'vue-quill-editor';
+  import Attach from './common/Attach';
 
   import settings from '../config/settings';
   const HOST = settings.host;
@@ -117,35 +123,28 @@
     modules: {
       toolbar: [
         ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-        //['blockquote', 'code-block'],
         ['blockquote'],
         [{
           'header': [1, 2, 3, 4, 5, 6, false]
         }],
-        //[{ 'header': 1 }, { 'header': 2 }],               // custom button values
         [{
           'list': 'ordered'
         }, {
           'list': 'bullet'
         }],
-        //[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-        //[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        //[{ 'direction': 'rtl' }],                         // text direction
         [{
           'size': ['small', false, 'large', 'huge']
-        }], // custom dropdown
+        }],
         [{
           'color': []
         }, {
           'background': []
-        }], // dropdown with defaults from theme
-        //[{ 'font': [] }],
+        }],
         [{
           'align': []
         }],
         ['clean'],
-        ['link'] // remove formatting button
-        // ['link', 'image', 'video']                         // link and image, video
+        ['link']
       ]
     }
   }
@@ -154,19 +153,20 @@
     name: 'main',
     components: {
       quillEditor,
-      MyPlayer
+      MyPlayer,
+      Attach
     },
     data() {
       return {
         article: {},
         config,
         comment: [],
-        mycomment: '',
         noComment: true,
         cartUrl: HOST + '/search/#',
         // 车号/轴号信息搜索接口
         attachList: [],
-        musicList: []
+        musicList: [],
+        mycomment:''
       }
     },
     watch: {
@@ -242,6 +242,9 @@
       },
       shouldVerify() {
         return settings.verifyUsers.includes(this.user.username);
+      },
+      fileList() {
+        return this.$store.state.fileList;
       }
     },
     methods: {
@@ -314,7 +317,7 @@
 
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台 ' + util.getNow(4),
+              title: '质量信息平台',
               delaytime: 0,
               receiver: this.receiver()
             });
@@ -340,7 +343,7 @@
             //进入下一步审批流程
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台 ' + util.getNow(4),
+              title: '质量信息平台',
               delaytime: 0,
               receiver: this.receiver('verify')
             });
@@ -433,12 +436,29 @@
           this.comment = obj.data;
         });
       },
+      getCommentAttach() {
+        this.fileList.sort((item1, item2) => item1.type - item2.type);
+
+        let arrStr = this.fileList.map((file, i) => {
+          let url = file.url.includes('http') ? file.url : settings.uploadContent + file.url;
+          let str;
+          if ((file.type == 'image' || file.type == 'images/webp')) {
+            str = `<img src="${url}"/>`;
+          } else {
+            str =
+              `<ul class="attach-list"><li class="attach-item"  title="'点击下载 '+${file.name}"><a href="${url}" target="_blank" title="'点击下载 '+${file.name}"><i class="el-icon-document"></i> 附件${i+1} —— ${file.name}</a></li></ul>`;
+          }
+          return str;
+        });
+        return arrStr.join(',');
+      },
       postComment() {
+        this.mycomment = '<div>' + this.mycomment + this.getCommentAttach() + '</div>';
         let comment = {
           rec_time: util.getNow(1),
           content: util.parseHtml(this.mycomment),
         };
-
+        
         comment = Object.assign(comment, this.commentSettings);
 
         let params = {
@@ -453,8 +473,9 @@
           emulateJSON: true
         }).then(res => {
           this.noComment = false;
-          comment.content = util.handleAttach(this.mycomment);
+          comment.content = this.mycomment;// util.handleAttach
           this.comment.push(comment);
+          console.log(comment);
           this.mycomment = '';
 
           this.rtxCommentStatus();
@@ -470,10 +491,10 @@
       // 腾讯通更新用户发送评论状态
       rtxCommentStatus() {
         let msg =
-          `${this.$store.state.user.username}对文章 [(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}] 添加了评论`;
+          `${this.$store.state.user.username}对文章[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}]添加了评论`;
         this.pushMsgByRtx({
           msg,
-          title: '质量信息平台 ' + util.getNow(4),
+          title: '质量信息平台',
           delaytime: 0,
           receiver: util.getAllReceiver()
         });
@@ -491,7 +512,7 @@
             return;
           }
           this.article = obj.data[0];
-          this.article.content = util.handleAttach(this.article.content);
+          //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
         });
       },
@@ -520,7 +541,7 @@
         } else {
           this.article = this.$store.state.preview;
           this.article.content = JSON.parse('"' + this.article.content + '"');
-          this.article.content = util.handleAttach(this.article.content);
+          //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
         }
       }
@@ -604,33 +625,31 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 100%;
     }
-    @attach-box: 80px;
-    .attach-list {
-      li {
-        margin: 10px;
-      }
-      .el-upload--picture-card {
-        line-height: 82px;
-        width: @attach-box;
-        height: @attach-box;
-      }
-    }
-    .bg-success {
-      background-color: #13CE66;
-      a {
-        color: #fff;
-      }
-    }
-    .bg-warning {
-      background-color: #F7BA2A;
-    }
-    .bg-blue {
-      background-color: #20A0FF;
-      a {
-        color: #fff;
-      }
+    ul li {
+      margin: 10px;
     }
   }
+
+  @attach-box: 60px;
+  .attach-list {
+    .attach-item {
+      display: inline-block;
+      text-align: center;
+      cursor: pointer;
+      background-color: #f1f3f5;
+      border: 1px dashed #c0ccda;
+      border-radius: 6px;
+      box-sizing: border-box;
+      width: 550px;
+      line-height: @attach-box;
+      height: @attach-box;
+      cursor: pointer; // line-height: 146px;
+      // vertical-align: top;
+      // display:flex;
+      // align-items:center;
+    }
+  }
+
 
   .article {
     min-height: 300px; //.margin-top-20;
@@ -639,15 +658,18 @@
       text-align: center;
       font-size: 30pt;
     }
+
     .sub-title {
       .font-thin;
       text-align: center;
       font-size: 12pt;
       color: @text-color;
     }
+
     .time {
       padding-left: 1.5em;
     }
+
     .content {
       text-indent: 2em;
       color: @text-color;
@@ -665,6 +687,7 @@
       border-left: 5px solid @vue-color;
       background-color: #eff;
     }
+
     .desc {
       border-top: 1px dotted #eee;
       padding: 20px 30px 30px 50px;
@@ -685,30 +708,36 @@
       display: flex;
       align-items: center;
     }
+
     .info {
       width: 90%;
       color: @text-color;
       padding: 10px 30px 10px 10px;
       text-indent: 2em;
     }
+
     blockquote {
       border-left: 5px solid #7af;
       background-color: #eef;
     }
+
     .center {
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     .user {
       width: 10%;
       min-height: 80px;
     }
+
     .img-header {
       width: 60px;
       height: 60px;
       border-radius: 50%;
     }
+
     .user-info {
       font-size: 11pt;
       font-style: italic;

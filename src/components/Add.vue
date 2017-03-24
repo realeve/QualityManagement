@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="value" :rules="rules" ref="value" label-width="100px">
+    <el-form :model = "value" :rules="rules" ref="value" label-width="100px">
       <div class="card">
         <div class="basic">
           <h3>基础信息</h3>
@@ -316,7 +316,7 @@
 
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台 ' + util.getNow(4),
+              title: '质量信息平台',
               delaytime: 0,
               receiver: util.getAllReceiver(this.$store.state.preview.title.includes('纸'))
             });

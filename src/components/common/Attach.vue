@@ -52,7 +52,7 @@
         }
       },
       needAdd2Editor() {
-        return this.$route.name == 'Add';
+        return this.$route.name == 'Add' || this.$route.name == 'View';
       },
       editorContent: {
         get() {
@@ -128,7 +128,7 @@
 
       },
       handleRemove(file) {
-        this.$store.state.fileList.forEach((item, i) => {
+        this.fileList.forEach((item, i) => {
           if (item.uid == file.uid) {
             //仅移除列表中信息，文件删除逻辑放到媒体库中管理
             this.$store.commit('removeFileItem', i);
@@ -169,7 +169,7 @@
         });
       },
       handlePreview(file) {
-        this.$store.state.fileList.forEach((item, i) => {
+        this.fileList.forEach((item, i) => {
           if (item.uid == file.uid) {
             if (this.needAdd2Editor && (file.type == 'image' || file.type == 'images/webp')) {
               this.addImg2Editor({
@@ -188,7 +188,7 @@
         file,
         idx
       }) {
-        let img = `<img src="${file.url}"/>`;
+        let img = `<img src="${settings.uploadContent+file.url}"/>`;
         this.editorContent += img;
         this.$store.commit('removeFileItem', idx);
       }
@@ -196,8 +196,33 @@
   }
 
 </script>
-<style>
+<style lang="less">
   .el-upload .el-upload-dragger {
     width: 180px;
   }
+
+  @attach-box: 60px;
+  .attach-list {
+    li {
+      margin: 10px;
+    }
+
+    .attach-item {
+      display: inline-block;
+      text-align: center;
+      cursor: pointer;
+      background-color: #f1f3f5;
+      border: 1px dashed #c0ccda;
+      border-radius: 6px;
+      box-sizing: border-box;
+      width: 550px;
+      line-height: @attach-box;
+      height: @attach-box;
+      cursor: pointer; // line-height: 146px;
+      // vertical-align: top;
+      // display:flex;
+      // align-items:center;
+    }
+  }
+
 </style>

@@ -1,152 +1,190 @@
 var options = {
-    proc: [{
-        value: '-2',
-        label: '钞纸'
+  proc: [{
+    value: '-4',
+    label: '钞纸'
+  }, {
+    value: '-3',
+    label: '辅料'
+  }, {
+    value: '-2',
+    label: '油墨'
+  }, {
+    value: '-1',
+    label: '印版'
+  }, {
+    value: '0',
+    label: '白纸数管'
+  }, {
+    value: '1',
+    label: '胶印'
+  }, {
+    value: '2',
+    label: '凹印'
+  }, {
+    value: '3',
+    label: '印码'
+  }, {
+    value: '4',
+    label: '检封'
+  }],
+  prod: [],
+  machine: [],
+  operator: [{
+    label: '工艺组',
+    options: [{
+      value: '徐东海'
     }, {
-        value: '-1',
-        label: '印版/油墨'
+      value: '陈文革'
     }, {
-        value: '0',
-        label: '白纸数管'
+      value: '钟鸣'
     }, {
-        value: '1',
-        label: '胶印'
+      value: '袁长虹'
     }, {
-        value: '2',
-        label: '凹印'
+      value: '张建军'
     }, {
-        value: '3',
-        label: '印码'
+      value: '曹娅'
     }, {
-        value: '4',
-        label: '检封'
-    }],
-    prod: [],
-    machine: [],
-    operator: [{
-        label: '工艺组',
-        options: [{
-            value: '徐东海'
-        }, {
-            value: '陈文革'
-        }, {
-            value: '钟鸣'
-        }, {
-            value: '袁长虹'
-        }, {
-            value: '张建军'
-        }, {
-            value: '曹娅'
-        }, {
-            value: '包诚'
-        }, {
-            value: '陈姝婧'
-        }, {
-            value: '李丹'
-        }, {
-            value: '杨畅'
-        }, {
-            value: '汪雄'
-        }, {
-            value: '吕从飞'
-        }]
+      value: '包诚'
     }, {
-        label: '印刷机检组',
-        options: [{
-            value: '舒粤'
-        }, {
-            value: '蒲明玥'
-        }, {
-            value: '冯诗伟'
-        }, {
-            value: '马可'
-        }, {
-            value: '李宾'
-        }, {
-            value: '徐闵'
-        }, {
-            value: '李超群'
-        }, {
-            value: '张立力'
-        }, {
-            value: '潘成'
-        }, {
-            value: '朱振华'
-        }]
+      value: '陈姝婧'
     }, {
-        label: '检封机检组',
-        options: [{
-            value: '杨林'
-        }, {
-            value: '胡新玥'
-        }, {
-            value: '金鑫'
-        }, {
-            value: '蒋荣'
-        }, {
-            value: '任礼科'
-        }]
+      value: '李丹'
     }, {
-        label: '钞纸工艺组',
-        options: [{
-            value: '陈晶'
-        }, {
-            value: '杜煜'
-        }, {
-            value: '赵锦良'
-        }]
-    }],
-    category: [{
-        value: '日常工作安排'
+      value: '杨畅'
     }, {
-        value: '质量问题发布'
+      value: '汪雄'
     }, {
-        value: '工艺质量月度工作计划'
-    }, {
-        value: '机检月度工作计划'
-    }, {
-        value: '周例会决议'
-    }, {
-        value: '司务会材料'
-    }, {
-        value: '年度项目计划'
-    }, {
-        value: '机检维护'
-    }, {
-        value: '工艺质量通知'
-    }, {
-        value: '风险隐患排查'
-    }],
-    mediaList: [{
-        label: '图片',
-        value: 'image'
-    }, {
-        label: '音频',
-        value: 'audio'
-    }, {
-        label: '视频',
-        value: 'video'
-    }, {
-        label: '其它',
-        value: 'other'
-    }],
-    mediaLoadingNums: 25,
-    menu: [{
-        label: '首页',
-        value: '/'
-    }, {
-        label: '列表',
-        value: '/list'
-    }, {
-        label: '新增',
-        value: '/add'
-    }, {
-        label: '媒体库',
-        value: '/media'
-    }, {
-        label: '搜索',
-        value: '/search'
+      value: '吕从飞'
     }]
+  }, {
+    label: '印刷机检组',
+    options: [{
+      value: '舒粤'
+    }, {
+      value: '蒲明玥'
+    }, {
+      value: '冯诗伟'
+    }, {
+      value: '马可'
+    }, {
+      value: '李宾'
+    }, {
+      value: '徐闵'
+    }, {
+      value: '李超群'
+    }, {
+      value: '张立力'
+    }, {
+      value: '潘成'
+    }, {
+      value: '朱振华'
+    }]
+  }, {
+    label: '检封机检组',
+    options: [{
+      value: '杨林'
+    }, {
+      value: '胡新玥'
+    }, {
+      value: '金鑫'
+    }, {
+      value: '蒋荣'
+    }, {
+      value: '任礼科'
+    }]
+  }, {
+    label: '综合管理及班组长',
+    options: [{
+      value: '白薇'
+    }, {
+      value: '杨洁'
+    }, {
+      value: '权净'
+    }, {
+      value: '吴运笙'
+    }, {
+      value: '蔡憬'
+    }, {
+      value: '周琳丽'
+    }, {
+      value: '吴梅'
+    }, {
+      value: '徐群英'
+    }, {
+      value: '廖迎春'
+    }]
+  }, {
+    label: '钞纸工艺组',
+    options: [{
+      value: '陈晶'
+    }, {
+      value: '杜煜'
+    }, {
+      value: '赵锦良'
+    }]
+  }, {
+    label: '物检中心',
+    options: [{
+      value: '李奎昌'
+    }, {
+      value: '李虹斌'
+    }, {
+      value: '刘方群'
+    }]
+  }],
+  category: [{
+    value: '日常工作安排'
+  },{
+    value: '党群专栏'
+  }, {
+    value: '质量问题发布'
+  }, {
+    value: '工艺质量月度工作计划'
+  }, {
+    value: '机检月度工作计划'
+  }, {
+    value: '周例会决议'
+  }, {
+    value: '司务会材料'
+  }, {
+    value: '年度项目计划'
+  }, {
+    value: '机检维护'
+  }, {
+    value: '工艺质量通知'
+  }, {
+    value: '风险隐患排查'
+  }],
+  mediaList: [{
+    label: '图片',
+    value: 'image'
+  }, {
+    label: '音频',
+    value: 'audio'
+  }, {
+    label: '视频',
+    value: 'video'
+  }, {
+    label: '其它',
+    value: 'other'
+  }],
+  mediaLoadingNums: 25,
+  menu: [{
+    label: '首页',
+    value: '/'
+  }, {
+    label: '列表',
+    value: '/list'
+  }, {
+    label: '新增',
+    value: '/add'
+  }, {
+    label: '媒体库',
+    value: '/media'
+  }, {
+    label: '搜索',
+    value: '/search'
+  }]
 }
 
 export default options

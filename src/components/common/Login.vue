@@ -107,7 +107,7 @@
         } else {          
           this.user.avatar = this.avatarContent +'Avatar_none.jpg';
         }
-      }, 300),
+      }, 400),
       init() {
         this.user = this.hisData;
         if (this.user.unLogin) {
