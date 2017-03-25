@@ -1,9 +1,9 @@
-var host = 'http://10.8.2.133'
-host = 'http://localhost'
+var host = '//10.8.2.133'
+host = '//localhost'
 
 var url = host + '/datainterface/api?ID='
 
-var rtxJmpLink = 'http://10.8.2.133:90'
+var rtxJmpLink = '//10.8.2.133:90'
 
 import rtx from './rtx'
 
