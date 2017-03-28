@@ -91,7 +91,7 @@
         <div class="card editor">
           <quill-editor :config="config" v-model="mycomment"></quill-editor>
           <div class="submit">
-            <el-button type="primary" @click="postComment" :disabled="this.mycomment==''">提交</el-button>
+            <el-button type="primary" @click="postComment" :disabled="mycomment==''">提交</el-button>
           </div>
         </div>
         <div class="card">
@@ -246,7 +246,9 @@
       fileList() {
         return this.$store.state.fileList;
       },
-
+      allReceiver() {
+        return util.getAllReceiver();
+      }
     },
     methods: {
       receiver(mode = 'reward') {
@@ -443,13 +445,13 @@
         this.fileList.sort((item1, item2) => item1.type - item2.type);
 
         let arrStr = this.fileList.map((file, i) => {
-          let url = file.url.includes('http') ? file.url : settings.uploadContent + file.url;
+          let url = file.url.includes('//') ? file.url : settings.uploadContent + file.url;
           let str;
           if ((file.type == 'image' || file.type == 'images/webp')) {
             str = `<img src="${url}"/>`;
           } else {
             // pdf文件直接点击打开
-            let strPdf = file.url.includes('.pdf')?'': `download="${file.name}"`;
+            let strPdf = file.url.includes('.pdf') ? '' : `download="${file.name}"`;
 
             // 其它文件点击下载到本地,需保证服务器存储文件与服务文件不跨域
             // the filename that you defined will be used only if the URI of the link has the same origin of the current page.
@@ -462,7 +464,7 @@
       },
       postComment() {
         this.mycomment += this.getCommentAttach();
-        
+
         let comment = {
           rec_time: util.getNow(1),
           content: util.parseHtml(this.mycomment),
@@ -484,7 +486,7 @@
           this.noComment = false;
           comment.content = this.mycomment; // util.handleAttach
           this.comment.push(comment);
-          
+
           this.mycomment = '';
 
           this.rtxCommentStatus();
@@ -505,7 +507,7 @@
           msg,
           title: '质量信息平台',
           delaytime: 0,
-          receiver: this.$store.state.rtxlist.join(',')
+          receiver: this.allReceiver //this.$store.state.rtxlist.join(',')
         });
       },
       loadArticle() {
