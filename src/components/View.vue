@@ -79,6 +79,7 @@
                 <img class="img-header" :src="item.useravatar">
               </div>
               <div class="info">
+                <el-button type="danger" icon="delete" class="float-right" v-if="user.username == item.username" @click="deleteComment(item.comment_id)"></el-button>
                 <div v-html="item.content"></div>
                 <div class="user-info float-right"><i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
               </div>
@@ -150,7 +151,7 @@
   }
 
   export default {
-    name: 'main',
+    name: 'my-view',
     components: {
       quillEditor,
       MyPlayer,
@@ -320,7 +321,7 @@
 
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台',
+              title: '质量问题管理平台',
               delaytime: 0,
               receiver: this.receiver()
             });
@@ -348,7 +349,7 @@
             //进入下一步审批流程
             this.pushMsgByRtx({
               msg,
-              title: '质量信息平台',
+              title: '质量问题管理平台',
               delaytime: 0,
               receiver: this.receiver('verify')
             });
@@ -410,10 +411,11 @@
           this.article.status = tip.status;
 
           this.$store.commit('refreshMainList', true);
-          this.$store.commit('updateneedRefreshNewsList', {
-            category: this.article.category,
-            value: true
-          })
+          // this.$store.commit('refreshNewsList', {
+          //   title: this.article.category,
+          //   data: [],
+          //   clear:true
+          // })
           this.article.status_username = this.user.username;
           this.article.status_rectime = util.getNow();
         }).catch(e => {
@@ -423,6 +425,41 @@
       closePreview() {
         this.$store.commit('enterPreview', false);
         this.$router.push('/add');
+      },
+      deleteComment(comment_id) {
+        this.$confirm('你确定要删除该条评论?', '删除评论', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let params = {
+            comment_id,
+            mainid:'comment_id',
+            tblname: 'tbl_article_comment'
+          };
+
+          let url = settings.api.delete;
+
+          this.$http.post(url, params, {
+            emulateJSON: true
+          }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            });
+            this.comment.forEach((item, i) => {
+              if (item.comment_id == comment_id) {
+                this.comment.splice(i, 1);
+              }
+            });
+          })
+
+        }).catch(e => {
+          this.$message({
+            type: 'success',
+            message: '删除失败'
+          });
+        })
       },
       loadComment() {
         let id = this.$route.params.id;
@@ -434,6 +471,7 @@
         }).then(res => {
           let obj = res.data;
           if (obj.rows == 0) {
+            this.comment = [];
             return;
           }
           this.noComment = false;
@@ -501,13 +539,17 @@
       },
       // 腾讯通更新用户发送评论状态
       rtxCommentStatus() {
+        let receiver = this.article.receiver;
+        if (typeof receiver == 'undefined') {
+          receiver = this.allReceiver;
+        }
         let msg =
           `${this.$store.state.user.username}对文章[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}]添加了评论`;
         this.pushMsgByRtx({
           msg,
-          title: '质量信息平台',
-          delaytime: 0,
-          receiver: this.allReceiver //this.$store.state.rtxlist.join(',')
+          receiver,
+          title: '质量问题管理平台',
+          delaytime: 0
         });
       },
       loadArticle() {

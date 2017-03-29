@@ -21,6 +21,14 @@
         <el-date-picker v-model="daterange" type="daterange" align="right" placeholder="选择日期范围" :picker-options="selectDateRange">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="操作人员">
+        <el-radio-group v-model="form.operator">
+          <el-radio label="0">由我发起</el-radio>
+          <el-radio label="1">由我处理</el-radio>
+          <el-radio label="2">由我关闭</el-radio>
+          <el-radio label="3">全部</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">开始搜索</el-button>
       </el-form-item>
@@ -82,6 +90,7 @@
           status: "2",
           tstart: '',
           tend: '',
+          operator: '2'
         },
         daterange: '',
         selectDateRange,
@@ -97,11 +106,11 @@
       }
     },
     computed: {
-      initStatus(){
+      initStatus() {
         let status = false;
-        if(typeof this.searchResult == 'undefined'){
+        if (typeof this.searchResult == 'undefined') {
           status = true;
-        }else if(this.searchResult.length==0){
+        } else if (this.searchResult.length == 0) {
           status = true;
         }
         return status;
@@ -113,6 +122,9 @@
         set(val) {
           this.$store.commit('setSearchResult', val);
         }
+      },
+      user() {
+        return this.$store.state.user;
       }
     },
     watch: {
@@ -146,6 +158,20 @@
         if (this.form.category.length) {
           str += `' and a.category ='${this.form.category}`;
         }
+
+        switch (this.form.operator) {
+          case "0":
+            str += `' and a.uid= '${this.user.id}`;
+            break;
+          case "1":
+            str += `' and a.operator like '%${this.user.username}%`;
+            break;
+          case "2":
+            str += `' and a.status_username like '%${this.user.username}%`;
+            break;
+          default:
+            break;
+        }
         return str;
       },
       loadMore() {
@@ -161,13 +187,13 @@
 
         if (start >= this.searchResult.length) {
           this.news.empty = true;
-          console.log('所有信息载入完毕');
         }
         this.news.isLoading = false;
       },
       onSubmit() {
         this.news.empty = false;
-        if (this.form.status == 2 && (this.form.tstart == '' || this.daterange[0] == null) && this.form.category.length +
+        if (this.form.status == 2 && this.form.operator == 3 && (this.form.tstart == '' || this.daterange[0] == null) &&
+          this.form.category.length +
           this.form.key == 0) {
           this.$message({
             message: '请选择至少一项条件',

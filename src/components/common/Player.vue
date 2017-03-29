@@ -22,8 +22,10 @@
     },
     methods: {
       init() {
-        setTimeout(()=>{
-          this.player = new APlayer({
+        // setTimeout(()=>{
+          
+        // },1000);
+        this.player = new APlayer({
             element: this.$el,
             narrow: false,
             autoplay: false,
@@ -33,7 +35,6 @@
             mode: 'random',
             music: this.music
           })
-        },1000);
       }
     },
     mounted() {

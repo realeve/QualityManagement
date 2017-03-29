@@ -72,5 +72,5 @@ SELECT top 15 a.id,a.name,(case when substring(a.type,8,4)='webp' then 'image' w
 SELECT a.ID id,a.UserName name,a.FullName username,a.set_avatar avatar FROM tblUser a order by id
 
 --文章搜索
-SELECT a.id,a.status,a.category,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM dbo.tbl_article AS a left join tblUser b on a.uid = b.id where a.content LIKE ? order by a.id desc
+SELECT a.id,a.status,a.category,a.title,isnull(b.fullName,'无') as 'user',convert(varchar,a.rec_time,120) as datetime,b.set_avatar avatar,cast(b.id as varchar)+rtrim(b.UserName) as avatarkey FROM dbo.tbl_article AS a left join tblUser b on a.uid = b.id where a.title+a.content LIKE ? order by a.id desc
 --key

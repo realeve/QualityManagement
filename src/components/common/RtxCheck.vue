@@ -6,7 +6,7 @@
       <el-checkbox v-for="item in list" :label="item.value" :key="item.value">{{item.label}}</el-checkbox>
     </el-checkbox-group>
 
-    <el-select class="push-list" v-model="pushList" size="large" multiple placeholder="请选择处理人员">
+    <el-select class="push-list" v-model="pushList" size="large" multiple placeholder="请选择消息推送人员">
       <el-option-group v-for="group in operators" :label="group.label" :key="group.label">
         <el-option v-for="item in group.options" :label="item.value" :value="item.id" :key="item.id">
         </el-option>

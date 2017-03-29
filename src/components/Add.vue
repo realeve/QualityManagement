@@ -22,7 +22,7 @@
                 <el-autocomplete class="inline-input" v-model="value.machine" :fetch-suggestions="querySearch" placeholder="请输入机台"></el-autocomplete>
               </el-form-item>
               <el-form-item label="处理人员" prop="operator">
-                <el-select v-model="value.operator"  multiple placeholder="请选择处理人员">
+                <el-select v-model="value.operator" multiple placeholder="请选择处理人员">
                   <el-option-group v-for="group in options.operator" :label="group.label" :key="group.value">
                     <el-option v-for="item in group.options" :label="item.label" :value="item.value" :key="item.value">
                     </el-option>
@@ -34,9 +34,9 @@
               </el-form-item>
             </div>
           </el-col>
-          <el-col :md="14" :sm="24" :xs="24">          
-              <h3>消息推送名单</h3>
-              <rtx-check/>
+          <el-col :md="14" :sm="24" :xs="24">
+            <h3>消息推送名单</h3>
+            <rtx-check/>
           </el-col>
         </el-row>
       </div>
@@ -309,8 +309,13 @@
           return;
         }
         let url = settings.api.insert;
+        let receiver = this.$store.state.rtxlist.join(',');
+
         //post CROS 需增加 emulateJSON:true
-        this.$http.post(url, this.$store.state.preview, {
+        //需更新article表单，增加receiver字段
+        this.$http.post(url, Object.assign(this.$store.state.preview, {
+            receiver
+          }), {
             emulateJSON: true
           })
           .then(response => {
@@ -332,18 +337,17 @@
             this.$store.commit('refreshMainList', true);
             window.localStorage.setItem('editor', '');
 
-            let msg =
-              `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
-
-            //如果标题中含有“纸”字样，推送给纸张工艺组
-
-            this.pushMsgByRtx({
-              msg,
-              title: '质量信息平台',
-              delaytime: 0,
-              receiver: this.$store.state.rtxlist.join(',')
-            });
-
+            //没有选择人员时，则不推送
+            if (receiver != '') {
+              let msg =
+                `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
+              this.pushMsgByRtx({
+                msg,
+                receiver,
+                title: '质量问题管理平台',
+                delaytime: 0
+              });
+            }
           })
           .catch(e => {
             console.log(e);
@@ -359,7 +363,8 @@
           cartno: '',
           category: '',
           content: '',
-          title: ''
+          title: '',
+          receiver: ''
         }
         this.$store.commit('clearFileList');
       },

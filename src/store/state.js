@@ -7,7 +7,8 @@ const state = {
         cartno: '',
         category: '',
         content: '',
-        title: ''
+        title: '',
+        receiver: ''
     },
 
     rtxlist: [], //添加新数据库字段

@@ -38,7 +38,8 @@ CREATE TABLE [dbo].[tbl_article] (
 [status_rectime] datetime2(7) NULL ,
 [reward] float(53) NULL ,
 [reward_status] int NULL ,
-[reward_user] varchar(15) NULL 
+[reward_user] varchar(15) NULL,
+[receiver] varchar(MAX) NULL 
 )
 
 
