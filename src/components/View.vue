@@ -426,6 +426,7 @@
       },
       loadComment() {
         let id = this.$route.params.id;
+        this.noComment = true;
         this.$http.jsonp(settings.api.commentDetail, {
           params: {
             aid: id
@@ -433,7 +434,6 @@
         }).then(res => {
           let obj = res.data;
           if (obj.rows == 0) {
-            this.noComment = true;
             return;
           }
           this.noComment = false;

@@ -30,7 +30,16 @@ var options = {
     prod: [],
     machine: [],
     operator: [{
-        label: '工艺组',
+        label: '技质部领导',
+        options: [{
+            value: '赵洪新'
+        }, {
+            value: '张楠岚'
+        }, {
+            value: '达时'
+        }]
+    }, {
+        label: '印钞工艺组',
         options: [{
             value: '徐东海'
         }, {
@@ -114,6 +123,19 @@ var options = {
             value: '廖迎春'
         }]
     }, {
+        label: '钞纸机检组',
+        options: [{
+            value: '于潇'
+        }, {
+            value: '丰锋'
+        }, {
+            value: '彭鹏'
+        }, {
+            value: '郭峰'
+        }, {
+            value: '潘成'
+        }]
+    }, {
         label: '钞纸工艺组',
         options: [{
             value: '陈晶'
@@ -138,22 +160,30 @@ var options = {
         value: '党群专栏'
     }, {
         value: '质量问题发布'
+    },{
+        value: '工艺质量检查'
     }, {
-        value: '工艺质量月度工作计划'
+        value: '工艺质量月度工作'
     }, {
-        value: '机检月度工作计划'
+        value: '机检月度工作'
     }, {
         value: '周例会决议'
     }, {
-        value: '司务会材料'
+        value: '汇报材料'
     }, {
-        value: '年度项目计划'
+        value: '年度项目'
     }, {
         value: '机检维护'
     }, {
         value: '工艺质量通知'
     }, {
         value: '风险隐患排查'
+    }, {
+        value: '安全管理'
+    }, {
+        value: '绩效管理'
+    }, {
+        value: '体系、标准运行'
     }],
     mediaList: [{
         label: '图片',

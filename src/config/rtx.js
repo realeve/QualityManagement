@@ -67,6 +67,16 @@ let rtxInfo = {
         value: '金鑫',
         id: 10880
     }],
+    pprImgVs:[{
+        value:'于潇',
+        id:10869,
+    },{
+        value:'丰锋',
+        id:10879,
+    },{
+        value:'彭鹏',
+        id:10885,
+    }],
     paper: [{
         value: '陈晶',
         id: 10871
@@ -166,10 +176,13 @@ let desc = [{
     label: '印钞机检组',
     value: 'imgVs'
 }, {
+    label: '钞纸机检组',
+    value: 'pprImgVs'
+}, {
     label: '钞纸工艺组',
     value: 'paper'
 }, {
-    label: '物理站',
+    label: '物检中心',
     value: 'physic'
 }, {
     label: '综合管理及班组长',
