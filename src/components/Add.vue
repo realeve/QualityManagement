@@ -45,12 +45,17 @@
         <el-form-item label="标题" prop="title">
           <el-input v-model="value.title" icon="edit" placeholder="请输入标题内容"></el-input>
         </el-form-item>
-        <el-form-item label="问题分类" prop="category">
-          <el-select v-model="value.category" clearable placeholder="请选择问题分类">
+        <el-form-item label="类别" prop="category">
+          <el-select v-model="value.category" clearable placeholder="请选择类别">
             <el-option v-for="(item,i) in options.category" :label="item.label" :value="item.value" :key="i">
             </el-option>
           </el-select>
         </el-form-item>
+        <transition name="custom-transition" enter-active-class="animated slideInUp" leave-active-class="animated fadeOutDown">
+          <el-form-item v-show="value.category == '质量问题发布'" label="备注" prop="remark">
+            <el-input style="width:210px;" v-model="value.remark" icon="information" placeholder="请输入备注信息"></el-input>
+          </el-form-item>
+        </transition>
         <my-editor/>
         <div class="submit">
           <el-button type="primary" @click="submitForm()">立即创建</el-button>
@@ -364,7 +369,8 @@
           category: '',
           content: '',
           title: '',
-          receiver: ''
+          receiver: '',
+          remark: ''
         }
         this.$store.commit('clearFileList');
       },

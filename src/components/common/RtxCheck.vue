@@ -28,7 +28,7 @@
     data() {
       return {
         checkAll: true,
-        checkedList: ['techLeader', 'technology'],
+        checkedList: ['techLeader', 'technology','printmonitor'],
         list: rtx.desc,
         isIndeterminate: true,
         operators: rtx.operators

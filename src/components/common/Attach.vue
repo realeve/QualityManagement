@@ -52,17 +52,28 @@
         }
       },
       needAdd2Editor() {
-        return this.$route.name == 'Add' || this.$route.name == 'View';
+        return this.routename == 'Add' || this.routename == 'View';
       },
       editorContent: {
         get() {
-          return this.$store.state.add.content;
+          if (this.routename == 'Add') {
+            return this.$store.state.add.content;
+          } else {
+            return this.$store.state.commentContent;
+          }
         },
         set(content) {
-          this.$store.commit('setArticleInfo', {
-            content
-          });
+          if (this.routename == 'Add') {
+            this.$store.commit('setAddInfo', {
+              content
+            });
+          } else {
+            this.$store.commit('setCommentContent', content);
+          }
         }
+      },
+      routename() {
+        return this.$route.name;
       }
     },
     methods: {
@@ -171,7 +182,8 @@
       handlePreview(file) {
         this.fileList.forEach((item, i) => {
           if (item.uid == file.uid) {
-            if (this.needAdd2Editor && (file.type == 'image' || file.type == 'images/webp')) {
+            if (this.needAdd2Editor && (file.type == 'image' || file.type == 'images/webp' || file.type ==
+                'image/webp')) {
               this.addImg2Editor({
                 file,
                 idx: i
@@ -188,8 +200,16 @@
         file,
         idx
       }) {
-        let img = `<img src="${settings.uploadContent+file.url}"/>`;
-        this.editorContent += img;
+        let img;
+        if (file.url.includes(HOST)) {
+          img = `<img src="${file.url}"/>`;
+        } else {
+          img = `<img src="${settings.uploadContent+file.url}"/>`;
+        }
+        if (file.type == 'image/webp') {
+          img = img.replace('/file/', '/image/');
+        }
+        this.editorContent = this.editorContent + img;
         this.$store.commit('removeFileItem', idx);
       }
     }

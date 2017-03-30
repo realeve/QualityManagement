@@ -39,7 +39,8 @@ CREATE TABLE [dbo].[tbl_article] (
 [reward] float(53) NULL ,
 [reward_status] int NULL ,
 [reward_user] varchar(15) NULL,
-[receiver] varchar(MAX) NULL 
+[receiver] varchar(MAX) NULL ,
+[remark] varchar(MAX) NULL 
 )
 
 

@@ -8,9 +8,10 @@
       </router-link>
     </div>
     <div class="entries">
-       <!--enter-class="animated tada" enter-active-class="animated tada" leave-class="animated zoomOut" leave-active-class="animated zoomOut"-->
-      <transition-group name="fade" tag="div">
-        <div v-for="(item,i) in news.data" :key="item.id">
+      <!--enter-class="animated tada" enter-active-class="animated tada" leave-class="animated zoomOut" leave-active-class="animated zoomOut"-->
+
+      <div v-for="(item,i) in news.data" :key="item.id">
+        <transition name="fade" tag="div">
           <div class="entry clearfix" @click="jump(item.url)">
             <div class="entry-screenshot float-left">
               <img class="entry-screenshot-image" :src="item.img">
@@ -39,8 +40,8 @@
               </div>
             </div>
           </div>
-        </div>
-      </transition-group>
+        </transition>
+      </div>
 
       <div v-if="!news.more" @click="loadMore" class="entry">
         <div class="loading-info" v-html="info"></div>
@@ -113,16 +114,18 @@
     cursor: pointer;
   }
 
-  .fade-enter-active,.fade-leave-active{
-    transition:all 1s;
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: all 1s;
   }
 
-  .fade-move{
-    transition:transform 1s;
+  .fade-move {
+    transition: transform 1s;
   }
 
-  .fade-enter,.fade-leave{
-    opacity:0;
-    //transform:translateY(50px);
+  .fade-enter,
+  .fade-leave {
+    opacity: 0; //transform:translateY(50px);
   }
+
 </style>

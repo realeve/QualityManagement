@@ -51,6 +51,9 @@ function parseHtml (html) {
   if (html === '') {
     return html
   }
+  
+  html = html.replace(/\<\/blockquote\>\<blockquote\>/g,'<br>');
+
   // special chacters convert,see from http://stackoverflow.com/questions/19176024/how-to-escape-special-characters-in-building-a-json-string
   html = JSON.stringify(html)
   // 转换后应去除首尾引号

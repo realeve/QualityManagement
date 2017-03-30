@@ -14,6 +14,7 @@
         <p>类型：{{article.category}}</p>
         <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
         <p v-show="article.status_username!='' && !previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
+        <p v-show="article.remark!=''">备注：{{article.remark}}</p>
       </blockquote>
       <div v-if="previewMode" class="submit">
         <el-button type="success" @click="closePreview">返回编辑</el-button>
@@ -101,6 +102,17 @@
         </div>
       </template>
 
+      <el-dialog title="原因确认" v-model="dialogFormVisible">
+        <el-form :model="article.remark">
+          <el-form-item label="问题原因" :label-width="'120px'">
+            <el-input v-model="article.remark" placeholder="请输入问题原因，如：机检系统异常，胶印质量、凹印质量、印码质量、成像异常等" auto-complete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="updateRemark">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -167,7 +179,7 @@
         // 车号/轴号信息搜索接口
         attachList: [],
         musicList: [],
-        mycomment: ''
+        dialogFormVisible: false
       }
     },
     watch: {
@@ -176,6 +188,9 @@
       }
     },
     computed: {
+      needUpdateRemark(){
+        return this.article.category == '机检异常品' || this.article.category == '质量问题发布'
+      },
       showDonate() {
         return this.article.category == '风险隐患排查';
       },
@@ -249,6 +264,14 @@
       },
       allReceiver() {
         return util.getAllReceiver();
+      },
+      mycomment: {
+        get() {
+          return this.$store.state.commentContent;
+        },
+        set(val) {
+          this.$store.commit('setCommentContent', val);
+        }
       }
     },
     methods: {
@@ -376,9 +399,37 @@
           status_username: this.user.username,
           status_rectime: util.getNow()
         };
+
+        if (this.needUpdateRemark) {
+          params.utf2gbk.push('remark');
+          params.remark = this.article.remark;
+        }
+
         return this.$http.jsonp(settings.api.update, {
           params
         });
+      },
+      updateRemark() {
+        this.dialogFormVisible = false;
+        this.changeArticleStatus(1)
+          .then(() => {
+            this.handleArticleClose({
+              message: '关闭成功!',
+              status: 1
+            });
+          });
+      },
+      handleArticleClose(tip) {
+        this.$message({
+          type: 'success',
+          message: tip.message
+        });
+        this.article.status = tip.status;
+
+        this.$store.commit('refreshMainList', true);
+
+        this.article.status_username = this.user.username;
+        this.article.status_rectime = util.getNow();
       },
       closeArticle() {
         let tip;
@@ -395,6 +446,10 @@
             message: '关闭成功!',
             status: 1
           };
+          if (this.needUpdateRemark) {
+            this.dialogFormVisible = true;
+            return;
+          }
         }
 
         this.$confirm(tip.title, '提示', {
@@ -404,20 +459,7 @@
         }).then(() => {
           return this.changeArticleStatus(tip.status);
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: tip.message
-          });
-          this.article.status = tip.status;
-
-          this.$store.commit('refreshMainList', true);
-          // this.$store.commit('refreshNewsList', {
-          //   title: this.article.category,
-          //   data: [],
-          //   clear:true
-          // })
-          this.article.status_username = this.user.username;
-          this.article.status_rectime = util.getNow();
+          this.handleArticleClose(tip);
         }).catch(e => {
           console.log(e);
         });
@@ -434,7 +476,7 @@
         }).then(() => {
           let params = {
             comment_id,
-            mainid:'comment_id',
+            mainid: 'comment_id',
             tblname: 'tbl_article_comment'
           };
 
@@ -703,7 +745,6 @@
     }
   }
 
-
   .article {
     min-height: 300px; //.margin-top-20;
     .title {
@@ -732,13 +773,6 @@
       padding-bottom: 10px;
       max-width: 100%;
       font-size: 1.3em;
-    }
-
-    blockquote {
-      color: @text-color;
-      padding: 10px 30px 10px 10px;
-      border-left: 5px solid @vue-color;
-      background-color: #eff;
     }
 
     .desc {
@@ -772,6 +806,7 @@
     blockquote {
       border-left: 5px solid #7af;
       background-color: #eef;
+      font-size: 16pt;
     }
 
     .center {

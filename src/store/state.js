@@ -8,9 +8,10 @@ const state = {
         category: '',
         content: '',
         title: '',
-        receiver: ''
+        receiver: '',
+        remark:''
     },
-
+    commentContent:'',
     rtxlist: [], //添加新数据库字段
 
     // 文章预览数据
