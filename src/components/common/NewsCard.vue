@@ -9,7 +9,6 @@
     </div>
     <div class="entries">
       <!--enter-class="animated tada" enter-active-class="animated tada" leave-class="animated zoomOut" leave-active-class="animated zoomOut"-->
-
       <div v-for="(item,i) in news.data" :key="item.id">
         <transition name="fade" tag="div">
           <div class="entry clearfix" @click="jump(item.url)">

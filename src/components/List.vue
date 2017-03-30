@@ -10,6 +10,7 @@
 <script>
   import MyCard from './common/NewsCard';
   import settings from '../config/settings';
+
   const HOST = settings.host;
   export default {
     name: 'list',
@@ -63,21 +64,19 @@
         this.$http.jsonp(url, {
           params
         }).then(res => {
-          this.news.isLoading = false;
           let obj = res.data;
+          
           if (0 == obj.rows) {
-            this.news.empty = true;
             if (typeof aid == 'undefined') {
               this.news.data = [];
             }
+            this.news.isLoading = false;
+            this.news.empty = true;
             return;
           }
-          this.news.empty = false;
 
           let avatar;
-          let data = [];
-
-          data = obj.data.map(item => {
+          let data = obj.data.map(item => {
             avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
             return Object.assign(item, {
               img: HOST + '/demo/avatar/' + avatar + '.jpg',
@@ -86,16 +85,24 @@
           });
 
           this.news.data = [...this.news.data, ...data]
-
           //保存当前新闻列表状态，防止在查看新闻后回退时列表数据为空;
           this.$store.commit('refreshNewsList', {
             title: this.category,
             data
           });
-          this.$store.commit('recordMaxListId', {
-            title: this.category,
-            id: obj.data[obj.data.length - 1].id
-          });
+
+          if (typeof obj.data[obj.data.length - 1].id != 'undefined') {
+            this.$store.commit('recordMaxListId', {
+              title: this.category,
+              id: obj.data[obj.data.length - 1].id
+            });
+            this.news.empty = false;
+          } else {
+            this.news.empty = true;
+          }
+
+          this.news.isLoading = false;
+
         }).catch(e => {
           this.news.isLoading = false;
           console.info(e);
