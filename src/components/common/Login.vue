@@ -101,11 +101,13 @@
           return;
         }
         let user = this.userList.filter(res => res.name.includes(username))[0];
-        this.user = Object.assign(this.user,user);
+        this.user = Object.assign(this.user, user);
         if (user && user.avatar == 1) {
-          this.user.avatar = this.avatarContent + btoa(user.id + user.name) + '.jpg';  
-        } else {          
-          this.user.avatar = this.avatarContent +'Avatar_none.jpg';
+          this.user.avatar = this.avatarContent + btoa(user.id + user.name) + '.jpg';
+        } else {
+          if (this.user.avatar == '0') {
+            this.user.avatar = this.avatarContent + 'Avatar_none.jpg';
+          }
         }
       }, 600),
       init() {
@@ -117,7 +119,7 @@
     },
     watch: {
       "user.name" () {
-        if(this.user.name==''){
+        if (this.user.name == '') {
           this.loadUserList();
         }
         this.setAvatar();

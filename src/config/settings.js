@@ -1,5 +1,4 @@
-var host = '//10.8.2.133'
-host = '//localhost'
+var host = (process.env.NODE_ENV == 'development') ? '//localhost' : '//10.8.2.133'
 
 var url = host + '/datainterface/api?ID='
 
