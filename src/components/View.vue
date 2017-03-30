@@ -103,7 +103,7 @@
       </template>
 
       <el-dialog title="原因确认" v-model="dialogFormVisible">
-        <el-form :model="article.remark">
+        <el-form :model="article">
           <el-form-item label="问题原因" :label-width="'120px'">
             <el-input v-model="article.remark" placeholder="请输入问题原因，如：机检系统异常，胶印质量、凹印质量、印码质量、成像异常等" auto-complete="off"></el-input>
           </el-form-item>
