@@ -13,10 +13,10 @@
       <blockquote>本问题由 {{article.operator}} 确认
         <p>类型：{{article.category}}</p>
         <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
-        <p v-show="article.status_username!='' && !previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
+        <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
         <p v-show="article.remark!=''">备注：{{article.remark}}</p>
       </blockquote>
-      <div v-if="previewMode" class="submit">
+      <div v-if="1 == previewMode" class="submit">
         <el-button type="success" @click="closePreview">返回编辑</el-button>
       </div>
       <div v-else class="article-status">
@@ -24,16 +24,21 @@
         <el-switch v-model="status" on-color="#13ce66" off-color="#ff4949" on-text="已关闭" off-text="未关闭" :width="72" @change="closeArticle">
         </el-switch>
       </div>
+      <div v-if="0 == previewMode" class="submit reedit">
+        <el-button type="success" @click="edit">重新编辑</el-button>
+      </div>
       <div v-if="showDonate" class="donate">
         <div class="verify-reward">
-          <el-button v-if="shouldReward && article.reward==''" type="danger" size="large" @click="donate">发起奖励</el-button>
+          <el-button v-if="shouldReward && (article.reward==''|| article.reward_status==0)" type="danger" size="large" @click="donate">发起奖励</el-button>
         </div>
         <template v-if="article.reward">
           <div class="verify-reward">
-            <el-button v-if="shouldVerify && article.reward_status==0" type="danger" size="large" @click="passDonate(1)">通过奖励</el-button>
-            <el-button v-if="shouldVerify && article.reward_status==0" type="warning" size="large" @click="passDonate(-1)">拒绝通过</el-button>
+            <el-button v-if="shouldVerify && article.reward_status==1" type="danger" size="large" @click="passDonate(1)">通过奖励</el-button>
+            <el-button v-if="shouldVerify && article.reward_status==1" type="warning" size="large" @click="passDonate(-1)">拒绝通过</el-button>
           </div>
-          <p v-show="article.reward_status>0 || (article.reward_status>-1 && shouldVerify)">本文由{{article.reward_user}}发起了
+          <p v-show=" (article.reward_status==1||article.reward_status==0) && shouldVerify">本文由{{article.reward_user}}发起了 ￥
+            <el-input style="width:50px;" v-model="article.reward"></el-input> 元的奖励</p>
+          <p v-show="article.reward_status == 2">本文由{{article.reward_user}}发起了
             <el-tag type="danger">￥{{article.reward}}</el-tag> 元的奖励</p>
         </template>
       </div>
@@ -65,7 +70,7 @@
 
       </div>
     </div>
-    <div v-show="!previewMode">
+    <div v-show="0 == previewMode">
       <div v-show="!noComment">
         <h2 class="font-thin">补充说明</h2>
         <div class="card comment">
@@ -188,7 +193,7 @@
       }
     },
     computed: {
-      needUpdateRemark(){
+      needUpdateRemark() {
         return this.article.category == '机检异常品' || this.article.category == '质量问题发布'
       },
       showDonate() {
@@ -203,8 +208,21 @@
       user() {
         return this.$store.state.user;
       },
-      previewMode() {
-        return this.$store.state.previewMode;
+      previewMode: {
+        get() {
+          return this.$store.state.previewMode;
+        },
+        set(val) {
+          this.$store.commit('enterPreview', val);
+        }
+      },
+      preview: {
+        get() {
+          return this.$store.state.preview;
+        },
+        set(val) {
+          this.$store.commit('setPreviewData', val);
+        }
       },
       commentSettings() {
         return {
@@ -292,11 +310,14 @@
           params
         }).then(response => this.$message.success(response.data.msg))
       },
-      verifyDonate(val) {
+      verifyDonate(val, reward) {
+        this.article.reward = reward;
+        this.article.reward_status = val;
         var params = {
           tblname: 'tbl_article',
           id: this.article.id,
-          reward_status: val
+          reward_status: val,
+          reward
         };
         return this.$http.jsonp(settings.api.update, {
           params
@@ -306,7 +327,7 @@
         var params = {
           tblname: 'tbl_article',
           id: this.article.id,
-          reward_status: 0,
+          reward_status: 1,
           utf2gbk: ['reward_user'],
           reward_user: this.user.username,
           reward
@@ -317,19 +338,23 @@
       },
       passDonate(val) {
         let tip = {};
+        let reward;
         if (val == 1) {
           tip.text = '该操作将通过该奖励申请，是否继续？';
           tip.title = '通过奖励'
+          val = 2;
+          reward = this.article.reward;
         } else {
           tip.text = '该操作将拒绝该奖励申请，是否继续？';
-          tip.title = '拒绝奖励'
+          tip.title = '拒绝奖励';
+          reward = 0;
         }
         this.$confirm(tip.text, tip.title, {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           })
-          .then(() => this.verifyDonate(val))
+          .then(() => this.verifyDonate(val, reward))
           .then(() => {
             this.$message({
               type: 'success',
@@ -359,7 +384,8 @@
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             inputPattern: /^(\d*\.)?\d+$/,
-            inputErrorMessage: '金额格式不正确'
+            inputErrorMessage: '金额格式不正确',
+            inputValue: this.article.reward
           })
           .then(({
             value
@@ -384,7 +410,7 @@
             });
             this.article.reward_user = this.user.username;
             this.article.reward = curValue;
-            this.article.reward_status = 0;
+            this.article.reward_status = 1;
           })
           .catch((e) => {
             console.log(e);
@@ -625,19 +651,34 @@
           this.attachList = obj.data;
         });
       },
+      edit() {
+        this.preview = this.article;
+        this.$router.push('/edit/' + this.article.id);
+        // 进入编辑模式
+        this.previewMode = 2;
+      },
       init() {
-        if (!this.previewMode) {
+        // 预览模式
+        if (1 == this.previewMode) {
+
+          this.article = this.preview;
+          this.article.content = JSON.parse('"' + this.article.content + '"');
+          //this.article.content = util.handleAttach(this.article.content);
+          this.loadAttachList();
+
+        } else {
           if ('preview' == this.$route.params.id) {
             this.$router.push('/add');
             return;
           }
+
+          // 从编辑界面返回时，重置标志位
+          if (2 == this.previewMode) {
+            this.previewMode = 0;
+          }
+
           this.loadArticle();
           this.loadComment();
-        } else {
-          this.article = this.$store.state.preview;
-          this.article.content = JSON.parse('"' + this.article.content + '"');
-          //this.article.content = util.handleAttach(this.article.content);
-          this.loadAttachList();
         }
       }
     },
@@ -680,6 +721,13 @@
     .margin-top-20;
     display: flex;
     justify-content: flex-end;
+  }
+
+  .reedit {
+    justify-content: flex-start;
+    a {
+      color: #fff;
+    }
   }
 
   .donate {

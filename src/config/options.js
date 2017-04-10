@@ -30,7 +30,7 @@ var options = {
   prod: [],
   machine: [],
   operator: [{
-    label: '技质部领导',
+    label: '技质部',
     options: [{
       value: '赵洪新'
     }, {
@@ -49,6 +49,10 @@ var options = {
     }, {
       value: '袁长虹'
     }, {
+      value: '杨晓娟'
+    }, {
+      value: '杨智勇'
+    }, {
       value: '张建军'
     }, {
       value: '曹娅'
@@ -62,6 +66,8 @@ var options = {
       value: '杨畅'
     }, {
       value: '汪雄'
+    }, {
+      value: '杨智勇'
     }, {
       value: '吕从飞'
     }]
@@ -152,6 +158,15 @@ var options = {
       value: '李虹斌'
     }, {
       value: '刘方群'
+    }]
+  }, {
+    label: '设备管理部',
+    options: [{
+      value: '王昌明'
+    }, {
+      value: '周晓平'
+    }, {
+      value: '谢其德'
     }]
   }],
   category: [{

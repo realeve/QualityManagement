@@ -90,7 +90,7 @@
           status: "2",
           tstart: '',
           tend: '',
-          operator: '2'
+          operator: '0'
         },
         daterange: '',
         selectDateRange,

@@ -2249,6 +2249,15 @@ body {
   margin: 15px auto;
 }
 
+.article .content .remark,.article .content blockquote{
+  text-indent: 0pt;
+  font-size: 15px;
+  padding:5px 80px 5px 5px;
+  max-width:700px;
+  border-left-color: #ff4949;
+  background-color:rgba(255,73,73,0.15);
+}
+
 blockquote {
   color: #5e6d82;
   padding: 10px 30px 10px 10px;

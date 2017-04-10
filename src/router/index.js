@@ -39,6 +39,10 @@ export default new Router({
     name: 'Add',
     component: Add
   }, {
+    path: '/edit/:id',
+    name: 'Edit',
+    component: Add
+  }, {
     path: '/view/:id',
     name: 'View',
     component: View

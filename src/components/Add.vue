@@ -52,15 +52,20 @@
           </el-select>
         </el-form-item>
         <transition name="custom-transition" enter-active-class="animated slideInUp" leave-active-class="animated fadeOutDown">
-          <el-form-item v-show="value.category == '质量问题发布'" label="备注" prop="remark">
-            <el-input style="width:210px;" v-model="value.remark" icon="information" placeholder="请输入备注信息"></el-input>
+          <el-form-item v-if="value.category == '质量问题发布'" :label="infoTips.text" prop="remark">
+            <el-input style="width:210px;" v-model="value.remark" icon="information" :placeholder="infoTips.placeholder"></el-input>
+          </el-form-item>
+        </transition>
+        <transition name="custom-transition" enter-active-class="animated slideInUp" leave-active-class="animated fadeOutDown">
+          <el-form-item v-if="value.category == '风险隐患排查'" :label="infoTips.text" prop="remark">
+            <el-input style="width:210px;" v-model="value.reward" icon="information" :placeholder="infoTips.placeholder"></el-input>
           </el-form-item>
         </transition>
         <my-editor/>
         <div class="submit">
-          <el-button type="primary" @click="submitForm()">立即创建</el-button>
-          <el-button @click="preview()">预览</el-button>
-          <el-button @click="resetForm">重置</el-button>
+          <el-button type="primary" @click="submitForm()">{{createText}}</el-button>
+          <el-button v-show="previewMode == 0" @click="enterPreview()">预览</el-button>
+          <el-button v-show="previewMode == 0" @click="resetForm">重置</el-button>
         </div>
       </div>
     </el-form>
@@ -123,6 +128,30 @@
       }
     },
     computed: {
+      infoTips() {
+        if (this.value.category == '质量问题发布') {
+          return {
+            text: '备注',
+            placeholder: '请输入备注信息',
+            value: ''
+          }
+        } else if (this.value.category == '风险隐患排查') {
+
+          if (this.previewMode != 2) {
+            this.value.reward = 5;
+            this.value.reward_status = 1;
+            this.value.reward_user = this.$store.state.user.username;
+          }
+
+          return {
+            text: '奖励金额',
+            placeholder: '请输入奖励金额'
+          }
+        }
+      },
+      createText() {
+        return (this.previewMode == 0) ? '立即创建' : '更新数据';
+      },
       procId() {
         let proc = this.$store.state.add.proc;
         let id;
@@ -160,6 +189,25 @@
         },
         set(val) {
           return this.$store.commit('setFileList', val);
+        }
+      },
+      articleId() {
+        return this.$route.params.id;
+      },
+      previewMode: {
+        get() {
+          return this.$store.state.previewMode;
+        },
+        set(val) {
+          this.$store.commit('enterPreview', val);
+        }
+      },
+      preview: {
+        get() {
+          return this.$store.state.preview;
+        },
+        set(val) {
+          this.$store.commit('setPreviewData', val);
         }
       }
     },
@@ -261,7 +309,7 @@
 
         let params = {
           tblname: 'tbl_article',
-          utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc'],
+          utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user','status_username'],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
           rec_time: util.getNow(1),
           attach_list: this.attachList
@@ -270,21 +318,28 @@
         let operator = this.value.operator.toString();
 
         params = Object.assign(params, this.value);
+
+        if (this.previewMode == 2) {
+          params.utf2gbk = ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user'];
+          this.value.content +=
+            `<blockquote class="remark">备注：${this.$store.state.user.username} 在 ${util.getNow(1)} 更新本消息</blockquote>`;
+        }
+
         params = Object.assign(params, {
           proc: this.value.proc,
           operator,
           content: util.parseHtml(this.value.content)
         });
 
-        this.$store.commit('setPreviewData', params);
+        this.preview = params;
         return true;
       },
-      preview() {
+      enterPreview() {
         if (!this.getParams()) {
           return;
         }
-        this.$store.commit('enterPreview', true);
-
+        // this.$store.commit('enterPreview', true);
+        this.previewMode = 1;
         this.$router.push('/view/preview');
       },
       updateAttachArticleId(article_id) {
@@ -313,12 +368,32 @@
         if (!this.getParams()) {
           return;
         }
-        let url = settings.api.insert;
+
+        let url = this.previewMode == 0 ? settings.api.insert : settings.api.update;
+        let submitData = Object.assign({}, this.preview);
+        submitData.rec_time = submitData.rec_time.substr(0,19);
+        submitData.status_rectime = submitData.status_rectime.substr(0,19);
+        if (this.previewMode == 2) {
+          Reflect.deleteProperty(submitData, 'rec_time');
+          Reflect.deleteProperty(submitData, 'status_rectime');
+          Reflect.deleteProperty(submitData, 'user');
+          Reflect.deleteProperty(submitData, 'uid');
+          Reflect.deleteProperty(submitData, 'status');
+          Reflect.deleteProperty(submitData, 'status_username');
+          Reflect.deleteProperty(submitData, 'reward');
+          Reflect.deleteProperty(submitData, 'reward_status');
+        } else {
+          Reflect.deleteProperty(submitData, 'id');
+          Reflect.deleteProperty(submitData, 'user');
+          submitData.status_username='';
+        }
+        Reflect.deleteProperty(submitData, 'datetime');
+
         let receiver = this.$store.state.rtxlist.join(',');
 
         //post CROS 需增加 emulateJSON:true
         //需更新article表单，增加receiver字段
-        this.$http.post(url, Object.assign(this.$store.state.preview, {
+        this.$http.post(url, Object.assign(submitData, {
             receiver
           }), {
             emulateJSON: true
@@ -333,46 +408,56 @@
               this.updateAttachArticleId(res.id);
               //提交后重置数据
               this.resetForm();
+              if (this.previewMode == 2) {
+                this.$router.push('/view/' + submitData.id);
+              } else {
+                this.$router.push('/view/' + res.id);
+              }
+              //没有选择人员时，则不推送
+              if (receiver != '' && this.previewMode == 0) {
+                let msg =
+                  `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
+                this.pushMsgByRtx({
+                  msg,
+                  receiver,
+                  title: '质量问题管理平台',
+                  delaytime: 0
+                });
+              }
+              this.previewMode == 0;
             } else {
               this.$message({
                 message: '数据添加失败',
                 type: 'error'
               });
             }
+
             this.$store.commit('refreshMainList', true);
             window.localStorage.setItem('editor', '');
-
-            //没有选择人员时，则不推送
-            if (receiver != '') {
-              let msg =
-                `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
-              this.pushMsgByRtx({
-                msg,
-                receiver,
-                title: '质量问题管理平台',
-                delaytime: 0
-              });
-            }
           })
           .catch(e => {
             console.log(e);
           })
+
       },
       resetForm(formName = 'value') {
         //this.$store.commit('resetAddInfo');
         this.value = {
-          prod: '',
-          proc: '',
-          machine: '',
-          operator: [],
-          cartno: '',
-          category: '',
-          content: '',
-          title: '',
-          receiver: '',
-          remark: ''
-        }
-        this.$store.commit('clearFileList');
+            prod: '',
+            proc: '',
+            machine: '',
+            operator: [],
+            cartno: '',
+            category: '',
+            content: '',
+            title: '',
+            receiver: '',
+            remark: '',
+            reward: 5,
+            reward_status: 0,
+            reward_user: ''
+          },
+          this.$store.commit('clearFileList');
       },
       convertFromMedia() {
         if (typeof this.fileList != 'undefined' && this.fileList.length) {
@@ -389,20 +474,27 @@
     },
     created() {
       this.loadProd();
-      this.$store.commit('enterPreview', false);
+      if (this.previewMode == 1) {
+        this.$store.commit('enterPreview', false);
+      }
       this.convertFromMedia();
       //this.$store.commit('clearFileList');
+    },
+    activated() {
+      if (this.previewMode == 2) {
+        this.value = this.preview;
+        this.value.operator = this.preview.operator.split(',');
+      }
     }
   }
 
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style lang="less" scoped>
   h3,
   h4 {
     font-weight: 400;
   }
-
 
   .margin-top-20 {
     margin-top: 20px;

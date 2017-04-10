@@ -38,6 +38,9 @@ let rtxInfo = {
   }, {
     value: '张建军',
     id: 10875
+  }, {
+    value: '杨智勇',
+    id: 10741
   }],
   imgVs: [{
     value: '徐闵',
@@ -97,7 +100,7 @@ let rtxInfo = {
     value: '刘方群',
     id: 10870
   }],
-  printmonitor: [ {
+  printmonitor: [{
     value: '权净',
     id: 10894
   }, {
@@ -170,6 +173,9 @@ let rtxInfo = {
     id: 11122
   }],
   prodLeader: [{
+    value: '刘乾军',
+    id: 10905
+  }, {
     value: '朱江',
     id: 10929
   }, {
@@ -178,6 +184,19 @@ let rtxInfo = {
   }, {
     value: '刘军',
     id: 10737
+  }, {
+    value: '黄莉',
+    id: 10651
+  }],
+  machine: [{
+    value: '王昌明',
+    id: 11079
+  }, {
+    value: '周晓平',
+    id: 11087
+  }, {
+    value: '谢其德',
+    id: 11083
   }]
 }
 
@@ -187,6 +206,9 @@ let desc = [{
 }, {
   label: '制作部领导',
   value: 'prodLeader'
+}, {
+  label: '设备部门',
+  value: 'machine'
 }, {
   label: '印钞工艺组',
   value: 'technology'
@@ -220,4 +242,8 @@ let operators = desc.map(item => {
   }
 })
 
-export default { rtxInfo, desc, operators}
+export default {
+  rtxInfo,
+  desc,
+  operators
+}
