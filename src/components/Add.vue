@@ -372,7 +372,10 @@
         let url = this.previewMode == 0 ? settings.api.insert : settings.api.update;
         let submitData = Object.assign({}, this.preview);
         submitData.rec_time = submitData.rec_time.substr(0,19);
-        submitData.status_rectime = submitData.status_rectime.substr(0,19);
+
+        if(Reflect.has(submitData,'submitData')){
+          submitData.status_rectime = submitData.status_rectime.substr(0,19);
+        }        
         if (this.previewMode == 2) {
           Reflect.deleteProperty(submitData, 'rec_time');
           Reflect.deleteProperty(submitData, 'status_rectime');
