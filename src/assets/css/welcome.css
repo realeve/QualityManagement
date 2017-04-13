@@ -2241,7 +2241,7 @@ body {
 
 .article .content img {
   border: 0;
-  max-width: 50%;
+  max-width: 80%;
   background: rgba(255, 255, 255, 0.12);
   border: 4px solid rgba(255, 255, 255, 0.82);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
