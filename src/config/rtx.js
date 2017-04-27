@@ -89,6 +89,24 @@ let rtxInfo = {
   }, {
     value: '赵锦良',
     id: 10858
+  }, {
+    value: '李政',
+    id: 10841
+  }, {
+    value: '王梅',
+    id: 11130
+  }, {
+    value: '张宁',
+    id: 11131
+  }, {
+    value: '罗克',
+    id: 11132
+  }, {
+    value: '黄凯',
+    id: 10775
+  }, {
+    value: '林莉',
+    id: 10779
   }],
   physic: [{
     value: '李奎昌',
@@ -153,6 +171,12 @@ let rtxInfo = {
     id: 11122
   }],
   verify: [{
+    value: '袁长虹',
+    id: 10863
+  }, {
+    value: '陈晶',
+    id: 10871
+  }, {
     value: '张楠岚',
     id: 10650
   }, {
@@ -173,6 +197,9 @@ let rtxInfo = {
     id: 11122
   }],
   prodLeader: [{
+    value: '杨文群',
+    id: 10907
+  }, {
     value: '刘乾军',
     id: 10905
   }, {
@@ -187,6 +214,22 @@ let rtxInfo = {
   }, {
     value: '黄莉',
     id: 10651
+  }],
+  paperProdLeader: [{
+    value: '杨帆',
+    id: 11118
+  }, {
+    value: '陈强',
+    id: 11120
+  }, {
+    value: '赵永康',
+    id: 10770
+  }, {
+    value: '张德云',
+    id: 10780
+  }, {
+    value: '马仕全',
+    id: 10778
   }],
   machine: [{
     value: '王昌明',
@@ -204,10 +247,13 @@ let desc = [{
   label: '技质领导',
   value: 'techLeader'
 }, {
-  label: '制作部领导',
+  label: '印钞领导',
   value: 'prodLeader'
 }, {
-  label: '设备部门',
+  label: '钞纸领导',
+  value: 'paperProdLeader'
+}, {
+  label: '设备管理部',
   value: 'machine'
 }, {
   label: '印钞工艺组',
