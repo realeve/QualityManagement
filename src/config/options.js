@@ -198,7 +198,7 @@ var options = {
   }, {
     value: '机检维护'
   }, {
-    value: '风险隐患排查'
+    value: '工艺质量隐患排查'
   }, {
     value: '项目管理'
   }, {

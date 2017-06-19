@@ -6,7 +6,7 @@
         {{article.user}}
         <span class="time">{{article.datetime}}</span>
         <p>
-          {{article.prod}} • {{article.proc}} • {{article.machine}}
+          {{article.prod}} • {{article.proc}} • {{article.machine}} (阅读数:{{article.readnum}})
         </p>
       </h3>
       <div class="content" v-html="article.content"></div>
@@ -597,6 +597,7 @@
 
           this.rtxCommentStatus();
           this.$store.commit('clearFileList');
+          this.addCommentNum();
         }).catch(e => {
           console.log(e);
           this.$message({
@@ -635,6 +636,7 @@
           this.article = obj.data[0];
           //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
+          this.addReadNum();
         });
       },
       loadAttachList() {
@@ -650,6 +652,26 @@
           }
           this.attachList = obj.data;
         });
+      },
+      addReadNum() {
+        if (process.env.NODE_ENV != 'development') {
+          this.$http.jsonp(settings.api.readnum, {
+            params: {
+              aid: this.article.id,
+              aid2: this.article.id
+            }
+          })
+        }
+      },
+      addCommentNum() {
+        if (process.env.NODE_ENV != 'development') {
+          this.$http.jsonp(settings.api.commentnum, {
+            params: {
+              aid: this.article.id,
+              aid2: this.article.id
+            }
+          })
+        }
       },
       edit() {
         this.preview = this.article;
@@ -678,7 +700,7 @@
           }
 
           this.loadArticle();
-          this.loadComment();
+          this.loadComment();          
         }
       }
     },

@@ -31,8 +31,10 @@
 
               <div class="entry-meta">
                 <div class="action entry-username">{{item.user}}</div>
-                <div class="action"> ·</div>
+                <div class="action">•</div>
                 <div class="action">{{item.datetime}}</div>
+                <div class="action">•</div>
+                <div class="action">{{item.readnum}}</div>
                 <div class="action">
                   <el-tag type="danger" v-if="0 == item.status">未完成</el-tag>
                 </div>
@@ -126,5 +128,7 @@
   .fade-leave {
     opacity: 0; //transform:translateY(50px);
   }
-
+  .welcome .entry-meta .action{
+    margin-right:.1em;
+  }
 </style>

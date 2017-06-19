@@ -1,0 +1,4 @@
+质量控制中心	文章阅读量记录	update tbl_article set readnum=(select (ISNULL(readnum,0))+1 where id=1) where id = ?	aid
+ID474
+质量控制中心	文章评论数	update tbl_article set commentnum=(select (ISNULL(commentnum,0))+1 where id=1) where id = ?	aid
+ID475
