@@ -57,7 +57,7 @@
           </el-form-item>
         </transition>
         <transition name="custom-transition" enter-active-class="animated slideInUp" leave-active-class="animated fadeOutDown">
-          <el-form-item v-if="value.category == '风险隐患排查'" :label="infoTips.text" prop="remark">
+          <el-form-item v-if="value.category == '工艺质量隐患排查'" :label="infoTips.text" prop="remark">
             <el-input style="width:210px;" v-model="value.reward" icon="information" :placeholder="infoTips.placeholder"></el-input>
           </el-form-item>
         </transition>
@@ -135,7 +135,7 @@
             placeholder: '请输入备注信息',
             value: ''
           }
-        } else if (this.value.category == '风险隐患排查') {
+        } else if (this.value.category == '工艺质量隐患排查') {
 
           if (this.previewMode != 2) {
             this.value.reward = 5;
