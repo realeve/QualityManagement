@@ -69,6 +69,24 @@ let rtxInfo = {
   }, {
     value: '金鑫',
     id: 10880
+  }, {
+    value: '张立力',
+    id: 11161
+  }, {
+    value: '潘成',
+    id: 11162
+  }, {
+    value: '冯诗伟',
+    id: 11165
+  }, {
+    value: '任礼科',
+    id: 11166
+  }, {
+    value: '蒋荣',
+    id: 11167
+  }, {
+    value: '朱振华',
+    id: 11168
   }],
   pprImgVs: [{
     value: '于潇',
@@ -79,6 +97,12 @@ let rtxInfo = {
   }, {
     value: '彭鹏',
     id: 10885
+  }, {
+    value: '王严',
+    id: 11163
+  }, {
+    value: '郭峰',
+    id: 11164
   }],
   paper: [{
     value: '陈晶',
