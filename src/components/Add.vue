@@ -42,9 +42,6 @@
       </div>
       <div class="card">
         <h3>文章内容</h3>
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="value.title" icon="edit" placeholder="请输入标题内容"></el-input>
-        </el-form-item>
         <el-form-item label="类别" prop="category">
           <el-select v-model="value.category" clearable placeholder="请选择类别">
             <el-option v-for="(item,i) in options.category" :label="item.label" :value="item.value" :key="i">
@@ -61,6 +58,9 @@
             <el-input style="width:210px;" v-model="value.reward" icon="information" :placeholder="infoTips.placeholder"></el-input>
           </el-form-item>
         </transition>
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="value.title" icon="edit" placeholder="请输入标题内容"></el-input>
+        </el-form-item>
         <my-editor/>
         <div class="submit">
           <el-button type="primary" @click="submitForm()">{{createText}}</el-button>
@@ -209,6 +209,12 @@
         set(val) {
           this.$store.commit('setPreviewData', val);
         }
+      },
+      category(){
+        return this.value.category;
+      },
+      title(){
+        return this.value.title;
       }
     },
     watch: {
@@ -221,6 +227,17 @@
         } else {
           this.options.machine = [];
         }
+      },
+      category (val) {
+        if (val == '质量隐患整改通知') {
+          this.value.title='关于XXX的整改通知';
+        }
+      },
+      title(val){
+        if (this.category == '质量隐患整改通知') {
+          let title = val.match(/关于(\S+)的整改通知/);
+          this.setDefaultData(title!=null?title[1]:'XXX');
+        }
       }
     },
     methods: {
@@ -229,6 +246,28 @@
         return this.$http.jsonp(url, {
           params
         }).then(response => this.$message.success(response.data.msg))
+      },
+      setDefaultData(title) {
+        this.value.content =
+          `
+          <p><strong>项目</strong></p>
+          <p>${title}</p>
+          <br>
+          <p><strong>质量隐患问题描述</strong></p>
+          <p>在此输入质量隐患问题描述</p>
+          <br>
+          <p><strong>隐患整改必要性</strong></p>
+          <p>在此输入隐患整改必要性</p>
+          <br>
+          <p><strong>整改要求</strong></p>
+          <p>问题整改要求如下</p>
+          <br>
+          <p><strong>审核人员</strong></p>
+          <p>${this.$store.state.user.username}</p>
+          <br>
+          <hr>
+          <p style="font-size:13pt;font-weight:lighter;">(注：原因分析、整改措施、达到的效果以附件的形式提交至评论区。)</p>
+          `;
       },
       validFile(file) {
         //const isJPG = file.type === 'image/jpeg';
@@ -309,7 +348,9 @@
 
         let params = {
           tblname: 'tbl_article',
-          utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user','status_username'],
+          utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user',
+            'status_username'
+          ],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
           rec_time: util.getNow(1),
           attach_list: this.attachList
@@ -371,11 +412,11 @@
 
         let url = this.previewMode == 0 ? settings.api.insert : settings.api.update;
         let submitData = Object.assign({}, this.preview);
-        submitData.rec_time = submitData.rec_time.substr(0,19);
+        submitData.rec_time = submitData.rec_time.substr(0, 19);
 
-        if(Reflect.has(submitData,'submitData')){
-          submitData.status_rectime = submitData.status_rectime.substr(0,19);
-        }        
+        if (Reflect.has(submitData, 'submitData')) {
+          submitData.status_rectime = submitData.status_rectime.substr(0, 19);
+        }
         if (this.previewMode == 2) {
           Reflect.deleteProperty(submitData, 'rec_time');
           Reflect.deleteProperty(submitData, 'status_rectime');
@@ -388,7 +429,7 @@
         } else {
           Reflect.deleteProperty(submitData, 'id');
           Reflect.deleteProperty(submitData, 'user');
-          submitData.status_username='';
+          submitData.status_username = '';
         }
         Reflect.deleteProperty(submitData, 'datetime');
 
@@ -419,7 +460,7 @@
               //没有选择人员时，则不推送
               if (receiver != '' && this.previewMode == 0) {
                 let msg =
-                  `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id}]`;
+                  `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id+'?read=1'}]`;
                 this.pushMsgByRtx({
                   msg,
                   receiver,

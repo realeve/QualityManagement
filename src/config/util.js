@@ -1,10 +1,10 @@
 import settings from './settings'
 
-function jsRight (sr, rightn) {
+function jsRight(sr, rightn) {
   return sr.substring(sr.length - rightn, sr.length)
 }
 
-function getNow (type = 1) {
+function getNow(type = 1) {
   let date = new Date()
 
   let a = date.getFullYear()
@@ -47,12 +47,12 @@ function getNow (type = 1) {
   return output
 }
 
-function parseHtml (html) {
+function parseHtml(html) {
   if (html === '') {
     return html
   }
-  
-  html = html.replace(/\<\/blockquote\>\<blockquote\>/g,'<br>');
+
+  html = html.replace(/\<\/blockquote\>\<blockquote\>/g, '<br>')
 
   // special chacters convert,see from http://stackoverflow.com/questions/19176024/how-to-escape-special-characters-in-building-a-json-string
   html = JSON.stringify(html)
@@ -60,20 +60,20 @@ function parseHtml (html) {
   return html.slice(1, html.length - 1)
 }
 
-function handleAttach (html) {
-  if (typeof html == 'undefined' || html == '') {
+function handleAttach(html) {
+  if (typeof html === 'undefined' || html == '') {
     return ''
   }
   var arrAttach = html.match(/<img \b[^>]*>/g)
   var linkStr
   var i = 1
-  if (null == arrAttach) {
+  if (arrAttach == null) {
     return html
   }
 
   // rar/txt/docx/xlsx/pptx/zip/audio 类型附件正常显示
 
-  function handleFileFormat (str) {
+  function handleFileFormat(str) {
     // rar
     str = str.replace('href="data:;base64,UmFyI', ' download="附件.rar" href="data:application/x-rar-compressed;base64,UmFyI')
 
@@ -99,14 +99,14 @@ function handleAttach (html) {
   return html
 }
 
-function handleContent (data) {
+function handleContent(data) {
   data.map((item, i) => {
     data[i].content = handleAttach(item.content)
   })
   return data
 }
 
-function getAllReceiver () {
+function getAllReceiver() {
   let userList = settings.rtxInfo
   let user = []
   for (var key in userList) {
@@ -119,9 +119,14 @@ function getAllReceiver () {
   return user.join(',')
 }
 
+function unionArr(arr) {
+  return Array.from(new Set(arr))
+}
+
 export default {
   getNow,
   parseHtml,
   handleContent,
   handleAttach,
-getAllReceiver}
+  getAllReceiver,
+  unionArr}

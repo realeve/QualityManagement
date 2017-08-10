@@ -15,6 +15,8 @@
         <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
         <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
         <p v-show="article.remark!=''">备注：{{article.remark}}</p>
+        <p v-if="article.read_users!=''">阅读状态：{{article.read_users}}</p>
+        <p v-else>阅读状态：无</p>
       </blockquote>
       <div v-if="1 == previewMode" class="submit">
         <el-button type="success" @click="closePreview">返回编辑</el-button>
@@ -26,6 +28,7 @@
       </div>
       <div v-if="0 == previewMode" class="submit reedit">
         <el-button type="success" @click="edit">重新编辑</el-button>
+        <el-button plain @click="remind">提醒办理</el-button>
       </div>
       <div v-if="showDonate" class="donate">
         <div class="verify-reward">
@@ -293,6 +296,28 @@
       }
     },
     methods: {
+      remind() {
+        let msg =
+          `${this.$store.state.user.username}提醒您尽快办理[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id+'?read=1'}]`;
+        let rtxList = Object.values(settings.rtxInfo);
+        let receiver = this.article.operator.split(',').map(username => {
+          let users = [];
+          rtxList.forEach(userList => {
+            userList.forEach(item => {
+              if (item.value == username) {
+                users.push(item.id);
+              }
+            });
+          })
+          return util.unionArr(users);
+        });
+        this.pushMsgByRtx({
+          msg,
+          receiver: receiver.join(','),
+          title: '质量问题管理平台',
+          delaytime: 0
+        });
+      },
       receiver(mode = 'reward') {
         let users;
         if (mode == 'reward') {
@@ -637,7 +662,31 @@
           //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
           this.addReadNum();
+          this.setReadStatus();
+          if(this.article.category == '质量隐患整改通知'){
+             this.loadDefaultCommentTpl();
+          }         
         });
+      },
+      loadDefaultCommentTpl(){
+        this.mycomment = `
+          <p><strong>原因分析</strong></p>
+          <p>该问题原因如下：</p>
+          <p>1.</p>
+          <p>2.</p>
+          <p>3.</p>
+          <br>
+          <p><strong>措施</strong></p>
+          <p>针对该问题我们采取了以下措施：</p>
+          <p>1.</p>
+          <p>2.</p>
+          <p>3.</p>
+          <br>
+          <p><strong>效果</strong></p>
+          <p>措施实施后，问题已完全/部分解决</p>
+          <br>
+          <p>详情请见附件</p>
+        `
       },
       loadAttachList() {
         this.$http.jsonp(settings.api.attachList, {
@@ -679,6 +728,73 @@
         // 进入编辑模式
         this.previewMode = 2;
       },
+      // 回执
+      sendReceipt(){
+        // 不是处理问题的人员，无需回执
+        if(!this.article.operator.includes(this.user.username)){
+          return;
+        }
+        let rtxList = Object.values(settings.rtxInfo);
+        let receiver = '';
+        rtxList.forEach(userList => {
+          userList.forEach(item => {
+            if (item.value == this.user.username) {
+              receiver = item.id;
+            }
+          });
+        }) ;
+
+        // 当前用户无rtxid时，无法发送回执
+        if(receiver == ''){       
+          return;
+        }
+
+        // 发送回执
+        let msg =
+          `${this.user.username}已阅读你的文章：[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id}]`;
+        this.pushMsgByRtx({
+          msg,
+          receiver,
+          delaytime: 0,
+          title: '质量问题管理平台'
+        });
+      },
+      // 阅读状态
+      setReadStatus() {
+        let status = Reflect.has(this.$route.query, 'read');
+        if (!status || this.article.read_users.includes(this.user.username)) {
+          return;
+        }
+        let readUsers = this.article.read_users.split('、');
+        if(readUsers[0] == ''){
+          readUsers[0] = this.user.username;
+        }else{
+          readUsers.push(this.user.username);
+        }        
+        readUsers = util.unionArr(readUsers);
+        this.article.read_users = readUsers.join('、');
+        //更新文章阅读状态
+        let url = settings.api.update;
+        let params = {
+          tblname: 'tbl_article',
+          id: this.article.id,
+          read_users: this.article.read_users,
+          utf2gbk: ['read_users']
+        };
+
+        this.$http.jsonp(url, {
+            params
+          })
+          .then(res => {
+            console.info('文章阅读状态更新成功');
+          })
+          .catch(e => {
+            console.log(e);
+          })
+          .finally(e=>{
+            this.sendReceipt();
+          })
+      },
       init() {
         // 预览模式
         if (1 == this.previewMode) {
@@ -700,7 +816,7 @@
           }
 
           this.loadArticle();
-          this.loadComment();          
+          this.loadComment();
         }
       }
     },
