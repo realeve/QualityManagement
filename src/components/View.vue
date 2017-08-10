@@ -761,8 +761,11 @@
       },
       // 阅读状态
       setReadStatus() {
-        let status = Reflect.has(this.$route.query, 'read');
-        if (!status || this.article.read_users.includes(this.user.username)) {
+        // let status = Reflect.has(this.$route.query, 'read');
+        // if (!status || this.article.read_users.includes(this.user.username)) {
+        //   return;
+        // }
+        if (this.article.read_users.includes(this.user.username)) {
           return;
         }
         let readUsers = this.article.read_users.split('、');
