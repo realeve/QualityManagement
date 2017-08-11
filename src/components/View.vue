@@ -665,6 +665,8 @@
           this.setReadStatus();
           if(this.article.category == '质量隐患整改通知'){
              this.loadDefaultCommentTpl();
+          }else{
+            this.mycomment='';
           }         
         });
       },
@@ -731,14 +733,14 @@
       // 回执
       sendReceipt(){
         // 不是处理问题的人员，无需回执
-        if(!this.article.operator.includes(this.user.username)){
+        if(!this.article.operator.includes(this.user.username)||this.user.username == this.article.user){
           return;
         }
         let rtxList = Object.values(settings.rtxInfo);
         let receiver = '';
         rtxList.forEach(userList => {
           userList.forEach(item => {
-            if (item.value == this.user.username) {
+            if (item.value == this.article.user) {
               receiver = item.id;
             }
           });
