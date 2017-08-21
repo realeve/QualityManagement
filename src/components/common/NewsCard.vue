@@ -1,7 +1,7 @@
 <template>
   <!--div class="entry-box" v-scroll="loadMore"-->
   <div class="entry-box" v-infinite-scroll="loadMore" infinite-scroll-disabled="news.isLoading" infinite-scroll-distance="10">
-    <div class="box-title clearfix">
+    <div class="box-title clearfix" :style="{background:bgcolor}">
       <div class="float-left">{{news.title}}</div>
       <router-link v-if="news.more" class="pointer" :to="news.more">
         <div class="float-right more">更多</div>
@@ -55,7 +55,14 @@
   import util from '../../config/util';
   export default {
     name: 'my-card',
-    props: ['news'],
+    props: {
+      news: {
+        default: []
+      },
+      bgcolor: {
+        default: '#2196f3'
+      }
+    },
     computed: {
       showCategory() {
         return typeof this.news.showCategory == 'undefined' ? false : this.news.showCategory;
@@ -92,9 +99,11 @@
     margin-bottom: 1.5em;
     .box-title {
       font-size: 1.4em;
+      color: #fff;
     }
     .more {
       font-size: 12pt;
+      color: #fff;
     }
   }
 
@@ -128,7 +137,9 @@
   .fade-leave {
     opacity: 0; //transform:translateY(50px);
   }
-  .welcome .entry-meta .action{
-    margin-right:.1em;
+
+  .welcome .entry-meta .action {
+    margin-right: .1em;
   }
+
 </style>

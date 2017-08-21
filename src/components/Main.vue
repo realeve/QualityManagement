@@ -1,7 +1,7 @@
 <template>
   <div class="welcome">
-    <div v-for="item in newsList" class=".welcome-center">
-      <my-card :news="item"></my-card>
+    <div v-for="(item,i) in newsList" class=".welcome-center" :key="i">
+      <my-card :news="item" :bgcolor="colorList[i%colorList.length]"></my-card>
     </div>
   </div>
 </template>
@@ -16,11 +16,18 @@
     components: {
       'my-card': MyCard
     },
+    data() {
+      return {
+        colorList: ['#9c27b0', 'rgb(241,112,112)','#673ab7', '#2196f3', '#4caf50', '#ff5722', '#9e9e9e',
+          '#20a0ff'
+        ]
+      };
+    },
     computed: {
       newsList() {
         return this.$store.state.mainList;
       },
-      user(){
+      user() {
         return this.$store.state.user.username;
       }
     },
@@ -47,7 +54,7 @@
         if (!this.$store.state.needRefreshMainList && this.newsList.length) {
           return;
         }
-        
+
         this.getMyWorkList();
 
         this.$http.jsonp(settings.api.articleTop5)
@@ -77,7 +84,7 @@
 
         this.$http.jsonp(settings.api.myWorkList, {
           params: {
-            user: '%'+this.user+'%'
+            user: '%' + this.user + '%'
           }
         }).then(res => {
           let obj = res.data;

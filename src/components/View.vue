@@ -10,7 +10,8 @@
         </p>
       </h3>
       <div class="content" v-html="article.content"></div>
-      <blockquote>本问题由 {{article.operator}} 确认
+      <blockquote>本问题由
+        <el-button plain v-for="(item,i) in operators" size="small" :key="i" @click="remind(item)">{{item}}</el-button> 确认
         <p>类型：{{article.category}}</p>
         <p v-if="article.cartno">车号: <a target="_blank" :href="cartUrl+article.cartno">{{article.cartno}}</a></p>
         <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
@@ -28,7 +29,6 @@
       </div>
       <div v-if="0 == previewMode" class="submit reedit">
         <el-button type="success" @click="edit">重新编辑</el-button>
-        <el-button plain @click="remind">提醒办理</el-button>
       </div>
       <div v-if="showDonate" class="donate">
         <div class="verify-reward">
@@ -200,7 +200,7 @@
         return this.article.category == '机检异常品' || this.article.category == '质量问题发布'
       },
       showDonate() {
-        return this.article.category == '风险隐患排查';
+        return this.article.category == '工艺质量隐患排查';
       },
       status_time() {
         return ('' + this.article.status_rectime).substr(0, 16);
@@ -293,24 +293,38 @@
         set(val) {
           this.$store.commit('setCommentContent', val);
         }
+      },
+      operators() {
+        return this.article.operator ? this.article.operator.split(',') : [];
       }
     },
     methods: {
-      remind() {
+      remind(username) {
         let msg =
           `${this.$store.state.user.username}提醒您尽快办理[(${this.article.title})|${settings.rtxJmpLink+'/view/'+this.article.id+'?read=1'}]`;
         let rtxList = Object.values(settings.rtxInfo);
-        let receiver = this.article.operator.split(',').map(username => {
-          let users = [];
-          rtxList.forEach(userList => {
-            userList.forEach(item => {
-              if (item.value == username) {
-                users.push(item.id);
-              }
-            });
-          })
-          return util.unionArr(users);
-        });
+        // let receiver = this.operators.map(username => {
+        //   let users = [];
+        //   rtxList.forEach(userList => {
+        //     userList.forEach(item => {
+        //       if (item.value == username) {
+        //         users.push(item.id);
+        //       }
+        //     });
+        //   })
+        //   return util.unionArr(users);
+        // }); 
+        
+        let users = [];
+        rtxList.forEach(userList => {
+          userList.forEach(item => {
+            if (item.value == username) {
+              users.push(item.id);
+            }
+          });
+        })
+        let receiver = util.unionArr(users);
+
         this.pushMsgByRtx({
           msg,
           receiver: receiver.join(','),
@@ -663,15 +677,16 @@
           this.loadAttachList();
           this.addReadNum();
           this.setReadStatus();
-          if(this.article.category == '质量隐患整改通知'){
-             this.loadDefaultCommentTpl();
-          }else{
-            this.mycomment='';
-          }         
+          if (this.article.category == '质量隐患整改通知') {
+            this.loadDefaultCommentTpl();
+          } else {
+            this.mycomment = '';
+          }
         });
       },
-      loadDefaultCommentTpl(){
-        this.mycomment = `
+      loadDefaultCommentTpl() {
+        this.mycomment =
+          `
           <p><strong>原因分析</strong></p>
           <p>该问题原因如下：</p>
           <p>1.</p>
@@ -731,9 +746,9 @@
         this.previewMode = 2;
       },
       // 回执
-      sendReceipt(){
+      sendReceipt() {
         // 不是处理问题的人员，无需回执
-        if(!this.article.operator.includes(this.user.username)||this.user.username == this.article.user){
+        if (!this.article.operator.includes(this.user.username) || this.user.username == this.article.user) {
           return;
         }
         let rtxList = Object.values(settings.rtxInfo);
@@ -744,10 +759,10 @@
               receiver = item.id;
             }
           });
-        }) ;
+        });
 
         // 当前用户无rtxid时，无法发送回执
-        if(receiver == ''){       
+        if (receiver == '') {
           return;
         }
 
@@ -771,11 +786,11 @@
           return;
         }
         let readUsers = this.article.read_users.split('、');
-        if(readUsers[0] == ''){
+        if (readUsers[0] == '') {
           readUsers[0] = this.user.username;
-        }else{
+        } else {
           readUsers.push(this.user.username);
-        }        
+        }
         readUsers = util.unionArr(readUsers);
         this.article.read_users = readUsers.join('、');
         //更新文章阅读状态
@@ -796,7 +811,7 @@
           .catch(e => {
             console.log(e);
           })
-          .finally(e=>{
+          .finally(e => {
             this.sendReceipt();
           })
       },
