@@ -36,6 +36,9 @@
                 <div class="action">•</div>
                 <div class="action">{{item.readnum}}</div>
                 <div class="action">
+                  <el-tag type="danger" v-show="!item.isread">未读</el-tag>
+                </div>
+                <div class="action">
                   <el-tag type="danger" v-if="0 == item.status">未完成</el-tag>
                 </div>
               </div>

@@ -203,6 +203,8 @@ var options = {
     value: '安全管理'
   }, {
     value: '体系、标准运行'
+  }, {
+    value: '设备维修'
   }],
   mediaList: [{
     label: '图片',

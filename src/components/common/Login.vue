@@ -100,7 +100,7 @@
           this.user.avatar = 'Avatar_none.jpg';
           return;
         }
-        let user = this.userList.filter(res => res.name.includes(username))[0];
+        let user = this.userList.filter(res => res.name.substring(0,username.length) == username)[0];
         this.user = Object.assign(this.user, user);
         if (user && user.avatar == 1) {
           this.user.avatar = this.avatarContent + btoa(user.id + user.name) + '.jpg';

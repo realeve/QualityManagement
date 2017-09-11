@@ -18,9 +18,7 @@
     },
     data() {
       return {
-        colorList: ['#9c27b0', 'rgb(241,112,112)','#673ab7', '#2196f3', '#4caf50', '#ff5722', '#9e9e9e',
-          '#20a0ff'
-        ]
+        colorList: ['#f17070', '#2196f3', '#4caf50', '#9e9e9e', '#20a0ff']
       };
     },
     computed: {
@@ -44,7 +42,8 @@
           let avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
           return Object.assign(item, {
             img: HOST + '/demo/avatar/' + avatar + '.jpg',
-            url: '/view/' + item.id
+            url: '/view/' + item.id,
+            isread: item.readers.includes(this.user)
           })
         });
         this.$store.commit('refreshHomeNewsList', newsItem);
@@ -97,7 +96,8 @@
             avatar = item.avatar == 1 ? window.btoa(item.avatarkey) : 'Avatar_none';
             return Object.assign(item, {
               img: HOST + '/demo/avatar/' + avatar + '.jpg',
-              url: '/view/' + item.id
+              url: '/view/' + item.id,
+              isread: item.readers.includes(this.user)
             })
           });
 
