@@ -117,9 +117,6 @@ let rtxInfo = {
     value: '李政',
     id: 10841
   }, {
-    value: '王梅',
-    id: 11130
-  }, {
     value: '张宁',
     id: 11131
   }, {
@@ -246,6 +243,9 @@ let rtxInfo = {
     value: '陈强',
     id: 11120
   }, {
+    value: '王梅',
+    id: 11130
+  }, {
     value: '赵永康',
     id: 10770
   }, {
@@ -259,11 +259,27 @@ let rtxInfo = {
     value: '王昌明',
     id: 11079
   }, {
+    value: '谢其德',
+    id: 11083
+  }, {
     value: '周晓平',
     id: 11087
   }, {
-    value: '谢其德',
-    id: 11083
+    value: '白平',
+    id: 11080
+  }],
+  material: [{
+    value: '贾燕',
+    id: 10976
+  }, {
+    value: '赵军',
+    id: 11023
+  }, {
+    value: '刘洪桔',
+    id: 10975
+  }, {
+    value: '张莲娜',
+    id: 11032
   }]
 }
 
@@ -279,6 +295,9 @@ let desc = [{
 }, {
   label: '设备管理部',
   value: 'machine'
+}, {
+  label: '物资管理部',
+  value: 'material'
 }, {
   label: '印钞工艺组',
   value: 'technology'

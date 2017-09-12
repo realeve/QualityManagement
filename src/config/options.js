@@ -179,6 +179,19 @@ var options = {
       value: '周晓平'
     }, {
       value: '谢其德'
+    }, {
+      value: '白平'
+    }]
+  }, {
+    label: '物资管理部',
+    options: [{
+      value: '贾燕'
+    }, {
+      value: '赵军'
+    }, {
+      value: '刘洪桔'
+    }, {
+      value: '张莲娜'
     }]
   }],
   category: [{
