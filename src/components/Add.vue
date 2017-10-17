@@ -349,7 +349,7 @@
         let params = {
           tblname: 'tbl_article',
           utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user',
-            'status_username'
+            'status_username','read_users'
           ],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
           rec_time: util.getNow(1),
@@ -361,7 +361,7 @@
         params = Object.assign(params, this.value);
 
         if (this.previewMode == 2) {
-          params.utf2gbk = ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user'];
+          params.utf2gbk = ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user','read_users'];
           this.value.content +=
             `<blockquote class="remark">备注：${this.$store.state.user.username} 在 ${util.getNow(1)} 更新本消息</blockquote>`;
         }
