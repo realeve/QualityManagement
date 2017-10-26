@@ -218,6 +218,8 @@ var options = {
     value: '体系、标准运行'
   }, {
     value: '设备维修'
+  }, {
+    value: '管三党支部建设'
   }],
   mediaList: [{
     label: '图片',

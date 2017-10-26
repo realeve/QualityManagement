@@ -349,7 +349,7 @@
         let params = {
           tblname: 'tbl_article',
           utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user',
-            'status_username','read_users'
+            'status_username'
           ],
           uid: this.$store.state.user.id, //此处需增加用户登录结果
           rec_time: util.getNow(1),
