@@ -2,71 +2,70 @@
 
 let mutations = {
   refreshMainList(state, val) {
-    state.needRefreshMainList = val
+    state.needRefreshMainList = val;
     if (val) {
-      state.mainList = []
+      state.mainList = [];
     }
   },
   setAddInfo(state, val) {
-    state.add = Object.assign(state.add, val)
+    state.add = Object.assign(state.add, val);
   },
   setNoticeInfo(state, val) {
-    state.notice = Object.assign(state.notice, val)
+    state.notice = Object.assign(state.notice, val);
   },
   setCommentContent(state, val) {
     state.commentContent = val;
   },
   setRtxList(state, val) {
-    state.rtxlist = val
+    state.rtxlist = val;
   },
   enterPreview(state, val) {
-    state.previewMode = val
+    state.previewMode = val;
   },
   setPreviewData(state, data) {
-    state.preview = data
+    state.preview = data;
   },
   recordMaxListId(state, param) {
-    state.articleId[param.title] = param.id
+    state.articleId[param.title] = param.id;
   },
   refreshNewsList(state, data) {
     // 文章二级列表数据
-    if (typeof state.newsList[data.title] === 'undefined') {
-      state.newsList[data.title] = data.data
+    if (typeof state.newsList[data.title] === "undefined") {
+      state.newsList[data.title] = data.data;
     } else {
-      state.newsList[data.title] = state.newsList[data.title].concat(data.data)
+      state.newsList[data.title] = state.newsList[data.title].concat(data.data);
     }
   },
   refreshHomeNewsList(state, data) {
     // 更新主页文章数据
-    state.mainList = state.mainList.concat(data).sort((a, b) => a.cateId - b.cateId)
+    state.mainList = state.mainList
+      .concat(data)
+      .sort((a, b) => a.cateId - b.cateId);
   },
   setFileList(state, item) {
-    state.fileList = item
+    state.fileList = item;
   },
   clearFileList(state) {
-    state.fileList = []
+    state.fileList = [];
   },
   removeFileItem(state, id) {
-    state.fileList.splice(id, 1)
+    state.fileList.splice(id, 1);
   },
   addFileItem(state, item) {
-    state.fileList.push(item)
+    state.fileList.push(item);
   },
   setUserInfo(state, value) {
-    state.user = value
+    state.user = value;
   },
   updateLatestFile(state, value) {
-    state.latestFile = value
+    state.latestFile = value;
   },
   setMediaActiveName(state, val) {
-    state.activeName = val
-  },
-  setUserInfo(state, val) {
-    state.user = val
+    state.activeName = val;
   },
   setSearchResult(state, val) {
-    state.searchResult = val
+    state.searchResult = val;
   }
-}
+};
 
-export default mutations
+export default mutations;
