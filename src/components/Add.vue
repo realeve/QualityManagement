@@ -3,7 +3,7 @@
     <el-form :model="value" :rules="rules" ref="value" label-width="100px">
       <div class="card">
         <el-row>
-          <el-col :md="10" :sm="24" :xs="24">
+          <el-col :md="14" :sm="24" :xs="24">
             <div class="basic">
               <h3>基础信息</h3>
               <el-form-item label="品种" prop="prod">
@@ -30,11 +30,15 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="车号/轴号" prop="cartno">
-                <el-input v-model="value.cartno" @input="capitalizeCartno" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
+                <el-tag :key="tag" v-for="tag in cartList" closable :disable-transitions="false" @close="handleClose(tag)">
+                  {{tag}}
+                </el-tag>
+                <el-input v-model="value.cartno" class="input-new-tag" v-if="inputVisible" ref="saveTagInput" size="small" @input="capitalizeCartno" @keyup.enter.native="addCart" @blur="addCart" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput">添加车号</el-button>
               </el-form-item>
             </div>
           </el-col>
-          <el-col :md="14" :sm="24" :xs="24">
+          <el-col :md="10" :sm="24" :xs="24">
             <h3>消息推送名单</h3>
             <rtx-check/>
           </el-col>
@@ -77,179 +81,201 @@
   </div>
 </template>
 <script>
-  import options from '../config/options';
-  import MyEditor from './common/Editor';
-  import Attach from './common/Attach';
-  import RtxCheck from './common/RtxCheck'
+import options from "../config/options";
+import MyEditor from "./common/Editor";
+import Attach from "./common/Attach";
+import RtxCheck from "./common/RtxCheck";
 
-  import settings from '../config/settings';
-  import util from '../config/util';
-  const HOST = settings.host;
-  export default {
-    name: 'add',
-    components: {
-      MyEditor,
-      Attach,
-      RtxCheck
-    },
-    data() {
-      return {
-        options,
-        rules: {
-          operator: [{
+import settings from "../config/settings";
+import util from "../config/util";
+const HOST = settings.host;
+export default {
+  name: "add",
+  components: {
+    MyEditor,
+    Attach,
+    RtxCheck
+  },
+  data() {
+    return {
+      options,
+      rules: {
+        operator: [
+          {
             required: true,
-            type: 'array',
-            message: '请选择操作人员',
-            trigger: 'blur'
-          }],
-          category: [{
+            type: "array",
+            message: "请选择操作人员",
+            trigger: "blur"
+          }
+        ],
+        category: [
+          {
             required: true,
-            message: '请选择文章分类',
-            trigger: 'blur'
-          }],
-          title: [{
+            message: "请选择文章分类",
+            trigger: "blur"
+          }
+        ],
+        title: [
+          {
             required: true,
-            message: '文章标题不能为空',
-            trigger: 'blur'
-          }],
-          cartno: [{
+            message: "文章标题不能为空",
+            trigger: "blur"
+          }
+        ],
+        cartno: [
+          {
             required: false,
-            trigger: 'blur',
+            trigger: "blur",
             validator(rule, value, callback) {
               let cart = /^[1-9]\d{3}[A-Za-z]\d{3}$|^[1-9]\d{6}[A-Ca-c]$|^[1-9]\d{6}$/;
-              if (value != '' && !cart.test(value)) {
-                callback(new Error('请输入正确的车号/轴号信息'));
+              if (value != "" && !cart.test(value)) {
+                callback(new Error("请输入正确的车号/轴号信息"));
               } else {
                 callback();
               }
             }
-          }]
-        }
-      }
-    },
-    computed: {
-      infoTips() {
-        if (this.value.category == '质量问题发布') {
-          return {
-            text: '备注',
-            placeholder: '请输入备注信息',
-            value: ''
           }
-        } else if (this.value.category == '工艺质量隐患排查') {
+        ]
+      },
+      cartList: [],
+      inputVisible: true
+    };
+  },
+  computed: {
+    infoTips() {
+      if (this.value.category == "质量问题发布") {
+        return {
+          text: "备注",
+          placeholder: "请输入备注信息",
+          value: ""
+        };
+      } else if (this.value.category == "工艺质量隐患排查") {
+        if (this.previewMode != 2) {
+          this.value.reward = 5;
+          this.value.reward_status = 1;
+          this.value.reward_user = this.$store.state.user.username;
+        }
 
-          if (this.previewMode != 2) {
-            this.value.reward = 5;
-            this.value.reward_status = 1;
-            this.value.reward_user = this.$store.state.user.username;
-          }
-
-          return {
-            text: '奖励金额',
-            placeholder: '请输入奖励金额'
-          }
-        }
-      },
-      createText() {
-        return (this.previewMode == 0) ? '立即创建' : '更新数据';
-      },
-      procId() {
-        let proc = this.$store.state.add.proc;
-        let id;
-        switch (proc) {
-          case '胶印':
-          case '凹印':
-            id = 1;
-            break;
-          case '印码':
-            id = 2;
-            break;
-          case '检封':
-            id = 3;
-            break;
-          default:
-            id = 0;
-            break;
-        }
-        return id;
-      },
-      value: {
-        get() {
-          return this.$store.state.add;
-        },
-        set(val) {
-          this.$store.commit('setAddInfo', val);
-        }
-      },
-      attachList() {
-        return this.$store.state.fileList.map(item => item.attach_id).join(',');
-      },
-      fileList: {
-        get() {
-          return this.$store.state.fileList;
-        },
-        set(val) {
-          return this.$store.commit('setFileList', val);
-        }
-      },
-      articleId() {
-        return this.$route.params.id;
-      },
-      previewMode: {
-        get() {
-          return this.$store.state.previewMode;
-        },
-        set(val) {
-          this.$store.commit('enterPreview', val);
-        }
-      },
-      preview: {
-        get() {
-          return this.$store.state.preview;
-        },
-        set(val) {
-          this.$store.commit('setPreviewData', val);
-        }
-      },
-      category(){
-        return this.value.category;
-      },
-      title(){
-        return this.value.title;
+        return {
+          text: "奖励金额",
+          placeholder: "请输入奖励金额"
+        };
       }
     },
-    watch: {
-      procId(id, oldId) {
-        if (oldId == id) {
-          return; //胶凹共用一个id
-        }
-        if (id > 0) {
-          this.loadMachineList(id);
-        } else {
-          this.options.machine = [];
-        }
+    createText() {
+      return this.previewMode == 0 ? "立即创建" : "更新数据";
+    },
+    procId() {
+      let proc = this.$store.state.add.proc;
+      let id;
+      switch (proc) {
+        case "胶印":
+        case "凹印":
+          id = 1;
+          break;
+        case "印码":
+          id = 2;
+          break;
+        case "检封":
+          id = 3;
+          break;
+        default:
+          id = 0;
+          break;
+      }
+      return id;
+    },
+    value: {
+      get() {
+        return this.$store.state.add;
       },
-      category (val) {
-        if (val == '质量隐患整改通知') {
-          this.value.title='关于XXX的整改通知';
-        }
-      },
-      title(val){
-        if (this.category == '质量隐患整改通知') {
-          let title = val.match(/关于(\S+)的整改通知/);
-          this.setDefaultData(title!=null?title[1]:'XXX');
-        }
+      set(val) {
+        this.$store.commit("setAddInfo", val);
       }
     },
-    methods: {
-      pushMsgByRtx(params) {
-        let url = settings.host + '/DataInterface/rtxPush'
-        return this.$http.jsonp(url, {
+    attachList() {
+      return this.$store.state.fileList.map(item => item.attach_id).join(",");
+    },
+    fileList: {
+      get() {
+        return this.$store.state.fileList;
+      },
+      set(val) {
+        return this.$store.commit("setFileList", val);
+      }
+    },
+    articleId() {
+      return this.$route.params.id;
+    },
+    previewMode: {
+      get() {
+        return this.$store.state.previewMode;
+      },
+      set(val) {
+        this.$store.commit("enterPreview", val);
+      }
+    },
+    preview: {
+      get() {
+        return this.$store.state.preview;
+      },
+      set(val) {
+        this.$store.commit("setPreviewData", val);
+      }
+    },
+    category() {
+      return this.value.category;
+    },
+    title() {
+      return this.value.title;
+    }
+  },
+  watch: {
+    procId(id, oldId) {
+      if (oldId == id) {
+        return; //胶凹共用一个id
+      }
+      if (id > 0) {
+        this.loadMachineList(id);
+      } else {
+        this.options.machine = [];
+      }
+    },
+    category(val) {
+      if (val == "质量隐患整改通知") {
+        this.value.title = "关于XXX的整改通知";
+      }
+    },
+    title(val) {
+      if (this.category == "质量隐患整改通知") {
+        let title = val.match(/关于(\S+)的整改通知/);
+        this.setDefaultData(title != null ? title[1] : "XXX");
+      }
+    }
+  },
+  methods: {
+    handleClose(tag) {
+      this.cartList.splice(this.cartList.indexOf(tag), 1);
+    },
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    pushMsgByRtx(params) {
+      let url = settings.host + "/DataInterface/rtxPush";
+      return this.$http
+        .jsonp(url, {
           params
-        }).then(response => this.$message.success(response.data.msg))
-      },
-      setDefaultData(title) {
-        this.value.content =
-          `
+        })
+        .then(response => this.$message.success(response.data.msg));
+    },
+    setDefaultData(title) {
+      if (this.value.content.includes("质量隐患问题描述")) {
+        return;
+      }
+      this.value.content = `
           <p><strong>项目</strong></p>
           <p>${title}</p>
           <br>
@@ -268,300 +294,367 @@
           <hr>
           <p style="font-size:13pt;font-weight:lighter;">(注：原因分析、整改措施、达到的效果以附件的形式提交至评论区。)</p>
           `;
-      },
-      validFile(file) {
-        //const isJPG = file.type === 'image/jpeg';
-        const isLt20M = file.size / 1024 / 1024 < 100;
-        if (!isLt20M) {
-          this.$message.error('上传头像图片大小不能超过 20MB!');
+    },
+    validFile(file) {
+      //const isJPG = file.type === 'image/jpeg';
+      const isLt20M = file.size / 1024 / 1024 < 100;
+      if (!isLt20M) {
+        this.$message.error("上传头像图片大小不能超过 20MB!");
+      }
+      return isLt20M;
+    },
+    addCart() {
+      let result = this.value.cartno;
+      if (result.length >= 8 && !this.cartList.includes(result)) {
+        if (
+          /^[1-9]\d{3}[A-Za-z]\d{3}$|^[1-9]\d{6}[A-Ca-c]$|^[1-9]\d{6}$/.test(
+            result
+          )
+        ) {
+          this.cartList.push(result);
+          this.inputVisible = false;
+          this.value.cartno = "";
+        } else {
+          this.$message.error("车号/轴号格式无效");
         }
-        return isLt20M;
-      },
-      capitalizeCartno(str) {
-        let reg = new RegExp(/[a-zA-Z]|\d/);
-        let result = str.split('').filter(item => item.match(reg)).join('').toUpperCase();
-        this.value.cartno = result;
-      },
-      loadProd() {
-        let url = HOST + '/DataInterface/Api';
-        this.$http.jsonp(url, {
+      }
+    },
+    capitalizeCartno() {
+      let str = this.value.cartno;
+      let reg = new RegExp(/[a-zA-Z]|\d/);
+      let result = str
+        .split("")
+        .filter(item => item.match(reg))
+        .join("")
+        .toUpperCase();
+      this.value.cartno = result;
+    },
+    loadProd() {
+      let url = HOST + "/DataInterface/Api";
+      this.$http
+        .jsonp(url, {
           params: {
-            ID: '35',
+            ID: "35",
             cache: 14400
           }
-        }).then(response => {
+        })
+        .then(response => {
           let data = response.data.data;
           this.options.prod = data.map(item => {
             return {
               value: item[0],
               label: item[1]
             };
-          })
+          });
         });
-      },
-      loadMachineList(id) {
-        let url = HOST + '/DataInterface/Api';
-        this.$http.jsonp(url, {
+    },
+    loadMachineList(id) {
+      let url = HOST + "/DataInterface/Api";
+      this.$http
+        .jsonp(url, {
           params: {
-            ID: '36',
+            ID: "36",
             p: id,
             cache: 14400
           }
-        }).then(response => {
+        })
+        .then(response => {
           let data = response.data.data;
           this.options.machine = data.map(item => {
             return {
               value: item[1],
               label: item[0]
             };
+          });
+        });
+    },
+    querySearch(queryString, next) {
+      let machine = this.options.machine;
+      let results = queryString
+        ? machine.filter(this.createFilter(queryString))
+        : machine;
+      // 调用 callback 返回建议列表的数据
+      next(results);
+    },
+    createFilter(queryString) {
+      return result => {
+        return result.value.indexOf(queryString.toLowerCase()) === 0;
+      };
+    },
+    validData(formName = "value") {
+      if (this.$store.state.add.content == "") {
+        this.$message.error("问题描述不能为空");
+        return false;
+      }
+
+      let valid = false;
+      this.$refs[formName].validate(result => {
+        valid = result;
+      });
+      return valid;
+    },
+    getParams() {
+      if (!this.validData()) {
+        return;
+      }
+
+      let params = {
+        tblname: "tbl_article",
+        utf2gbk: [
+          "title",
+          "content",
+          "machine",
+          "operator",
+          "category",
+          "proc",
+          "remark",
+          "reward_user",
+          "status_username"
+        ],
+        uid: this.$store.state.user.id, //此处需增加用户登录结果
+        rec_time: util.getNow(1),
+        attach_list: this.attachList
+      };
+
+      let operator = this.value.operator.toString();
+
+      params = Object.assign(params, this.value);
+
+      if (this.previewMode == 2) {
+        params.utf2gbk = [
+          "title",
+          "content",
+          "machine",
+          "operator",
+          "category",
+          "proc",
+          "remark",
+          "reward_user",
+          "read_users"
+        ];
+        this.value.content += `<blockquote class="remark">备注：${
+          this.$store.state.user.username
+        } 在 ${util.getNow(1)} 更新本消息</blockquote>`;
+      }
+
+      params = Object.assign(params, {
+        proc: this.value.proc,
+        operator,
+        content: util.parseHtml(this.value.content)
+      });
+
+      this.preview = params;
+      return true;
+    },
+    enterPreview() {
+      if (!this.getParams()) {
+        return;
+      }
+      // this.$store.commit('enterPreview', true);
+      this.previewMode = 1;
+      this.$router.push("/view/preview");
+    },
+    updateAttachArticleId(article_id) {
+      //更新附件中对应的文章id
+      let url = settings.api.update;
+      let params = {
+        tblname: "tbl_article_attach",
+        article_id
+      };
+
+      this.attachList.split(",").map(id => {
+        params.id = id;
+        this.$http
+          .jsonp(url, {
+            params
           })
-        });
-      },
-      querySearch(queryString, next) {
-        let machine = this.options.machine;
-        let results = queryString ? machine.filter(this.createFilter(queryString)) : machine;
-        // 调用 callback 返回建议列表的数据
-        next(results);
-      },
-      createFilter(queryString) {
-        return (result) => {
-          return (result.value.indexOf(queryString.toLowerCase()) === 0);
-        };
-      },
-      validData(formName = 'value') {
-        if (this.$store.state.add.content == '') {
-          this.$message.error('问题描述不能为空');
-          return false;
-        }
-
-        let valid = false;
-        this.$refs[formName].validate(result => {
-          valid = result;
-        });
-        return valid;
-      },
-      getParams() {
-
-        if (!this.validData()) {
-          return;
-        }
-
-        let params = {
-          tblname: 'tbl_article',
-          utf2gbk: ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user',
-            'status_username'
-          ],
-          uid: this.$store.state.user.id, //此处需增加用户登录结果
-          rec_time: util.getNow(1),
-          attach_list: this.attachList
-        };
-
-        let operator = this.value.operator.toString();
-
-        params = Object.assign(params, this.value);
-
-        if (this.previewMode == 2) {
-          params.utf2gbk = ['title', 'content', 'machine', 'operator', 'category', 'proc', 'remark', 'reward_user','read_users'];
-          this.value.content +=
-            `<blockquote class="remark">备注：${this.$store.state.user.username} 在 ${util.getNow(1)} 更新本消息</blockquote>`;
-        }
-
-        params = Object.assign(params, {
-          proc: this.value.proc,
-          operator,
-          content: util.parseHtml(this.value.content)
-        });
-
-        this.preview = params;
-        return true;
-      },
-      enterPreview() {
-        if (!this.getParams()) {
-          return;
-        }
-        // this.$store.commit('enterPreview', true);
-        this.previewMode = 1;
-        this.$router.push('/view/preview');
-      },
-      updateAttachArticleId(article_id) {
-        //更新附件中对应的文章id
-        let url = settings.api.update;
-        let params = {
-          tblname: 'tbl_article_attach',
-          article_id
-        };
-
-        this.attachList.split(',').map(id => {
-          params.id = id;
-          this.$http.jsonp(url, {
-              params
-            })
-            .then(res => {
-              console.info('附件信息更新成功');
-            })
-            .catch(e => {
-              console.log(e);
-            })
-        });
-
-      },
-      submitForm() {
-        if (!this.getParams()) {
-          return;
-        }
-
-        let url = this.previewMode == 0 ? settings.api.insert : settings.api.update;
-        let submitData = Object.assign({}, this.preview);
-        submitData.rec_time = submitData.rec_time.substr(0, 19);
-
-        if (Reflect.has(submitData, 'submitData')) {
-          submitData.status_rectime = submitData.status_rectime.substr(0, 19);
-        }
-        if (this.previewMode == 2) {
-          Reflect.deleteProperty(submitData, 'rec_time');
-          Reflect.deleteProperty(submitData, 'status_rectime');
-          Reflect.deleteProperty(submitData, 'user');
-          Reflect.deleteProperty(submitData, 'uid');
-          Reflect.deleteProperty(submitData, 'status');
-          Reflect.deleteProperty(submitData, 'status_username');
-          Reflect.deleteProperty(submitData, 'reward');
-          Reflect.deleteProperty(submitData, 'reward_status');
-        } else {
-          Reflect.deleteProperty(submitData, 'id');
-          Reflect.deleteProperty(submitData, 'user');
-          submitData.status_username = '';
-        }
-        Reflect.deleteProperty(submitData, 'datetime');
-
-        let receiver = this.$store.state.rtxlist.join(',');
-
-        //post CROS 需增加 emulateJSON:true
-        //需更新article表单，增加receiver字段
-        this.$http.post(url, Object.assign(submitData, {
-            receiver
-          }), {
-            emulateJSON: true
-          })
-          .then(response => {
-            let res = response.data;
-            if (res.type == 1) {
-              this.$message({
-                message: '数据添加成功',
-                type: 'success'
-              });
-              this.updateAttachArticleId(res.id);
-              //提交后重置数据
-              this.resetForm();
-              if (this.previewMode == 2) {
-                this.$router.push('/view/' + submitData.id);
-              } else {
-                this.$router.push('/view/' + res.id);
-              }
-              //没有选择人员时，则不推送
-              if (receiver != '' && this.previewMode == 0) {
-                let msg =
-                  `${this.$store.state.user.username}发表了一篇新文章,[(${this.$store.state.preview.title})|${settings.rtxJmpLink+'/view/'+res.id+'?read=1'}]`;
-                this.pushMsgByRtx({
-                  msg,
-                  receiver,
-                  title: '质量问题管理平台',
-                  delaytime: 0
-                });
-              }
-              this.previewMode == 0;
-            } else {
-              this.$message({
-                message: '数据添加失败',
-                type: 'error'
-              });
-            }
-
-            this.$store.commit('refreshMainList', true);
-            window.localStorage.setItem('editor', '');
+          .then(res => {
+            console.info("附件信息更新成功");
           })
           .catch(e => {
             console.log(e);
-          })
-
-      },
-      resetForm(formName = 'value') {
-        //this.$store.commit('resetAddInfo');
-        this.value = {
-            prod: '',
-            proc: '',
-            machine: '',
-            operator: [],
-            cartno: '',
-            category: '',
-            content: '',
-            title: '',
-            receiver: '',
-            remark: '',
-            reward: 5,
-            reward_status: 0,
-            reward_user: ''
-          },
-          this.$store.commit('clearFileList');
-      },
-      convertFromMedia() {
-        if (typeof this.fileList != 'undefined' && this.fileList.length) {
-          this.fileList = this.fileList.map(item => {
-            if (typeof item.id != 'undefined') {
-              item.attach_id = item.id;
-              delete item.id;
-              item.url = settings.uploadContent + item.url;
-            }
-            return item;
           });
-        }
-      }
+      });
     },
-    created() {
-      this.loadProd();
-      if (this.previewMode == 1) {
-        this.$store.commit('enterPreview', false);
+    submitForm() {
+      if (!this.getParams()) {
+        return;
       }
-      this.convertFromMedia();
-      //this.$store.commit('clearFileList');
-    },
-    activated() {
+
+      let url =
+        this.previewMode == 0 ? settings.api.insert : settings.api.update;
+      let submitData = Object.assign({}, this.preview);
+      submitData.rec_time = submitData.rec_time.substr(0, 19);
+
+      if (Reflect.has(submitData, "submitData")) {
+        submitData.status_rectime = submitData.status_rectime.substr(0, 19);
+      }
       if (this.previewMode == 2) {
-        this.value = this.preview;
-        this.value.operator = this.preview.operator.split(',');
+        Reflect.deleteProperty(submitData, "rec_time");
+        Reflect.deleteProperty(submitData, "status_rectime");
+        Reflect.deleteProperty(submitData, "user");
+        Reflect.deleteProperty(submitData, "uid");
+        Reflect.deleteProperty(submitData, "status");
+        Reflect.deleteProperty(submitData, "status_username");
+        Reflect.deleteProperty(submitData, "reward");
+        Reflect.deleteProperty(submitData, "reward_status");
+      } else {
+        Reflect.deleteProperty(submitData, "id");
+        Reflect.deleteProperty(submitData, "user");
+        submitData.status_username = "";
+      }
+      Reflect.deleteProperty(submitData, "datetime");
+
+      submitData.cartno = this.cartList.join(",");
+
+      let receiver = this.$store.state.rtxlist.join(",");
+
+      //post CROS 需增加 emulateJSON:true
+      //需更新article表单，增加receiver字段
+      this.$http
+        .post(
+          url,
+          Object.assign(submitData, {
+            receiver
+          }),
+          {
+            emulateJSON: true
+          }
+        )
+        .then(response => {
+          let res = response.data;
+          if (res.type == 1) {
+            this.$message({
+              message: "数据添加成功",
+              type: "success"
+            });
+            this.updateAttachArticleId(res.id);
+            //提交后重置数据
+            this.resetForm();
+            if (this.previewMode == 2) {
+              this.$router.push("/view/" + submitData.id);
+            } else {
+              this.$router.push("/view/" + res.id);
+            }
+            //没有选择人员时，则不推送
+            if (receiver != "" && this.previewMode == 0) {
+              let msg = `${this.$store.state.user.username}发表了一篇新文章,[(${
+                this.$store.state.preview.title
+              })|${settings.rtxJmpLink + "/view/" + res.id + "?read=1"}]`;
+              this.pushMsgByRtx({
+                msg,
+                receiver,
+                title: "质量问题管理平台",
+                delaytime: 0
+              });
+            }
+            this.previewMode == 0;
+          } else {
+            this.$message({
+              message: "数据添加失败",
+              type: "error"
+            });
+          }
+
+          this.$store.commit("refreshMainList", true);
+          window.localStorage.setItem("editor", "");
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    resetForm(formName = "value") {
+      //this.$store.commit('resetAddInfo');
+      (this.value = {
+        prod: "",
+        proc: "",
+        machine: "",
+        operator: [],
+        cartno: "",
+        category: "",
+        content: "",
+        title: "",
+        receiver: "",
+        remark: "",
+        reward: 5,
+        reward_status: 0,
+        reward_user: ""
+      }),
+        this.$store.commit("clearFileList");
+    },
+    convertFromMedia() {
+      if (typeof this.fileList != "undefined" && this.fileList.length) {
+        this.fileList = this.fileList.map(item => {
+          if (typeof item.id != "undefined") {
+            item.attach_id = item.id;
+            delete item.id;
+            item.url = settings.uploadContent + item.url;
+          }
+          return item;
+        });
       }
     }
+  },
+  created() {
+    this.loadProd();
+    if (this.previewMode == 1) {
+      this.$store.commit("enterPreview", false);
+    }
+    this.convertFromMedia();
+    //this.$store.commit('clearFileList');
+  },
+  activated() {
+    if (this.previewMode == 2) {
+      this.value = this.preview;
+      this.value.operator = this.preview.operator.split(",");
+    }
   }
-
+};
 </script>
 
 <style lang="less" scoped>
-  h3,
-  h4 {
-    font-weight: 400;
-  }
+h3,
+h4 {
+  font-weight: 400;
+}
 
-  .margin-top-20 {
-    margin-top: 20px;
-  }
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 180px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 
-  .submit {
-    .margin-top-20;
-    display: flex;
-    justify-content: flex-end;
-  }
+.margin-top-20 {
+  margin-top: 20px;
+}
 
-  .card {
-    .margin-top-20;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 4px;
-    .basic {
-      width: 290px;
-    }
-  }
+.submit {
+  .margin-top-20;
+  display: flex;
+  justify-content: flex-end;
+}
 
-  .card:nth-child(1) {
-    margin-top: 0;
+.card {
+  .margin-top-20;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  .basic {
+    width: 290px;
   }
+}
 
+.card:nth-child(1) {
+  margin-top: 0;
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="listType=='picture-card'" class="margin-top-20">
-      <el-upload multiple :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType" :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
+      <el-upload :action="uploadUrl" :on-remove="handleRemove" :file-list="fileList" :list-type="listType" :on-success="handleSuccess" :before-upload="validFile" :on-preview="handlePreview">
         <i class="el-icon-plus"></i>
         <div class="el-upload__tip" slot="tip">文件大小请勿超过100MB，图片文件点击列表预览</div>
       </el-upload>
@@ -125,12 +125,6 @@ export default {
             response.url = HOST + "/upload" + response.url;
             //this.fileList.push(response);
 
-            if (!["images/webp", "image/webp", "image"].includes(file.type)) {
-              this.$store.commit("addFileItem", response);
-            } else {
-              this.addImg2Editor({ file: this.latestFile });
-            }
-
             this.latestFile = {
               id: res.id,
               url: response.url.split("/upload")[1],
@@ -139,6 +133,19 @@ export default {
               width: response.width,
               height: response.height
             };
+
+            if (
+              !["images/webp", "image/webp", "image"].includes(response.type)
+            ) {
+              this.$store.commit("addFileItem", response);
+            } else {
+              this.addImg2Editor({ file: this.latestFile });
+              // 删除最后一项文件
+              this.$store.commit(
+                "removeFileItem",
+                this.$store.state.fileList.length - 1
+              );
+            }
           }
         })
         .catch(e => {
