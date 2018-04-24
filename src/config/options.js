@@ -332,16 +332,13 @@ var options = {
       value: "质量隐患整改通知"
     },
     {
-      value: "安全管理"
+      value: "综合管理"
     },
     {
-      value: "体系、标准运行"
+      value: "专项工作跟踪"
     },
     {
       value: "设备维修"
-    },
-    {
-      value: "管三党支部建设"
     }
   ],
   mediaList: [
