@@ -282,6 +282,15 @@ var options = {
         },
         {
           value: "白平"
+        },
+        {
+          value: "杜宁"
+        },
+        {
+          value: "张亚伟"
+        },
+        {
+          value: "任伟"
         }
       ]
     },
@@ -299,6 +308,12 @@ var options = {
         },
         {
           value: "张莲娜"
+        },
+        {
+          value: "李平"
+        },
+        {
+          value: "魏屹"
         }
       ]
     }
