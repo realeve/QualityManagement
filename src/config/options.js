@@ -232,6 +232,9 @@ var options = {
           value: "陈晶"
         },
         {
+          value: "周正东"
+        },
+        {
           value: "杜煜"
         },
         {

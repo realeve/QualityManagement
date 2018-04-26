@@ -169,6 +169,10 @@ let rtxInfo = {
     {
       value: "林莉",
       id: 10779
+    },
+    {
+      value: "周正东",
+      id: 11126
     }
   ],
   physic: [
