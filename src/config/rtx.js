@@ -1,6 +1,5 @@
 let rtxInfo = {
-  technology: [
-    {
+  technology: [{
       value: "徐东海",
       id: 10866
     },
@@ -53,8 +52,7 @@ let rtxInfo = {
       id: 10875
     }
   ],
-  imgVs: [
-    {
+  imgVs: [{
       value: "徐闵",
       id: 10884
     },
@@ -115,8 +113,7 @@ let rtxInfo = {
       id: 11168
     }
   ],
-  pprImgVs: [
-    {
+  pprImgVs: [{
       value: "于潇",
       id: 10869
     },
@@ -137,8 +134,7 @@ let rtxInfo = {
       id: 11164
     }
   ],
-  paper: [
-    {
+  paper: [{
       value: "陈晶",
       id: 10871
     },
@@ -175,8 +171,7 @@ let rtxInfo = {
       id: 11126
     }
   ],
-  physic: [
-    {
+  physic: [{
       value: "李奎昌",
       id: 10873
     },
@@ -189,8 +184,7 @@ let rtxInfo = {
       id: 10870
     }
   ],
-  printmonitor: [
-    {
+  printmonitor: [{
       value: "权净",
       id: 10894
     },
@@ -207,8 +201,7 @@ let rtxInfo = {
       id: 10798
     }
   ],
-  papermonitor: [
-    {
+  papermonitor: [{
       value: "周琳丽",
       id: 10896
     },
@@ -225,8 +218,7 @@ let rtxInfo = {
       id: 10899
     }
   ],
-  manage: [
-    {
+  manage: [{
       value: "白薇",
       id: 10887
     },
@@ -235,8 +227,7 @@ let rtxInfo = {
       id: 10653
     }
   ],
-  reward: [
-    {
+  reward: [{
       value: "袁长虹",
       id: 10863
     },
@@ -273,8 +264,7 @@ let rtxInfo = {
       id: 10648
     }
   ],
-  verify: [
-    {
+  verify: [{
       value: "袁长虹",
       id: 10863
     },
@@ -307,8 +297,7 @@ let rtxInfo = {
       id: 10648
     }
   ],
-  techLeader: [
-    {
+  techLeader: [{
       value: "武明凯",
       id: 10647
     },
@@ -333,8 +322,7 @@ let rtxInfo = {
       id: 11022
     }
   ],
-  prodLeader: [
-    {
+  prodLeader: [{
       value: "杨文群",
       id: 10907
     },
@@ -359,8 +347,7 @@ let rtxInfo = {
       id: 10651
     }
   ],
-  paperProdLeader: [
-    {
+  paperProdLeader: [{
       value: "杨帆",
       id: 11118
     },
@@ -385,8 +372,7 @@ let rtxInfo = {
       id: 10778
     }
   ],
-  machine: [
-    {
+  machine: [{
       value: "王昌明",
       id: 11079
     },
@@ -415,8 +401,7 @@ let rtxInfo = {
       id: 11089
     }
   ],
-  material: [
-    {
+  material: [{
       value: "贾燕",
       id: 10976
     },
@@ -440,11 +425,27 @@ let rtxInfo = {
       value: "赵军",
       id: 11023
     }
+  ],
+  infontech: [{
+      value: "唐璇",
+      id: 10094
+    },
+    {
+      value: "倪震",
+      id: 10093
+    },
+    {
+      value: "郝中明",
+      id: 10086
+    },
+    {
+      value: "蒲云飞",
+      id: 10080
+    }
   ]
 };
 
-let desc = [
-  {
+let desc = [{
     label: "印钞管理部/钞纸管理部",
     value: "techLeader"
   },
@@ -495,6 +496,10 @@ let desc = [
   {
     label: "钞纸班长",
     value: "papermonitor"
+  },
+  {
+    label: "企划信息",
+    value: "infontech"
   }
 ];
 

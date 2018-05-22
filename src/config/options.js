@@ -1,6 +1,5 @@
 var options = {
-  proc: [
-    {
+  proc: [{
       value: "0",
       label: "辅料"
     },
@@ -39,11 +38,9 @@ var options = {
   ],
   prod: [],
   machine: [],
-  operator: [
-    {
+  operator: [{
       label: "印钞管理部",
-      options: [
-        {
+      options: [{
           value: "武明凯"
         },
         {
@@ -56,8 +53,7 @@ var options = {
     },
     {
       label: "钞纸管理部",
-      options: [
-        {
+      options: [{
           value: "赵洪新"
         },
         {
@@ -70,8 +66,7 @@ var options = {
     },
     {
       label: "印钞工艺组",
-      options: [
-        {
+      options: [{
           value: "徐东海"
         },
         {
@@ -114,8 +109,7 @@ var options = {
     },
     {
       label: "印刷机检组",
-      options: [
-        {
+      options: [{
           value: "舒粤"
         },
         {
@@ -149,8 +143,7 @@ var options = {
     },
     {
       label: "检封机检组",
-      options: [
-        {
+      options: [{
           value: "杨林"
         },
         {
@@ -172,8 +165,7 @@ var options = {
     },
     {
       label: "综合管理及班组长",
-      options: [
-        {
+      options: [{
           value: "白薇"
         },
         {
@@ -204,8 +196,7 @@ var options = {
     },
     {
       label: "钞纸机检组",
-      options: [
-        {
+      options: [{
           value: "于潇"
         },
         {
@@ -224,8 +215,7 @@ var options = {
     },
     {
       label: "钞纸工艺组",
-      options: [
-        {
+      options: [{
           value: "王梅"
         },
         {
@@ -259,8 +249,7 @@ var options = {
     },
     {
       label: "物检中心",
-      options: [
-        {
+      options: [{
           value: "李奎昌"
         },
         {
@@ -273,8 +262,7 @@ var options = {
     },
     {
       label: "设备管理部",
-      options: [
-        {
+      options: [{
           value: "王昌明"
         },
         {
@@ -299,8 +287,7 @@ var options = {
     },
     {
       label: "物资管理部",
-      options: [
-        {
+      options: [{
           value: "贾燕"
         },
         {
@@ -319,10 +306,25 @@ var options = {
           value: "魏屹"
         }
       ]
+    },
+    {
+      label: "企划信息部",
+      options: [{
+          value: "唐璇"
+        },
+        {
+          value: "倪震"
+        },
+        {
+          value: "郝中明"
+        },
+        {
+          value: "蒲云飞"
+        }
+      ]
     }
   ],
-  category: [
-    {
+  category: [{
       value: "日常工作安排"
     },
     {
@@ -359,8 +361,7 @@ var options = {
       value: "设备维修"
     }
   ],
-  mediaList: [
-    {
+  mediaList: [{
       label: "图片",
       value: "image"
     },
@@ -378,8 +379,7 @@ var options = {
     }
   ],
   mediaLoadingNums: 25,
-  menu: [
-    {
+  menu: [{
       label: "首页",
       value: "/"
     },
