@@ -1,6 +1,5 @@
 /*! This file is created by gold.xitu.io. */
 
-
 /*! normalize.scss v0.1.0 | MIT License | based on git.io/normalize */
 
 html {
@@ -502,7 +501,7 @@ strong {
 
 @media (max-width:600px) {
   .hide-when-small {
-    display: none!important
+    display: none !important
   }
   .show-when-small {
     display: block
@@ -511,13 +510,13 @@ strong {
 
 @media (max-width:960px) {
   .hide-when-not-large {
-    display: none!important
+    display: none !important
   }
 }
 
 @media (min-width:960px) {
   .hide-when-large {
-    display: none!important
+    display: none !important
   }
 }
 
@@ -1077,7 +1076,7 @@ nav .actions>.action {
 }
 
 nav .actions>.action.dropdown {
-  border-bottom-color: transparent!important
+  border-bottom-color: transparent !important
 }
 
 nav .actions>.action .dropdown-active {
@@ -1612,7 +1611,11 @@ body {
 
 .welcome .entry-title {
   font-weight: 600;
-  line-height: 1.5em
+  line-height: 1.5em;
+  width: 345px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .welcome .entry-title:hover {
@@ -2249,13 +2252,14 @@ body {
   margin: 15px auto;
 }
 
-.article .content .remark,.article .content blockquote{
+.article .content .remark,
+.article .content blockquote {
   text-indent: 0pt;
   font-size: 15px;
-  padding:5px 80px 5px 5px;
-  max-width:700px;
+  padding: 5px 80px 5px 5px;
+  max-width: 700px;
   border-left-color: #ff4949;
-  background-color:rgba(255,73,73,0.15);
+  background-color: rgba(255, 73, 73, 0.15);
 }
 
 blockquote {
