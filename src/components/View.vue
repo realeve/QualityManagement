@@ -9,40 +9,99 @@
           {{article.prod}} • {{article.proc}} • {{article.machine}} (阅读数:{{article.readnum}})
         </p>
       </h3>
-      <div class="content" v-html="article.content"></div>
+      <div
+        class="content"
+        v-html="article.content"
+      ></div>
       <blockquote>本问题由
-        <el-button plain v-for="(item,i) in operators" size="small" :key="i" @click="remind(item)">{{item}}</el-button> 确认
+        <el-button
+          plain
+          v-for="(item,i) in operators"
+          size="small"
+          :key="i"
+          @click="remind(item)"
+        >{{item}}</el-button> 确认
         <p>类型：{{article.category}}</p>
         <p v-if="article.cartno">车号:
-          <a class="cart-info" v-for="item in article.cartno.split(',')" :key="item" target="_blank" :href="cartUrl+item">{{item}}</a>
+          <a
+            class="cart-info"
+            v-for="item in article.cartno.split(',')"
+            :key="item"
+            target="_blank"
+            :href="cartUrl+item"
+          >{{item}}</a>
         </p>
         <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
         <p v-show="article.remark!=''">备注：{{article.remark}}</p>
         <p v-if="article.read_users!=''">阅读状态：{{article.read_users}}</p>
         <p v-else>阅读状态：无</p>
       </blockquote>
-      <div v-if="1 == previewMode" class="submit">
-        <el-button type="success" @click="closePreview">返回编辑</el-button>
+      <div
+        v-if="1 == previewMode"
+        class="submit"
+      >
+        <el-button
+          type="success"
+          @click="closePreview"
+        >返回编辑</el-button>
       </div>
-      <div v-else class="article-status">
+      <div
+        v-else
+        class="article-status"
+      >
         <span>文章状态</span>
-        <el-switch v-model="status" on-color="#13ce66" off-color="#ff4949" on-text="已关闭" off-text="未关闭" :width="72" @change="closeArticle">
+        <el-switch
+          v-model="status"
+          on-color="#13ce66"
+          off-color="#ff4949"
+          on-text="已关闭"
+          off-text="未关闭"
+          :width="72"
+          @change="closeArticle"
+        >
         </el-switch>
       </div>
-      <div v-if="0 == previewMode" class="submit reedit">
-        <el-button type="success" @click="edit">重新编辑</el-button>
+      <div
+        v-if="0 == previewMode"
+        class="submit reedit"
+      >
+        <el-button
+          type="success"
+          @click="edit"
+        >重新编辑</el-button>
       </div>
-      <div v-if="showDonate" class="donate">
+      <div
+        v-if="showDonate"
+        class="donate"
+      >
         <div class="verify-reward">
-          <el-button v-if="shouldReward && (article.reward==''|| article.reward_status==0)" type="danger" size="large" @click="donate">发起奖励</el-button>
+          <el-button
+            v-if="shouldReward && (article.reward==''|| article.reward_status==0)"
+            type="danger"
+            size="large"
+            @click="donate"
+          >发起奖励</el-button>
         </div>
         <template v-if="article.reward">
           <div class="verify-reward">
-            <el-button v-if="shouldVerify && article.reward_status==1" type="danger" size="large" @click="passDonate(1)">通过奖励</el-button>
-            <el-button v-if="shouldVerify && article.reward_status==1" type="warning" size="large" @click="passDonate(-1)">拒绝通过</el-button>
+            <el-button
+              v-if="shouldVerify && article.reward_status==1"
+              type="danger"
+              size="large"
+              @click="passDonate(1)"
+            >通过奖励</el-button>
+            <el-button
+              v-if="shouldVerify && article.reward_status==1"
+              type="warning"
+              size="large"
+              @click="passDonate(-1)"
+            >拒绝通过</el-button>
           </div>
           <p v-show=" (article.reward_status==1||article.reward_status==0) && shouldVerify">本文由{{article.reward_user}}发起了 ￥
-            <el-input style="width:50px;" v-model="article.reward"></el-input> 元的奖励</p>
+            <el-input
+              style="width:50px;"
+              v-model="article.reward"
+            ></el-input> 元的奖励</p>
           <p v-show="article.reward_status == 2">本文由{{article.reward_user}}发起了
             <el-tag type="danger">￥{{article.reward}}</el-tag> 元的奖励</p>
         </template>
@@ -51,25 +110,54 @@
     <div v-show="attachList.length">
       <h2 class="font-thin">附件列表</h2>
       <div class="card attach">
-        <el-carousel indicator-position="inside" height="500px" v-if="attaches.image.length" arrow="always">
-          <el-carousel-item v-for="(item,i) in attaches.image" :key="i">
-            <img :src="item.url" :alt="item.name">
+        <el-carousel
+          indicator-position="inside"
+          height="500px"
+          v-if="attaches.image.length"
+          arrow="always"
+        >
+          <el-carousel-item
+            v-for="(item,i) in attaches.image"
+            :key="i"
+          >
+            <img
+              :src="item.url"
+              :alt="item.name"
+            >
           </el-carousel-item>
         </el-carousel>
 
-        <div v-if="musicList.length" class="center margin-top-20">
+        <div
+          v-if="musicList.length"
+          class="center margin-top-20"
+        >
           <my-player :music="musicList" />
         </div>
 
         <div class="center margin-top-20">
-          <div v-for="(item,i) in attaches.video" :key="i">
-            <video :src="item.url" controls="controls"></video>
+          <div
+            v-for="(item,i) in attaches.video"
+            :key="i"
+          >
+            <video
+              :src="item.url"
+              controls="controls"
+            ></video>
           </div>
         </div>
 
         <ul class="attach-list">
-          <li class="attach-item" v-for="(item,i) in attaches.other" :key="i" :title="'点击下载 '+item.name">
-            <a :href="item.url" target="_blank" :title="'点击下载 '+item.name">
+          <li
+            class="attach-item"
+            v-for="(item,i) in attaches.other"
+            :key="i"
+            :title="'点击下载 '+item.name"
+          >
+            <a
+              :href="item.url"
+              target="_blank"
+              :title="'点击下载 '+item.name"
+            >
               <i class="el-icon-document"></i> 附件{{i+1}} —— {{item.name}}</a>
           </li>
         </ul>
@@ -86,12 +174,25 @@
             </p>
           </div>
           <div v-else>
-            <div v-for="item in comment" :key="item.comment_id" class="entry">
+            <div
+              v-for="item in comment"
+              :key="item.comment_id"
+              class="entry"
+            >
               <div class="user float-left center">
-                <img class="img-header" :src="item.useravatar">
+                <img
+                  class="img-header"
+                  :src="item.useravatar"
+                >
               </div>
               <div class="info">
-                <el-button type="danger" icon="delete" class="float-right" v-if="user.username == item.username" @click="deleteComment(item.comment_id)"></el-button>
+                <el-button
+                  type="danger"
+                  icon="delete"
+                  class="float-right"
+                  v-if="user.username == item.username"
+                  @click="deleteComment(item.comment_id)"
+                ></el-button>
                 <div v-html="item.content"></div>
                 <div class="user-info float-right">
                   <i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
@@ -103,9 +204,16 @@
       <template v-show="user.id!=''">
         <h2 class="font-thin">留言</h2>
         <div class="card editor">
-          <quill-editor :config="config" v-model="mycomment"></quill-editor>
+          <quill-editor
+            :config="config"
+            v-model="mycomment"
+          ></quill-editor>
           <div class="submit">
-            <el-button type="primary" @click="postComment" :disabled="mycomment==''">提交</el-button>
+            <el-button
+              type="primary"
+              @click="postComment"
+              :disabled="mycomment==''"
+            >提交</el-button>
           </div>
         </div>
         <div class="card">
@@ -114,15 +222,31 @@
         </div>
       </template>
 
-      <el-dialog title="原因确认" v-model="dialogFormVisible">
+      <el-dialog
+        title="原因确认"
+        v-model="dialogFormVisible"
+      >
         <el-form :model="article">
-          <el-form-item label="问题原因" :label-width="'120px'">
-            <el-input v-model="article.remark" placeholder="请输入问题原因，如：机检系统异常，胶印质量、凹印质量、印码质量、成像异常等" auto-complete="off"></el-input>
+          <el-form-item
+            label="问题原因"
+            :label-width="'120px'"
+          >
+            <el-input
+              v-model="article.remark"
+              placeholder="请输入问题原因，如：机检系统异常，胶印质量、凹印质量、印码质量、成像异常等"
+              auto-complete="off"
+            ></el-input>
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
+        <div
+          slot="footer"
+          class="dialog-footer"
+        >
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateRemark">确 定</el-button>
+          <el-button
+            type="primary"
+            @click="updateRemark"
+          >确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -312,7 +436,12 @@ export default {
       }
     },
     operators() {
-      return this.article.operator ? this.article.operator.split(",") : [];
+      return this.article.operator
+        ? util.unionArr([
+            this.article.user,
+            ...this.article.operator.split(",")
+          ])
+        : [article.user];
     }
   },
   methods: {
@@ -832,16 +961,19 @@ export default {
       // if (!status || this.article.read_users.includes(this.user.username)) {
       //   return;
       // }
+      let readUsers = this.article.read_users;
       if (this.article.read_users.includes(this.user.username)) {
+        this.article.read_users = readUsers.replace("0、", "");
         return;
       }
-      let readUsers = this.article.read_users.split("、");
+      readUsers = this.article.read_users.split("、");
       if (readUsers[0] == "") {
         readUsers[0] = this.user.username;
       } else {
         readUsers.push(this.user.username);
       }
       readUsers = util.unionArr(readUsers);
+      readUsers = readUsers.filter(item => item != "0");
       this.article.read_users = readUsers.join("、");
       //更新文章阅读状态
       let url = settings.api.update;
