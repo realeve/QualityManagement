@@ -1,10 +1,11 @@
-var host = (process.env.NODE_ENV !== 'development') ? '//localhost' : '//10.8.2.133'
+var host =
+  process.env.NODE_ENV == 'development' ? '//localhost' : '//10.8.2.133';
 
-var url = host + '/datainterface/api?ID='
+var url = host + '/datainterface/api?ID=';
 
-var rtxJmpLink = '//10.8.2.133:90'
+var rtxJmpLink = '//10.8.2.133:90';
 
-import rtx from './rtx'
+import rtx from './rtx';
 
 export default {
   host,
@@ -12,62 +13,62 @@ export default {
   rtxJmpLink,
   uploadContent: host + '/upload',
   api: {
-        // POST
+    // POST
     insert: host + '/DataInterface/insert',
 
-        // UPDATE
+    // UPDATE
     update: host + '/DataInterface/update',
 
-        // DELETE (POST)
+    // DELETE (POST)
     delete: host + '/DataInterface/delete',
 
-        // FILEUPLOAD (POST)
+    // FILEUPLOAD (POST)
     fileUpload: host + '/upload/upload.php',
 
-        // FILEDELETE (GET)
+    // FILEDELETE (GET)
     fileDelete: host + '/upload/upload.php',
 
-        // 主页模块
+    // 主页模块
     articleHome: url + 402 + '&M=0',
 
-        // 主页各模块Top5，无请求参数，一次加载完成
+    // 主页各模块Top5，无请求参数，一次加载完成
     articleTop5: url + 412 + '&M=0',
 
     myWorkList: url + 413 + '&M=0',
 
     myWorkListByPage: url + 414 + '&M=0',
 
-        // 文章详情
+    // 文章详情
     articleDetail: url + 403 + '&M=0',
 
-        // 文章评论
+    // 文章评论
     commentDetail: url + 404 + '&M=0',
 
-        // 文章列表详情
+    // 文章列表详情
     articleList: url + 405 + '&M=0',
 
-        // 附件列表
+    // 附件列表
     attachList: url + 406 + '&M=0',
 
-        // 媒体列表
+    // 媒体列表
     mediaList: url + 407 + '&M=0',
 
-        // 素材库载入更多:
+    // 素材库载入更多:
     mediaLoadMore: url + 408 + '&M=0&cache=10',
 
-        // 登录模块-用户列表
+    // 登录模块-用户列表
     userList: url + 409 + '&M=0',
 
-        // md5 encrypt
+    // md5 encrypt
     md5: host + '/datainterface/md5',
 
-        // login
+    // login
     login: url + 165 + '&M=0',
 
-        // search
+    // search
     search: url + 410 + '&M=0',
 
-        // rtxPush
+    // rtxPush
     rtxPush: host + '/datainterface/rtxpush',
 
     readnum: url + 474 + '&M=3',
@@ -76,4 +77,4 @@ export default {
   rewardUsers: ['袁长虹', '张建军', '陈晶', '张楠岚', '赵洪新', '达时'],
   verifyUsers: ['袁长虹', '张楠岚', '赵洪新', '达时'],
   rtxInfo: rtx.rtxInfo
-}
+};
