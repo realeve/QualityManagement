@@ -441,7 +441,7 @@ export default {
             this.article.user,
             ...this.article.operator.split(",")
           ])
-        : [article.user];
+        : [this.article.user];
     }
   },
   methods: {
