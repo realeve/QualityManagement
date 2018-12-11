@@ -1,5 +1,5 @@
 var host =
-  process.env.NODE_ENV == 'development' ? '//localhost' : '//10.8.2.133';
+  process.env.NODE_ENV === 'development' ? '//localhost' : '//10.8.2.133';
 
 var url = host + '/datainterface/api?ID=';
 
@@ -29,35 +29,35 @@ export default {
     fileDelete: host + '/upload/upload.php',
 
     // 主页模块
-    articleHome: url + 402 + '&M=0',
+    articleHome: 'http://localhost:90/api/57/e25408e435', // url + 402 + '&M=0',
 
     // 主页各模块Top5，无请求参数，一次加载完成
-    articleTop5: url + 412 + '&M=0',
+    articleTop5: 'http://localhost:90/api/56/67772bd935', // url + 412 + '&M=0',
 
-    myWorkList: url + 413 + '&M=0',
+    myWorkList: 'http://localhost:90/api/55/b0fdc7440d', // url + 413 + '&M=0',
 
-    myWorkListByPage: url + 414 + '&M=0',
+    myWorkListByPage: 'http://localhost:90/api/58/21eac5516f', // url + 414 + '&M=0',
 
     // 文章详情
-    articleDetail: url + 403 + '&M=0',
+    articleDetail: 'http://localhost:90/api/52/4ea73d46fc', // 'http://10.8.1.25:100/api/298/2011115320',
 
     // 文章评论
-    commentDetail: url + 404 + '&M=0',
+    commentDetail: 'http://localhost:90/api/53/bbf61894f5', // url + 404 + '&M=0',
 
     // 文章列表详情
-    articleList: url + 405 + '&M=0',
+    articleList: 'http://localhost:90/api/59/9ce72536da', // url + 405 + '&M=0',
 
     // 附件列表
-    attachList: url + 406 + '&M=0',
+    attachList: 'http://localhost:90/api/54/6685ffcc2f', // url + 406 + '&M=0',
 
     // 媒体列表
-    mediaList: url + 407 + '&M=0',
+    mediaList: 'http://localhost:90/api/60/c7c49da170', // url + 407 + '&M=0',
 
     // 素材库载入更多:
-    mediaLoadMore: url + 408 + '&M=0&cache=10',
+    mediaLoadMore: 'http://localhost:90/api/61/f179198b56', // url + 408 + '&M=0&cache=10',
 
     // 登录模块-用户列表
-    userList: url + 409 + '&M=0',
+    userList: 'http://localhost:90/api/62/337580349b', // url + 409 + '&M=0',
 
     // md5 encrypt
     md5: host + '/datainterface/md5',
@@ -66,13 +66,13 @@ export default {
     login: url + 165 + '&M=0',
 
     // search
-    search: url + 410 + '&M=0',
+    search: url + 410 + '&M=0', // 'http://localhost:90/api/63/1013f75c9c', // 不允许字符串拼接
 
     // rtxPush
     rtxPush: host + '/datainterface/rtxpush',
 
-    readnum: url + 474 + '&M=3',
-    commentnum: url + 475 + '&M=3'
+    readnum: 'http://localhost:90/api/65/c231fe5f9f', // url + 474 + '&M=3',
+    commentnum: 'http://localhost:90/api/64/59eef0d55a' // url + 475 + '&M=3'
   },
   rewardUsers: ['袁长虹', '张建军', '陈晶', '张楠岚', '赵洪新', '达时'],
   verifyUsers: ['袁长虹', '张楠岚', '赵洪新', '达时'],

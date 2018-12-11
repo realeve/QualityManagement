@@ -834,7 +834,7 @@ export default {
     },
     loadArticle() {
       let id = this.$route.params.id;
-      let url = HOST + "/DataInterface/Api";
+      // let url = HOST + "/DataInterface/Api";
       this.$http
         .jsonp(settings.api.articleDetail, {
           params: {
@@ -842,6 +842,7 @@ export default {
           }
         })
         .then(res => {
+          console.log(res);
           let obj = res.data;
           if (obj.rows == 0) {
             return;
@@ -856,6 +857,9 @@ export default {
           } else {
             this.mycomment = "";
           }
+        })
+        .catch(e => {
+          console.log(e);
         });
     },
     loadDefaultCommentTpl() {

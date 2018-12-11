@@ -1,75 +1,217 @@
 <template>
   <div>
-    <el-form :model="value" :rules="rules" ref="value" label-width="100px">
+    <el-form
+      :model="value"
+      :rules="rules"
+      ref="value"
+      label-width="100px"
+    >
       <div class="card">
         <el-row>
-          <el-col :md="14" :sm="24" :xs="24">
+          <el-col
+            :md="14"
+            :sm="24"
+            :xs="24"
+          >
             <div class="basic">
               <h3>基础信息</h3>
-              <el-form-item label="品种" prop="prod">
-                <el-select v-model="value.prod" clearable placeholder="请选择品种名称">
-                  <el-option v-for="item in options.prod" :label="item.label" :value="item.label" :key="item.value">
+              <el-form-item
+                label="品种"
+                prop="prod"
+              >
+                <el-select
+                  v-model="value.prod"
+                  clearable
+                  placeholder="请选择品种名称"
+                >
+                  <el-option
+                    v-for="item in options.prod"
+                    :label="item.label"
+                    :value="item.label"
+                    :key="item.value"
+                  >
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="工序" prop="proc">
-                <el-select v-model="value.proc" clearable placeholder="请选择工序">
-                  <el-option v-for="item in options.proc" :label="item.label" :value="item.label" :key="item.label">
+              <el-form-item
+                label="工序"
+                prop="proc"
+              >
+                <el-select
+                  v-model="value.proc"
+                  clearable
+                  placeholder="请选择工序"
+                >
+                  <el-option
+                    v-for="item in options.proc"
+                    :label="item.label"
+                    :value="item.label"
+                    :key="item.label"
+                  >
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="机台" prop="machine">
-                <el-autocomplete class="inline-input" v-model="value.machine" :fetch-suggestions="querySearch" placeholder="请输入机台"></el-autocomplete>
+              <el-form-item
+                label="机台"
+                prop="machine"
+              >
+                <el-autocomplete
+                  class="inline-input"
+                  v-model="value.machine"
+                  :fetch-suggestions="querySearch"
+                  placeholder="请输入机台"
+                ></el-autocomplete>
               </el-form-item>
-              <el-form-item label="处理人员" prop="operator">
-                <el-select v-model="value.operator" multiple placeholder="请选择处理人员">
-                  <el-option-group v-for="group in options.operator" :label="group.label" :key="group.value">
-                    <el-option v-for="item in group.options" :label="item.label" :value="item.value" :key="item.value">
+              <el-form-item
+                label="处理人员"
+                prop="operator"
+              >
+                <el-select
+                  v-model="value.operator"
+                  multiple
+                  placeholder="请选择处理人员"
+                >
+                  <el-option-group
+                    v-for="group in options.operator"
+                    :label="group.label"
+                    :key="group.value"
+                  >
+                    <el-option
+                      v-for="item in group.options"
+                      :label="item.label"
+                      :value="item.value"
+                      :key="item.value"
+                    >
                     </el-option>
                   </el-option-group>
                 </el-select>
               </el-form-item>
-              <el-form-item label="车号/轴号" prop="cartno">
-                <el-tag :key="tag" v-for="tag in cartList" closable :disable-transitions="false" @close="handleClose(tag)">
+              <el-form-item
+                label="车号/轴号"
+                prop="cartno"
+              >
+                <el-tag
+                  :key="tag"
+                  v-for="tag in cartList"
+                  closable
+                  :disable-transitions="false"
+                  @close="handleClose(tag)"
+                >
                   {{tag}}
                 </el-tag>
-                <el-input v-model="value.cartno" class="input-new-tag" v-if="inputVisible" ref="saveTagInput" size="small" @input="capitalizeCartno" @keyup.enter.native="addCart" @blur="addCart" :maxlength="8" :minlength="7" icon="edit" placeholder="请输入车号/轴号信息"></el-input>
-                <el-button v-else class="button-new-tag" size="small" @click="showInput">添加车号</el-button>
+                <el-input
+                  v-model="value.cartno"
+                  class="input-new-tag"
+                  v-if="inputVisible"
+                  ref="saveTagInput"
+                  size="small"
+                  @input="capitalizeCartno"
+                  @keyup.enter.native="addCart"
+                  @blur="addCart"
+                  :maxlength="8"
+                  :minlength="7"
+                  icon="edit"
+                  placeholder="请输入车号/轴号信息"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput"
+                >添加车号</el-button>
               </el-form-item>
             </div>
           </el-col>
-          <el-col :md="10" :sm="24" :xs="24">
+          <el-col
+            :md="10"
+            :sm="24"
+            :xs="24"
+          >
             <h3>消息推送名单</h3>
-            <rtx-check/>
+            <rtx-check />
           </el-col>
         </el-row>
       </div>
       <div class="card">
         <h3>文章内容</h3>
-        <el-form-item label="类别" prop="category">
-          <el-select v-model="value.category" clearable placeholder="请选择类别">
-            <el-option v-for="(item,i) in options.category" :label="item.label" :value="item.value" :key="i">
+        <el-form-item
+          label="类别"
+          prop="category"
+        >
+          <el-select
+            v-model="value.category"
+            clearable
+            placeholder="请选择类别"
+          >
+            <el-option
+              v-for="(item,i) in options.category"
+              :label="item.label"
+              :value="item.value"
+              :key="i"
+            >
             </el-option>
           </el-select>
         </el-form-item>
-        <transition name="custom-transition" enter-active-class="animated slideInUp" leave-active-class="animated fadeOutDown">
-          <el-form-item v-if="value.category == '质量问题发布'" :label="infoTips.text" prop="remark">
-            <el-input style="width:210px;" v-model="value.remark" icon="information" :placeholder="infoTips.placeholder"></el-input>
+        <transition
+          name="custom-transition"
+          enter-active-class="animated slideInUp"
+          leave-active-class="animated fadeOutDown"
+        >
+          <el-form-item
+            v-if="value.category == '质量问题发布'"
+            :label="infoTips.text"
+            prop="remark"
+          >
+            <el-input
+              style="width:210px;"
+              v-model="value.remark"
+              icon="information"
+              :placeholder="infoTips.placeholder"
+            ></el-input>
           </el-form-item>
         </transition>
-        <transition name="custom-transition" enter-active-class="animated slideInUp" leave-active-class="animated fadeOutDown">
-          <el-form-item v-if="value.category == '工艺质量隐患排查'" :label="infoTips.text" prop="remark">
-            <el-input style="width:210px;" v-model="value.reward" icon="information" :placeholder="infoTips.placeholder"></el-input>
+        <transition
+          name="custom-transition"
+          enter-active-class="animated slideInUp"
+          leave-active-class="animated fadeOutDown"
+        >
+          <el-form-item
+            v-if="value.category == '工艺质量隐患排查'"
+            :label="infoTips.text"
+            prop="remark"
+          >
+            <el-input
+              style="width:210px;"
+              v-model="value.reward"
+              icon="information"
+              :placeholder="infoTips.placeholder"
+            ></el-input>
           </el-form-item>
         </transition>
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="value.title" icon="edit" placeholder="请输入标题内容"></el-input>
+        <el-form-item
+          label="标题"
+          prop="title"
+        >
+          <el-input
+            v-model="value.title"
+            icon="edit"
+            placeholder="请输入标题内容"
+          ></el-input>
         </el-form-item>
-        <my-editor/>
+        <my-editor />
         <div class="submit">
-          <el-button type="primary" @click="submitForm()">{{createText}}</el-button>
-          <el-button v-show="previewMode == 0" @click="enterPreview()">预览</el-button>
-          <el-button v-show="previewMode == 0" @click="resetForm">重置</el-button>
+          <el-button
+            type="primary"
+            @click="submitForm()"
+          >{{createText}}</el-button>
+          <el-button
+            v-show="previewMode == 0"
+            @click="enterPreview()"
+          >预览</el-button>
+          <el-button
+            v-show="previewMode == 0"
+            @click="resetForm"
+          >重置</el-button>
         </div>
       </div>
     </el-form>
@@ -330,14 +472,8 @@ export default {
       this.value.cartno = result;
     },
     loadProd() {
-      let url = HOST + "/DataInterface/Api";
       this.$http
-        .jsonp(url, {
-          params: {
-            ID: "35",
-            cache: 14400
-          }
-        })
+        .jsonp("http://localhost:90/api/66/19ff06e209/array")
         .then(response => {
           let data = response.data.data;
           this.options.prod = data.map(item => {
@@ -349,15 +485,9 @@ export default {
         });
     },
     loadMachineList(id) {
-      let url = HOST + "/DataInterface/Api";
+      // let url = HOST + "/DataInterface/Api";
       this.$http
-        .jsonp(url, {
-          params: {
-            ID: "36",
-            p: id,
-            cache: 14400
-          }
-        })
+        .jsonp(`http://localhost:90/api/67/9ad51d5a12/array?p=${id}`)
         .then(response => {
           let data = response.data.data;
           this.options.machine = data.map(item => {
