@@ -4,7 +4,7 @@ import { sys_id } from './db';
 var host =
   process.env.NODE_ENV === 'development' ? '//localhost' : '//10.8.2.133';
 
-host = '//localhost';
+// host = '//localhost';
 
 var url = host + '/datainterface/api?ID=';
 

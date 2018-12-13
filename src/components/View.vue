@@ -856,7 +856,8 @@ export default {
           }
           obj.data[0].content = obj.data[0].content
             .replace(/\\t/g, " ")
-            .replace(/\n\r/g, "<br>");
+            .replace(/\n\r/g, "<br>")
+            .replace(/\\"/g, "");
           this.article = obj.data[0];
           //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
