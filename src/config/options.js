@@ -1,3 +1,4 @@
+import * as db from './db';
 var options = {
   proc: [
     {
@@ -418,7 +419,13 @@ var options = {
     {
       label: '新增',
       value: '/add'
-    },
+    }
+  ]
+};
+
+if (db.sys_id === 0) {
+  options.menu = [
+    ...options.menu,
     {
       label: '媒体库',
       value: '/media'
@@ -427,7 +434,6 @@ var options = {
       label: '搜索',
       value: '/search'
     }
-  ]
-};
-
+  ];
+}
 export default options;

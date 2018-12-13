@@ -1,6 +1,22 @@
 import { axios } from './axios';
-export let sys_id = 0;
+let { hostname, port } = window.location;
+let system_id = 0;
+switch (parseInt(port, 10)) {
+  // 工艺质量管理平台
+  case 90:
+  case 8080:
+    system_id = 0;
+    break;
+  // 党支部
+  case 71:
+    system_id = 1;
+    break;
+  default:
+    system_id = 99;
+    break;
+}
 
+export let sys_id = system_id;
 /**
  *   @database: { 工艺质量管理 }
  *   @desc:     { 文章类别列表 }

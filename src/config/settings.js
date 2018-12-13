@@ -46,7 +46,7 @@ export default {
     articleDetail: apiHost + '298/2011115320?sys_id=' + sys_id, // apiHost+'298/2011115320',
 
     // 文章评论
-    commentDetail: apiHost + '300/3a4c83f64a?sys_id=' + sys_id, // url + 404 + '&M=0',
+    commentDetail: apiHost + '300/3a4c83f64a', // url + 404 + '&M=0',
 
     // 文章列表详情
     articleList: apiHost + '305/decabfe0c7?sys_id=' + sys_id, // url + 405 + '&M=0',
