@@ -348,8 +348,13 @@ export default {
     status_time() {
       return ("" + this.article.status_rectime).substr(0, 16);
     },
-    status() {
-      return this.article.status != 0;
+    status: {
+      get() {
+        return this.article.status != 0;
+      },
+      set(val) {
+        this.article.status = val ? 1 : 0;
+      }
     },
     user() {
       return this.$store.state.user;
@@ -596,22 +601,12 @@ export default {
         });
     },
     changeArticleStatus(status) {
-      var params = {
-        tblname: "tbl_article",
-        id: this.article.id,
+      return db.setArticleStatus({
         status,
-        utf2gbk: ["status_username"],
         status_username: this.user.username,
-        status_rectime: util.getNow()
-      };
-
-      if (this.needUpdateRemark) {
-        params.utf2gbk.push("remark");
-        params.remark = this.article.remark;
-      }
-
-      return this.$http.jsonp(settings.api.update, {
-        params
+        status_rectime: util.getNow(),
+        remark: this.article.remark,
+        _id: this.article.id
       });
     },
     updateRemark() {
@@ -637,7 +632,7 @@ export default {
     },
     closeArticle() {
       let tip;
-      if (this.status) {
+      if (!this.status) {
         tip = {
           title: "此操作将文章重新置为未关闭状态, 是否继续?",
           message: "打开成功!",
@@ -661,7 +656,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          return this.changeArticleStatus(tip.status);
+          return this.changeArticleStatus(this.status ? 1 : 0);
         })
         .then(() => {
           this.handleArticleClose(tip);

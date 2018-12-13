@@ -18,6 +18,7 @@
               <el-form-item
                 label="品种"
                 prop="prod"
+                v-show="sys_proc"
               >
                 <el-select
                   v-model="value.prod"
@@ -36,6 +37,7 @@
               <el-form-item
                 label="工序"
                 prop="proc"
+                v-show="sys_proc"
               >
                 <el-select
                   v-model="value.proc"
@@ -54,6 +56,7 @@
               <el-form-item
                 label="机台"
                 prop="machine"
+                v-show="sys_proc"
               >
                 <el-autocomplete
                   class="inline-input"
@@ -89,6 +92,7 @@
               <el-form-item
                 label="车号/轴号"
                 prop="cartno"
+                v-show="sys_proc"
               >
                 <el-tag
                   :key="tag"
@@ -296,6 +300,9 @@ export default {
     };
   },
   computed: {
+    sys_proc() {
+      return db.sys_id == 0;
+    },
     infoTips() {
       if (this.value.category == "质量问题发布") {
         return {
