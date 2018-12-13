@@ -260,6 +260,7 @@ import settings from "../config/settings";
 const HOST = settings.host;
 import util from "../config/util";
 import MyPlayer from "./common/Player";
+import * as db from "../config/db";
 
 // php.ini中mssql.textlimit/mssql.textsize被设置为 409600，导致接口输入长度被截取
 
@@ -450,31 +451,19 @@ export default {
         this.article.title
       })|${settings.rtxJmpLink + "/view/" + this.article.id + "?read=1"}]`;
       let rtxList = Object.values(settings.rtxInfo);
-      // let receiver = this.operators.map(username => {
-      //   let users = [];
-      //   rtxList.forEach(userList => {
-      //     userList.forEach(item => {
-      //       if (item.value == username) {
-      //         users.push(item.id);
-      //       }
-      //     });
-      //   })
-      //   return util.unionArr(users);
-      // });
 
       let users = [];
-      rtxList.forEach(userList => {
-        userList.forEach(item => {
-          if (item.value == username) {
-            users.push(item.id);
-          }
-        });
+      rtxList.forEach(item => {
+        users = [...users, ...item];
       });
-      let receiver = util.unionArr(users);
-
+      users = util.unionArr(users);
+      let res = users.find(item => item.value === username.trim());
+      if (typeof res == "undefined") {
+        return;
+      }
       this.pushMsgByRtx({
         msg,
-        receiver: receiver.join(","),
+        receiver: res.id,
         title: "质量问题管理平台",
         delaytime: 0
       });
@@ -493,12 +482,9 @@ export default {
       return users.join(",");
     },
     pushMsgByRtx(params) {
-      let url = settings.host + "/DataInterface/rtxPush";
-      return this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(response => this.$message.success(response.data.msg));
+      db.proxy1082111(params).then(({ data }) => {
+        this.$message.success(data.msg);
+      });
     },
     verifyDonate(val, reward) {
       this.article.reward = reward;
@@ -842,11 +828,13 @@ export default {
           }
         })
         .then(res => {
-          console.log(res);
           let obj = res.data;
           if (obj.rows == 0) {
             return;
           }
+          obj.data[0].content = obj.data[0].content
+            .replace(/\\t/g, " ")
+            .replace(/\n\r/g, "<br>");
           this.article = obj.data[0];
           //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
@@ -979,18 +967,14 @@ export default {
       readUsers = util.unionArr(readUsers);
       readUsers = readUsers.filter(item => item != "0");
       this.article.read_users = readUsers.join("、");
-      //更新文章阅读状态
-      let url = settings.api.update;
-      let params = {
-        tblname: "tbl_article",
-        id: this.article.id,
-        read_users: this.article.read_users,
-        utf2gbk: ["read_users"]
-      };
 
+      //更新文章阅读状态
       this.$http
-        .jsonp(url, {
-          params
+        .jsonp(settings.api.updateUserInfo, {
+          params: {
+            read_users: this.article.read_users,
+            _id: this.article.id
+          }
         })
         .then(res => {
           console.info("文章阅读状态更新成功");

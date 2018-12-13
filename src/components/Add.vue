@@ -144,10 +144,10 @@
             placeholder="请选择类别"
           >
             <el-option
-              v-for="(item,i) in options.category"
-              :label="item.label"
-              :value="item.value"
-              :key="i"
+              v-for="{name,value} in options.category"
+              :label="name"
+              :value="value"
+              :key="value"
             >
             </el-option>
           </el-select>
@@ -230,6 +230,9 @@ import RtxCheck from "./common/RtxCheck";
 
 import settings from "../config/settings";
 import util from "../config/util";
+import * as db from "../config/db";
+import { getType } from "../config/axios";
+
 const HOST = settings.host;
 export default {
   name: "add",
@@ -240,7 +243,16 @@ export default {
   },
   data() {
     return {
-      options,
+      options: {
+        proc: [],
+        prod: [],
+        machine: [],
+        operator: [],
+        category: [],
+        mediaList: [],
+        mediaLoadingNums: 25,
+        menu: []
+      },
       rules: {
         operator: [
           {
@@ -406,12 +418,9 @@ export default {
       });
     },
     pushMsgByRtx(params) {
-      let url = settings.host + "/DataInterface/rtxPush";
-      return this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(response => this.$message.success(response.data.msg));
+      db.proxy1082111(params).then(({ data }) => {
+        this.$message.success(data.msg);
+      });
     },
     setDefaultData(title) {
       if (this.value.content.includes("质量隐患问题描述")) {
@@ -471,32 +480,12 @@ export default {
         .toUpperCase();
       this.value.cartno = result;
     },
-    loadProd() {
-      this.$http
-        .jsonp("http://localhost:90/api/66/19ff06e209/array")
-        .then(response => {
-          let data = response.data.data;
-          this.options.prod = data.map(item => {
-            return {
-              value: item[0],
-              label: item[1]
-            };
-          });
-        });
-    },
-    loadMachineList(id) {
-      // let url = HOST + "/DataInterface/Api";
-      this.$http
-        .jsonp(`http://localhost:90/api/67/9ad51d5a12/array?p=${id}`)
-        .then(response => {
-          let data = response.data.data;
-          this.options.machine = data.map(item => {
-            return {
-              value: item[1],
-              label: item[0]
-            };
-          });
-        });
+    async loadMachineList(id) {
+      let { data } = await db.getMachinedata(id);
+      this.options.machine = data.map(([label, value]) => ({
+        value: value.trim(),
+        label: label.trim()
+      }));
     },
     querySearch(queryString, next) {
       let machine = this.options.machine;
@@ -529,18 +518,18 @@ export default {
       }
 
       let params = {
-        tblname: "tbl_article",
-        utf2gbk: [
-          "title",
-          "content",
-          "machine",
-          "operator",
-          "category",
-          "proc",
-          "remark",
-          "reward_user",
-          "status_username"
-        ],
+        // tblname: "tbl_article",
+        // utf2gbk: [
+        //   "title",
+        //   "content",
+        //   "machine",
+        //   "operator",
+        //   "category",
+        //   "proc",
+        //   "remark",
+        //   "reward_user",
+        //   "status_username"
+        // ],
         uid: this.$store.state.user.id, //此处需增加用户登录结果
         rec_time: util.getNow(1),
         attach_list: this.attachList
@@ -551,17 +540,17 @@ export default {
       params = Object.assign(params, this.value);
 
       if (this.previewMode == 2) {
-        params.utf2gbk = [
-          "title",
-          "content",
-          "machine",
-          "operator",
-          "category",
-          "proc",
-          "remark",
-          "reward_user",
-          "read_users"
-        ];
+        // params.utf2gbk = [
+        //   "title",
+        //   "content",
+        //   "machine",
+        //   "operator",
+        //   "category",
+        //   "proc",
+        //   "remark",
+        //   "reward_user",
+        //   "read_users"
+        // ];
         this.value.content += `<blockquote class="remark">备注：${
           this.$store.state.user.username
         } 在 ${util.getNow(1)} 更新本消息</blockquote>`;
@@ -584,37 +573,26 @@ export default {
       this.previewMode = 1;
       this.$router.push("/view/preview");
     },
-    updateAttachArticleId(article_id) {
+    async updateAttachArticleId(article_id) {
+      if (this.attachList.length == 0) {
+        return;
+      }
       //更新附件中对应的文章id
-      let url = settings.api.update;
-      let params = {
-        tblname: "tbl_article_attach",
-        article_id
-      };
-
-      this.attachList.split(",").map(id => {
-        params.id = id;
-        this.$http
-          .jsonp(url, {
-            params
-          })
-          .then(res => {
-            console.info("附件信息更新成功");
-          })
-          .catch(e => {
-            console.log(e);
-          });
+      await db.setArticleAttach({
+        article_id,
+        _id: this.attachList
       });
     },
-    submitForm() {
+    async submitForm() {
       if (!this.getParams()) {
         return;
       }
 
-      let url =
-        this.previewMode == 0 ? settings.api.insert : settings.api.update;
+      // let url =
+      //   this.previewMode == 0 ? settings.api.insert : settings.api.update;
       let submitData = Object.assign({}, this.preview);
       submitData.rec_time = submitData.rec_time.substr(0, 19);
+      submitData.cate_id = submitData.category;
 
       if (Reflect.has(submitData, "submitData")) {
         submitData.status_rectime = submitData.status_rectime.substr(0, 19);
@@ -634,64 +612,51 @@ export default {
         submitData.status_username = "";
       }
       Reflect.deleteProperty(submitData, "datetime");
+      Reflect.deleteProperty(submitData, "category");
 
       submitData.cartno = this.cartList.join(",");
 
       let receiver = this.$store.state.rtxlist.join(",");
 
-      //post CROS 需增加 emulateJSON:true
-      //需更新article表单，增加receiver字段
-      this.$http
-        .post(
-          url,
-          Object.assign(submitData, {
-            receiver
-          }),
-          {
-            emulateJSON: true
-          }
-        )
-        .then(response => {
-          let res = response.data;
-          if (res.type == 1) {
-            this.$message({
-              message: "数据添加成功",
-              type: "success"
-            });
-            this.updateAttachArticleId(res.id);
-            //提交后重置数据
-            this.resetForm();
-            if (this.previewMode == 2) {
-              this.$router.push("/view/" + submitData.id);
-            } else {
-              this.$router.push("/view/" + res.id);
-            }
-            //没有选择人员时，则不推送
-            if (receiver != "" && this.previewMode == 0) {
-              let msg = `${this.$store.state.user.username}发表了一篇新文章,[(${
-                this.$store.state.preview.title
-              })|${settings.rtxJmpLink + "/view/" + res.id + "?read=1"}]`;
-              this.pushMsgByRtx({
-                msg,
-                receiver,
-                title: "质量问题管理平台",
-                delaytime: 0
-              });
-            }
-            this.previewMode == 0;
-          } else {
-            this.$message({
-              message: "数据添加失败",
-              type: "error"
-            });
-          }
+      let {
+        data: [{ affected_rows, id }]
+      } = await db.addArticle(submitData);
 
-          this.$store.commit("refreshMainList", true);
-          window.localStorage.setItem("editor", "");
-        })
-        .catch(e => {
-          console.log(e);
+      if (affected_rows == 1) {
+        this.$message({
+          message: "数据添加成功",
+          type: "success"
         });
+        this.updateAttachArticleId(id);
+        //提交后重置数据
+        this.resetForm();
+        if (this.previewMode == 2) {
+          this.$router.push("/view/" + submitData.id);
+        } else {
+          this.$router.push("/view/" + id);
+        }
+        //没有选择人员时，则不推送
+        if (receiver != "" && this.previewMode == 0) {
+          let msg = `${this.$store.state.user.username}发表了一篇新文章,[(${
+            this.$store.state.preview.title
+          })|${settings.rtxJmpLink + "/view/" + id + "?read=1"}]`;
+          this.pushMsgByRtx({
+            msg,
+            receiver,
+            title: "质量问题管理平台",
+            delaytime: 0
+          });
+        }
+        this.previewMode == 0;
+      } else {
+        this.$message({
+          message: "数据添加失败",
+          type: "error"
+        });
+      }
+
+      this.$store.commit("refreshMainList", true);
+      window.localStorage.setItem("editor", "");
     },
     resetForm(formName = "value") {
       //this.$store.commit('resetAddInfo');
@@ -713,7 +678,7 @@ export default {
         this.$store.commit("clearFileList");
     },
     convertFromMedia() {
-      if (typeof this.fileList != "undefined" && this.fileList.length) {
+      if (getType(this.fileList) == "array" && this.fileList.length > 0) {
         this.fileList = this.fileList.map(item => {
           if (typeof item.id != "undefined") {
             item.attach_id = item.id;
@@ -723,14 +688,24 @@ export default {
           return item;
         });
       }
+    },
+    async initOption() {
+      let { data: category } = await db.getCateList();
+      let { data } = await db.getProductdata();
+      let prod = data.map(({ value, name: label }) => ({
+        value: value.trim(),
+        label: label.trim()
+      }));
+
+      this.options = Object.assign(options, { category, prod });
     }
   },
   created() {
-    this.loadProd();
     if (this.previewMode == 1) {
       this.$store.commit("enterPreview", false);
     }
     this.convertFromMedia();
+    this.initOption();
     //this.$store.commit('clearFileList');
   },
   activated() {

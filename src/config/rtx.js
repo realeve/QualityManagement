@@ -467,10 +467,6 @@ let rtxInfo = {
     {
       value: '魏屹',
       id: 10979
-    },
-    {
-      value: '赵军',
-      id: 11023
     }
   ],
   infontech: [

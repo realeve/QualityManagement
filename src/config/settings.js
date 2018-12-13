@@ -1,11 +1,13 @@
+import rtx from './rtx';
 var host =
   process.env.NODE_ENV === 'development' ? '//localhost' : '//10.8.2.133';
+
+host = '//localhost';
 
 var url = host + '/datainterface/api?ID=';
 
 var rtxJmpLink = '//10.8.2.133:90';
-
-import rtx from './rtx';
+var apiHost = 'http://10.8.1.25:100/api/';
 
 export default {
   host,
@@ -29,41 +31,41 @@ export default {
     fileDelete: host + '/upload/upload.php',
 
     // 主页模块
-    articleHome: 'http://localhost:90/api/57/e25408e435', // url + 402 + '&M=0',
+    articleHome: apiHost + '303/1dd06c4feb', // url + 402 + '&M=0',
 
     // 主页各模块Top5，无请求参数，一次加载完成
-    articleTop5: 'http://localhost:90/api/56/67772bd935', // url + 412 + '&M=0',
+    articleTop5: apiHost + '299/bcdc7669bf', // url + 412 + '&M=0',
 
-    myWorkList: 'http://localhost:90/api/55/b0fdc7440d', // url + 413 + '&M=0',
+    myWorkList: apiHost + '297/cf86aaa28a', // url + 413 + '&M=0',
 
-    myWorkListByPage: 'http://localhost:90/api/58/21eac5516f', // url + 414 + '&M=0',
+    myWorkListByPage: apiHost + '304/137aea8cd0', // url + 414 + '&M=0',
 
     // 文章详情
-    articleDetail: 'http://localhost:90/api/52/4ea73d46fc', // 'http://10.8.1.25:100/api/298/2011115320',
+    articleDetail: apiHost + '298/2011115320', // apiHost+'298/2011115320',
 
     // 文章评论
-    commentDetail: 'http://localhost:90/api/53/bbf61894f5', // url + 404 + '&M=0',
+    commentDetail: apiHost + '300/3a4c83f64a', // url + 404 + '&M=0',
 
     // 文章列表详情
-    articleList: 'http://localhost:90/api/59/9ce72536da', // url + 405 + '&M=0',
+    articleList: apiHost + '305/decabfe0c7', // url + 405 + '&M=0',
 
     // 附件列表
-    attachList: 'http://localhost:90/api/54/6685ffcc2f', // url + 406 + '&M=0',
+    attachList: apiHost + '301/e7bf22591e', // url + 406 + '&M=0',
 
     // 媒体列表
-    mediaList: 'http://localhost:90/api/60/c7c49da170', // url + 407 + '&M=0',
+    mediaList: apiHost + '306/136f90d1fd', // url + 407 + '&M=0',
 
     // 素材库载入更多:
-    mediaLoadMore: 'http://localhost:90/api/61/f179198b56', // url + 408 + '&M=0&cache=10',
+    mediaLoadMore: apiHost + '307/3c7dd0e46e', // url + 408 + '&M=0&cache=10',
 
     // 登录模块-用户列表
-    userList: 'http://localhost:90/api/62/337580349b', // url + 409 + '&M=0',
+    userList: apiHost + '308/2076a6d913', // url + 409 + '&M=0',
 
     // md5 encrypt
     md5: host + '/datainterface/md5',
 
     // login
-    login: url + 165 + '&M=0',
+    login: apiHost + '312/203b7261ef', // url + 165 + '&M=0',
 
     // search
     search: url + 410 + '&M=0', // 'http://localhost:90/api/63/1013f75c9c', // 不允许字符串拼接
@@ -71,8 +73,10 @@ export default {
     // rtxPush
     rtxPush: host + '/datainterface/rtxpush',
 
-    readnum: 'http://localhost:90/api/65/c231fe5f9f', // url + 474 + '&M=3',
-    commentnum: 'http://localhost:90/api/64/59eef0d55a' // url + 475 + '&M=3'
+    readnum: apiHost + '311/39225a57a3', // url + 474 + '&M=3',
+    commentnum: apiHost + '310/0f4099a412', // url + 475 + '&M=3'
+
+    updateUserInfo: apiHost + '313/b951835b08'
   },
   rewardUsers: ['袁长虹', '张建军', '陈晶', '张楠岚', '赵洪新', '达时'],
   verifyUsers: ['袁长虹', '张楠岚', '赵洪新', '达时'],
