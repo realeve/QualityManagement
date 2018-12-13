@@ -594,9 +594,15 @@ export default {
       submitData.rec_time = submitData.rec_time.substr(0, 19);
       submitData.cate_id = submitData.category;
 
+      // 新增及修改中，增加系统id辨识。
+      submitData.sys_id = db.sys_id;
       if (Reflect.has(submitData, "submitData")) {
         submitData.status_rectime = submitData.status_rectime.substr(0, 19);
       }
+
+      // 新增文章
+      let method = "addArticle";
+
       if (this.previewMode == 2) {
         Reflect.deleteProperty(submitData, "rec_time");
         Reflect.deleteProperty(submitData, "status_rectime");
@@ -606,6 +612,11 @@ export default {
         Reflect.deleteProperty(submitData, "status_username");
         Reflect.deleteProperty(submitData, "reward");
         Reflect.deleteProperty(submitData, "reward_status");
+        method = "setArticle";
+        submitData.receiver = submitData.receiver || "";
+        submitData.remark = submitData.remark || "";
+        submitData.reward_user = submitData.reward_user || "";
+        submitData._id = this.preview.id;
       } else {
         Reflect.deleteProperty(submitData, "id");
         Reflect.deleteProperty(submitData, "user");
@@ -614,13 +625,20 @@ export default {
       Reflect.deleteProperty(submitData, "datetime");
       Reflect.deleteProperty(submitData, "category");
 
+      if (!/\d+/.test(submitData.cate_id)) {
+        let res = this.options.category.find(
+          item => item.name == submitData.cate_id
+        );
+        submitData.cate_id = res.value;
+      }
+
       submitData.cartno = this.cartList.join(",");
 
       let receiver = this.$store.state.rtxlist.join(",");
 
       let {
         data: [{ affected_rows, id }]
-      } = await db.addArticle(submitData);
+      } = await db[method](submitData);
 
       if (affected_rows == 1) {
         this.$message({

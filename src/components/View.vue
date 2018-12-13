@@ -261,6 +261,7 @@ const HOST = settings.host;
 import util from "../config/util";
 import MyPlayer from "./common/Player";
 import * as db from "../config/db";
+import rtx from "../config/rtx";
 
 // php.ini中mssql.textlimit/mssql.textsize被设置为 409600，导致接口输入长度被截取
 
@@ -678,38 +679,26 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          let params = {
-            comment_id,
-            mainid: "comment_id",
-            tblname: "tbl_article_comment"
-          };
-
-          let url = settings.api.delete;
-
-          this.$http
-            .post(url, params, {
-              emulateJSON: true
-            })
-            .then(() => {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.comment.forEach((item, i) => {
-                if (item.comment_id == comment_id) {
-                  this.comment.splice(i, 1);
-                }
-              });
+      }).then(() => {
+        db.delArticleComment(comment_id)
+          .then(_ => {
+            this.$message({
+              type: "success",
+              message: "删除成功"
             });
-        })
-        .catch(e => {
-          this.$message({
-            type: "success",
-            message: "删除失败"
+            this.comment.forEach((item, i) => {
+              if (item.comment_id == comment_id) {
+                this.comment.splice(i, 1);
+              }
+            });
+          })
+          .catch(e => {
+            this.$message({
+              type: "success",
+              message: "删除失败"
+            });
           });
-        });
+      });
     },
     loadComment() {
       let id = this.$route.params.id;
@@ -728,7 +717,12 @@ export default {
           }
           this.noComment = false;
           obj.data = util.handleContent(obj.data);
-          this.comment = obj.data;
+          this.comment = obj.data.map(item => {
+            item.content = item.content
+              .replace(/\\t/g, " ")
+              .replace(/\n\r/g, "<br>");
+            return item;
+          });
         });
     },
     getCommentAttach() {
@@ -761,7 +755,7 @@ export default {
       });
       return arrStr.join(",");
     },
-    postComment() {
+    async postComment() {
       this.mycomment += this.getCommentAttach();
 
       let comment = {
@@ -769,44 +763,72 @@ export default {
         content: util.parseHtml(this.mycomment)
       };
 
-      comment = Object.assign(comment, this.commentSettings);
-
-      let params = {
-        tblname: "tbl_article_comment",
-        utf2gbk: ["username", "content"]
-      };
-
-      params = Object.assign(params, comment);
-
-      let url = settings.api.insert;
-      this.$http
-        .post(url, params, {
-          emulateJSON: true
-        })
-        .then(res => {
-          this.noComment = false;
-          comment.content = this.mycomment; // util.handleAttach
-          this.comment.push(comment);
-
-          this.mycomment = "";
-
-          this.rtxCommentStatus();
-          this.$store.commit("clearFileList");
-          this.addCommentNum();
-        })
-        .catch(e => {
-          console.log(e);
-          this.$message({
-            message: "发表评论失败，请刷新重试",
-            type: "error"
-          });
+      let params = Object.assign(comment, this.commentSettings);
+      let { data } = await db.addArticleComment(params).catch(e => {
+        console.log(e);
+        this.$message({
+          message: "发表评论失败，请刷新重试",
+          type: "error"
         });
+      });
+      if (data.length == 0) {
+        return;
+      }
+
+      // 处理@符号后提醒的人员信息
+      this.rtxRemindUser(comment.content);
+
+      this.noComment = false;
+      comment.content = this.mycomment; // util.handleAttach
+      this.comment.push(comment);
+
+      this.mycomment = "";
+
+      this.rtxCommentStatus();
+      this.$store.commit("clearFileList");
+      this.addCommentNum();
+    },
+    getRemindReceiver(content) {
+      if (!content.includes("@")) {
+        return "";
+      }
+      // 分析出@的人员信息
+      let users = content
+        .split("@")
+        .slice(1)
+        .map(item => {
+          return item.slice(0, item.indexOf(" "));
+        });
+      let remUsers = rtx.users
+        .filter(item => users.includes(item.value))
+        .map(item => item.id);
+      return remUsers.join(",");
+    },
+    rtxRemindUser(content) {
+      let receiver = this.getRemindReceiver(content);
+      if (receiver == "") {
+        return;
+      }
+      let msg = `${this.$store.state.user.username}在文章[(${
+        this.article.title
+      })|${settings.rtxJmpLink +
+        "/view/" +
+        this.article.id}]的评论中提到了你。`;
+      this.pushMsgByRtx({
+        msg,
+        receiver,
+        title: "质量问题管理平台",
+        delaytime: 0
+      });
     },
     // 腾讯通更新用户发送评论状态
     rtxCommentStatus() {
       let receiver = this.article.receiver;
       if (typeof receiver == "undefined") {
         receiver = this.allReceiver;
+      }
+      if (typeof receiver == "null" || receiver == null) {
+        return;
       }
       let msg = `${this.$store.state.user.username}对文章[(${
         this.article.title

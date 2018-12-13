@@ -1,10 +1,11 @@
 import { axios } from './axios';
+export let sys_id = 0;
 
 /**
  *   @database: { 工艺质量管理 }
  *   @desc:     { 文章类别列表 }
  */
-export const getCateList = (sys_type_id = 0) =>
+export const getCateList = (sys_type_id = sys_id) =>
   axios({
     url: '/314/d36c7f1ade.json',
     params: {
@@ -68,5 +69,41 @@ export const setArticleAttach = (params) =>
 export const proxy1082111 = (params) =>
   axios({
     url: '/319/b804147c6e.json',
+    params
+  });
+
+/**
+*   @database: { 工艺质量管理 }
+*   @desc:     { 添加评论 }
+    const { rec_time, content, article_id, username, uid, useravatar } = params;
+*/
+export const addArticleComment = (params) =>
+  axios({
+    url: '/320/7bdb354d30.json',
+    params
+  });
+
+/**
+ *   @database: { 工艺质量管理 }
+ *   @desc:     { 删除评论 }
+ */
+export const delArticleComment = (comment_id) =>
+  axios({
+    url: '/321/8c7c57cc9e.json',
+    params: {
+      comment_id
+    }
+  });
+
+/**
+*   @database: { 工艺质量管理 }
+*   @desc:     { 更新文章 }
+	以下参数在建立过程中与系统保留字段冲突，已自动替换:
+	@id:_id. 参数说明：api 索引序号
+    const { attach_list, prod, [proc], machine, operator, cartno, content, title, receiver, remark, reward_user, readnum, commentnum, read_users, cate_id, _id } = params;
+*/
+export const setArticle = (params) =>
+  axios({
+    url: '/322/f6f8711acf.json',
     params
   });

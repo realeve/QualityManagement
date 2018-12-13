@@ -1,3 +1,5 @@
+import util from './util';
+
 let rtxInfo = {
   technology: [
     {
@@ -548,6 +550,11 @@ let desc = [
   }
 ];
 
+let users = [];
+Object.values(rtxInfo).forEach((item) => {
+  users = [...users, ...item];
+});
+
 let operators = desc.map((item) => {
   return {
     label: item.label,
@@ -558,5 +565,6 @@ let operators = desc.map((item) => {
 export default {
   rtxInfo,
   desc,
-  operators
+  operators,
+  users: util.unionArr(users)
 };

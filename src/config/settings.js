@@ -1,4 +1,6 @@
 import rtx from './rtx';
+import { sys_id } from './db';
+
 var host =
   process.env.NODE_ENV === 'development' ? '//localhost' : '//10.8.2.133';
 
@@ -31,23 +33,23 @@ export default {
     fileDelete: host + '/upload/upload.php',
 
     // 主页模块
-    articleHome: apiHost + '303/1dd06c4feb', // url + 402 + '&M=0',
+    articleHome: apiHost + '303/1dd06c4feb?sys_id=' + sys_id, // url + 402 + '&M=0',
 
     // 主页各模块Top5，无请求参数，一次加载完成
-    articleTop5: apiHost + '299/bcdc7669bf', // url + 412 + '&M=0',
+    articleTop5: apiHost + '299/bcdc7669bf?sys_id=' + sys_id, // url + 412 + '&M=0',
 
-    myWorkList: apiHost + '297/cf86aaa28a', // url + 413 + '&M=0',
+    myWorkList: apiHost + '297/cf86aaa28a?sys_id=' + sys_id, // url + 413 + '&M=0',
 
-    myWorkListByPage: apiHost + '304/137aea8cd0', // url + 414 + '&M=0',
+    myWorkListByPage: apiHost + '304/137aea8cd0?sys_id=' + sys_id, // url + 414 + '&M=0',
 
     // 文章详情
-    articleDetail: apiHost + '298/2011115320', // apiHost+'298/2011115320',
+    articleDetail: apiHost + '298/2011115320?sys_id=' + sys_id, // apiHost+'298/2011115320',
 
     // 文章评论
-    commentDetail: apiHost + '300/3a4c83f64a', // url + 404 + '&M=0',
+    commentDetail: apiHost + '300/3a4c83f64a?sys_id=' + sys_id, // url + 404 + '&M=0',
 
     // 文章列表详情
-    articleList: apiHost + '305/decabfe0c7', // url + 405 + '&M=0',
+    articleList: apiHost + '305/decabfe0c7?sys_id=' + sys_id, // url + 405 + '&M=0',
 
     // 附件列表
     attachList: apiHost + '301/e7bf22591e', // url + 406 + '&M=0',

@@ -1,30 +1,60 @@
 <template>
   <!--div class="entry-box" v-scroll="loadMore"-->
-  <div class="entry-box" v-infinite-scroll="loadMore" infinite-scroll-disabled="news.isLoading" infinite-scroll-distance="10">
-    <div class="box-title clearfix" :style="{background:bgcolor}">
+  <div
+    class="entry-box"
+    v-infinite-scroll="loadMore"
+    infinite-scroll-disabled="news.isLoading"
+    infinite-scroll-distance="10"
+  >
+    <div
+      class="box-title clearfix"
+      :style="{background:bgcolor}"
+    >
       <div class="float-left">{{news.title}}</div>
-      <router-link v-if="news.more" class="pointer" :to="news.more">
+      <router-link
+        v-if="news.more"
+        class="pointer"
+        :to="news.more"
+      >
         <div class="float-right more">更多</div>
       </router-link>
     </div>
     <div class="entries">
       <!--enter-class="animated tada" enter-active-class="animated tada" leave-class="animated zoomOut" leave-active-class="animated zoomOut"-->
-      <div v-for="(item,i) in news.data" :key="item.id">
-        <transition name="fade" tag="div">
-          <div class="entry clearfix" @click="jump(item.url)">
+      <div
+        v-for="(item,i) in news.data"
+        :key="item.id"
+      >
+        <transition
+          name="fade"
+          tag="div"
+        >
+          <div
+            class="entry clearfix"
+            @click="jump(item.url)"
+          >
             <div class="entry-screenshot float-left">
-              <img class="entry-screenshot-image" :src="item.img">
+              <img
+                class="entry-screenshot-image"
+                :src="item.img"
+              >
             </div>
             <div class="entry-info float-left">
               <template v-if="item.datetime > now">
-                <el-badge value="新" class="item">
+                <el-badge
+                  value="新"
+                  class="item"
+                >
                   <div class="entry-title">
                     <span>{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
                   </div>
                 </el-badge>
               </template>
               <template v-else>
-                <div class="entry-title">
+                <div
+                  class="entry-title"
+                  :class="{'home-page':!isHomePage}"
+                >
                   <span>{{i+1}}.<span v-if="showCategory">『{{item.category}}』 </span>{{item.title}}</span>
                 </div>
               </template>
@@ -36,10 +66,16 @@
                 <div class="action">•</div>
                 <div class="action">{{item.readnum}}</div>
                 <div class="action">
-                  <el-tag type="danger" v-show="!item.isread">未读</el-tag>
+                  <el-tag
+                    type="danger"
+                    v-show="!item.isread && isHomePage"
+                  >未读</el-tag>
                 </div>
                 <div class="action">
-                  <el-tag type="danger" v-if="0 == item.status">未完成</el-tag>
+                  <el-tag
+                    type="danger"
+                    v-if="0 == item.status"
+                  >未完成</el-tag>
                 </div>
               </div>
             </div>
@@ -47,102 +83,112 @@
         </transition>
       </div>
 
-      <div v-if="!news.more" @click="loadMore" class="entry">
-        <div class="loading-info" v-html="info"></div>
+      <div
+        v-if="!news.more"
+        @click="loadMore"
+        class="entry"
+      >
+        <div
+          class="loading-info"
+          v-html="info"
+        ></div>
       </div>
 
     </div>
   </div>
 </template>
 <script>
-  import util from '../../config/util';
-  export default {
-    name: 'my-card',
-    props: {
-      news: {
-        default: []
-      },
-      bgcolor: {
-        default: '#2196f3'
+import util from "../../config/util";
+export default {
+  name: "my-card",
+  props: {
+    news: {
+      default: []
+    },
+    bgcolor: {
+      default: "#2196f3"
+    }
+  },
+  computed: {
+    showCategory() {
+      return typeof this.news.showCategory == "undefined"
+        ? false
+        : this.news.showCategory;
+    },
+    now() {
+      return util.getNow(6);
+    },
+    info() {
+      if (this.news.isLoading) {
+        return '<i class="el-icon-loading"></i> 正在加载...';
+      } else if (this.news.empty) {
+        return "加载完毕";
+      } else {
+        return "点击载入更多";
       }
     },
-    computed: {
-      showCategory() {
-        return typeof this.news.showCategory == 'undefined' ? false : this.news.showCategory;
-      },
-      now() {
-        return util.getNow(6);
-      },
-      info() {
-        if (this.news.isLoading) {
-          return '<i class="el-icon-loading"></i> 正在加载...';
-        } else if (this.news.empty) {
-          return '加载完毕'
-        } else {
-          return '点击载入更多'
-        }
-      }
+    isHomePage() {
+      return this.$route.name == "Main";
+    }
+  },
+  methods: {
+    jump(url) {
+      this.$router.push(url);
     },
-    methods: {
-      jump(url) {
-        this.$router.push(url);
-      },
-      loadMore() {
-        if (!this.news.empty) {
-          this.$emit('loadMore');
-        }
-      },
+    loadMore() {
+      if (!this.news.empty) {
+        this.$emit("loadMore");
+      }
     }
   }
-
+};
 </script>
 <style lang="less" scoped>
-  .welcome .entry-box {
-    border-radius: 4px;
-    margin-bottom: 1.5em;
-    .box-title {
-      font-size: 1.4em;
-      color: #fff;
-    }
-    .more {
-      font-size: 12pt;
-      color: #fff;
-    }
+.welcome .entry-box {
+  border-radius: 4px;
+  margin-bottom: 1.5em;
+  .box-title {
+    font-size: 1.4em;
+    color: #fff;
   }
-
-  .loading-info {
-    padding: 15px 0;
-    text-align: center;
+  .more {
+    font-size: 12pt;
+    color: #fff;
   }
+}
 
-  .entry-screenshot-image {
-    border-radius: 50%;
-  }
+.loading-info {
+  padding: 15px 0;
+  text-align: center;
+}
 
-  .list .entry-box {
-    padding: 30px 100px;
-  }
+.entry-screenshot-image {
+  border-radius: 50%;
+}
 
-  .pointer {
-    cursor: pointer;
-  }
+.list .entry-box {
+  padding: 30px 100px;
+}
 
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: all 1s;
-  }
+.pointer {
+  cursor: pointer;
+}
 
-  .fade-move {
-    transition: transform 1s;
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 1s;
+}
 
-  .fade-enter,
-  .fade-leave {
-    opacity: 0; //transform:translateY(50px);
-  }
+.fade-move {
+  transition: transform 1s;
+}
 
-  .welcome .entry-meta .action {
-    margin-right: .1em;
-  }
+.fade-enter,
+.fade-leave {
+  opacity: 0; //transform:translateY(50px);
+}
 
+.welcome .entry-meta .action {
+  margin-right: 0.1em;
+}
 </style>
