@@ -892,7 +892,7 @@ export default {
       this.$http
         .jsonp(settings.api.attachList, {
           params: {
-            attachid: this.article.attach_list.replace(/,/g, "','")
+            attachid: this.article.attach_list.split(",")
           }
         })
         .then(res => {
