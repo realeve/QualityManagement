@@ -1,14 +1,16 @@
 import { axios } from './axios';
-let { hostname, port } = window.location;
+let { port } = window.location;
 let system_id = 0;
 switch (parseInt(port, 10)) {
   // 工艺质量管理平台
   case 90:
+  case 8080:
     system_id = 0;
+    document.title = '工艺质量管理交互平台';
     break;
   // 党支部
   case 71:
-  case 8080:
+    document.title = '党支部信息管理平台';
     system_id = 1;
     break;
   default:

@@ -16,6 +16,7 @@
 import MyCard from "./common/NewsCard";
 import options from "../config/options";
 import settings from "../config/settings";
+import * as db from "../config/db";
 const HOST = settings.host;
 
 export default {
@@ -63,17 +64,20 @@ export default {
 
       this.getMyWorkList();
 
-      this.$http.jsonp(settings.api.articleTop5).then(res => {
+      this.$http.jsonp(settings.api.articleTop5).then(async res => {
         let obj = res.data;
         if (obj.rows == 0) {
           return;
         }
-        options.category.forEach((item, i) => {
+        let { data: category } = await db.getCateList();
+        category = category.map(item => ({ value: item.name }));
+        category.forEach((item, i) => {
           let news = obj.data.filter(newItem => newItem.category == item.value);
           if (news.length) {
             this.handleTop5NewsItem(item.value, i, news);
           }
         });
+
         this.$store.commit("refreshMainList", false);
       });
     },
