@@ -67,6 +67,7 @@ function handleAttach(html) {
   var arrAttach = html.match(/<img \b[^>]*>/g);
   var linkStr;
   var i = 1;
+  html = html.replace(/\\"/g, '');
   if (arrAttach == null) {
     return html;
   }
@@ -107,7 +108,6 @@ function handleAttach(html) {
       }
     }
   });
-  html = html.replace(/\\"/g, '');
   return html;
 }
 
