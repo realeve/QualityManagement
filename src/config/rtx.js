@@ -488,6 +488,28 @@ let rtxInfo = {
       value: '蒲云飞',
       id: 10080
     }
+  ],
+  mes: [
+    {
+      value: '倪震',
+      id: 10093
+    },
+    {
+      value: '鲁可',
+      id: 11035
+    },
+    {
+      value: '江鑫',
+      id: 11037
+    },
+    {
+      value: '詹祎炜',
+      id: 11038
+    },
+    {
+      value: '侯熠',
+      id: 10081
+    }
   ]
 };
 
@@ -547,6 +569,10 @@ let desc = [
   {
     label: '企划信息',
     value: 'infontech'
+  },
+  {
+    label: 'MES项目组',
+    value: 'mes'
   }
 ];
 

@@ -348,6 +348,26 @@ var options = {
           value: '蒲云飞'
         }
       ]
+    },
+    {
+      label: 'MES项目组',
+      options: [
+        {
+          value: '倪震'
+        },
+        {
+          value: '鲁可'
+        },
+        {
+          value: '江鑫'
+        },
+        {
+          value: '詹祎炜'
+        },
+        {
+          value: '侯熠'
+        }
+      ]
     }
   ],
   category: [
