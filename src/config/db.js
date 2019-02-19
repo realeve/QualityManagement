@@ -1,24 +1,27 @@
 import { axios } from './axios';
-let { port } = window.location;
-let system_id = 0;
-switch (parseInt(port, 10)) {
-  // 工艺质量管理平台
-  case 90:
-  case 8080:
-    system_id = 0;
-    document.title = '工艺质量管理交互平台';
-    break;
-  // 党支部
-  case 71:
-    document.title = '党支部信息管理平台';
-    system_id = 1;
-    break;
-  default:
-    system_id = 99;
-    break;
-}
+export const getSysId = () => {
+  let { port } = window.location;
+  let system_id = 0;
+  switch (parseInt(port, 10)) {
+    // 工艺质量管理平台
+    case 90:
+    case 8080:
+      system_id = 0;
+      document.title = '工艺质量管理交互平台';
+      break;
+    // 党支部
+    case 71:
+      document.title = '印钞党支部信息管理平台';
+      system_id = 1;
+      break;
+    default:
+      system_id = 99;
+      break;
+  }
+  return system_id;
+};
 
-export let sys_id = system_id;
+export let sys_id = getSysId();
 /**
  *   @database: { 工艺质量管理 }
  *   @desc:     { 文章类别列表 }
@@ -129,8 +132,8 @@ export const setArticle = (params) =>
 /**
 *   @database: { 工艺质量管理 }
 *   @desc:     { 更新阅读状态 }
-	以下参数在建立过程中与系统保留字段冲突，已自动替换:
-	@id:_id. 参数说明：api 索引序号
+	  以下参数在建立过程中与系统保留字段冲突，已自动替换:
+	  @id:_id. 参数说明：api 索引序号
     const { status, status_username, status_rectime, remark, _id } = params;
 */
 export const setArticleStatus = (params) =>

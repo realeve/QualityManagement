@@ -66,13 +66,13 @@
                 ></el-autocomplete>
               </el-form-item>
               <el-form-item
-                label="处理人员"
+                label="责任人"
                 prop="operator"
               >
                 <el-select
                   v-model="value.operator"
                   multiple
-                  placeholder="请选择处理人员"
+                  placeholder="请选择责任人"
                 >
                   <el-option-group
                     v-for="group in options.operator"
@@ -668,7 +668,10 @@ export default {
           this.pushMsgByRtx({
             msg,
             receiver,
-            title: "质量问题管理平台",
+            title:
+              db.sys_id == 0
+                ? "工艺质量管理交互平台"
+                : "印钞党支部信息管理平台",
             delaytime: 0
           });
         }

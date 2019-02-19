@@ -8,7 +8,7 @@ var host =
 
 var url = host + '/datainterface/api?ID=';
 
-var rtxJmpLink = '//10.8.2.133:90';
+var rtxJmpLink = `//10.8.2.133:${sys_id === 0 ? 90 : 71}`;
 var apiHost = 'http://10.8.1.25:100/api/';
 
 export default {

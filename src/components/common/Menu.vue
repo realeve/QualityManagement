@@ -12,12 +12,13 @@
             <el-menu-item
               v-if="i!=1"
               :index="i.toString()"
-              :key="i"
+              :key="item.label"
               @click="jump(item.value)"
             >{{item.label}}</el-menu-item>
             <el-submenu
               v-else
               :index="i.toString()"
+              :key="item.label"
             >
               <template slot="title">{{item.label}}</template>
               <el-menu-item
@@ -28,6 +29,15 @@
               >{{submenu.name}}</el-menu-item>
             </el-submenu>
           </template>
+          <li
+            class="el-menu-item"
+            v-if="showPartyUrl"
+            style="background: #20a0ff;color: #fff;"
+          >
+            <a
+              href="http://10.8.2.133:71"
+              target="_blank"
+            >印钞党支部党员管理</a></li>
         </el-menu>
       </el-col>
       <el-col :span="4">
@@ -78,6 +88,9 @@ export default {
       set(val) {
         this.$store.commit("setUserInfo", val);
       }
+    },
+    showPartyUrl() {
+      return this.$store.state.showPartyUrl && db.sys_id == 0;
     }
   },
   methods: {
@@ -102,6 +115,13 @@ export default {
         },
         ...category
       ];
+    }
+  },
+  watch: {
+    "user.name"() {
+      if (["印钞管理部", "经理部"].includes(this.user.dept.trim())) {
+        this.$store.commit("updatePartyUrl", true);
+      }
     }
   },
   created() {

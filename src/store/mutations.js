@@ -30,7 +30,7 @@ let mutations = {
   },
   refreshNewsList(state, data) {
     // 文章二级列表数据
-    if (typeof state.newsList[data.title] === "undefined") {
+    if (typeof state.newsList[data.title] === 'undefined') {
       state.newsList[data.title] = data.data;
     } else {
       state.newsList[data.title] = state.newsList[data.title].concat(data.data);
@@ -65,6 +65,9 @@ let mutations = {
   },
   setSearchResult(state, val) {
     state.searchResult = val;
+  },
+  updatePartyUrl(state, val) {
+    state.showPartyUrl = val;
   }
 };
 

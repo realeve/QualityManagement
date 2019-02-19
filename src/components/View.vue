@@ -470,7 +470,8 @@ export default {
       this.pushMsgByRtx({
         msg,
         receiver: res.id,
-        title: "质量问题管理平台",
+        title:
+          db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
         delaytime: 0
       });
     },
@@ -554,7 +555,10 @@ export default {
 
           this.pushMsgByRtx({
             msg,
-            title: "质量问题管理平台",
+            title:
+              db.sys_id == 0
+                ? "工艺质量管理交互平台"
+                : "印钞党支部信息管理平台",
             delaytime: 0,
             receiver: this.receiver()
           });
@@ -582,7 +586,10 @@ export default {
           //进入下一步审批流程
           this.pushMsgByRtx({
             msg,
-            title: "质量问题管理平台",
+            title:
+              db.sys_id == 0
+                ? "工艺质量管理交互平台"
+                : "印钞党支部信息管理平台",
             delaytime: 0,
             receiver: this.receiver("verify")
           });
@@ -812,7 +819,8 @@ export default {
       this.pushMsgByRtx({
         msg,
         receiver,
-        title: "质量问题管理平台",
+        title:
+          db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
         delaytime: 0
       });
     },
@@ -831,7 +839,8 @@ export default {
       this.pushMsgByRtx({
         msg,
         receiver,
-        title: "质量问题管理平台",
+        title:
+          db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
         delaytime: 0
       });
     },
@@ -962,7 +971,8 @@ export default {
         msg,
         receiver,
         delaytime: 0,
-        title: "质量问题管理平台"
+        title:
+          db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台"
       });
     },
     // 阅读状态
