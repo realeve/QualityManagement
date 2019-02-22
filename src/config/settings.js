@@ -41,7 +41,8 @@ export default {
     myWorkList: apiHost + '297/cf86aaa28a?sys_id=' + sys_id, // url + 413 + '&M=0',
 
     myWorkListByPage: apiHost + '304/137aea8cd0?sys_id=' + sys_id, // url + 414 + '&M=0',
-
+    workListAboutMe: apiHost + '356/751db37ab1?sys_id=' + sys_id,
+    workListAboutMeByPage: apiHost + '357/4ad6aa3afb?sys_id=' + sys_id,
     // 文章详情
     articleDetail: apiHost + '298/2011115320?sys_id=' + sys_id, // apiHost+'298/2011115320',
 

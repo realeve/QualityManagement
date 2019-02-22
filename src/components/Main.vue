@@ -1,16 +1,22 @@
 <template>
-  <div class="welcome">
-    <div
+  <el-row
+    class="welcome"
+    :gutter="20"
+  >
+    <el-col
       v-for="(item,i) in newsList"
       class=".welcome-center"
       :key="i"
+      :md="6"
+      :sm="12"
+      :xs="12"
     >
       <my-card
         :news="item"
         :bgcolor="colorList[i%colorList.length]"
-      ></my-card>
-    </div>
-  </div>
+      />
+    </el-col>
+  </el-row>
 </template>
 <script>
 import MyCard from "./common/NewsCard";
@@ -81,9 +87,7 @@ export default {
         this.$store.commit("refreshMainList", false);
       });
     },
-    getMyWorkList() {
-      let title = "我的工作列表";
-      let id = -1;
+    getWorkListWithTitle(title, id, apiUrl) {
       let newsItem = {
         title,
         more: "/list/" + title,
@@ -92,7 +96,7 @@ export default {
       };
 
       this.$http
-        .jsonp(settings.api.myWorkList, {
+        .jsonp(settings.api[apiUrl], {
           params: {
             user: "%" + this.user + "%"
           }
@@ -116,6 +120,10 @@ export default {
 
           this.$store.commit("refreshHomeNewsList", newsItem);
         });
+    },
+    getMyWorkList() {
+      this.getWorkListWithTitle("与我有关的工作事项", -2, "workListAboutMe");
+      this.getWorkListWithTitle("我的工作列表", -1, "myWorkList");
     }
   },
   activated() {
@@ -129,7 +137,7 @@ export default {
 @import "../assets/css/welcome.css";
 /*瀑布流布局*/
 
-.welcome {
+/* .welcome {
   column-width: 400px;
   column-gap: 20px;
 }
@@ -137,5 +145,5 @@ export default {
 .box {
   column-count: 2;
   column-gap: 20px;
-}
+} */
 </style>

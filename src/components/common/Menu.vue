@@ -110,6 +110,10 @@ export default {
       let { data: category } = await db.getCateList();
       this.category = [
         {
+          value: "-2",
+          name: "与我有关的工作事项"
+        },
+        {
           value: "-1",
           name: "我的工作列表"
         },
