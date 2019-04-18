@@ -5,6 +5,7 @@
       :config="config"
       v-model="value.content"
       @change="onEditorChange($event)"
+      :style="editorStyle"
     >
     </quill-editor>
   </div>
@@ -76,6 +77,9 @@ export default {
       set(val) {
         this.$store.commit("setAddInfo", val);
       }
+    },
+    editorStyle() {
+      return { "min-height": this.$route.path === "/add" ? "800px" : "300px" };
     }
   },
   methods: {
@@ -96,8 +100,9 @@ export default {
 </script>
 <style lang="less">
 .ql-editor {
-  min-height: 200px;
+  min-height: 300px;
   p {
+    padding-top: 20px !important;
     font-size: 16pt;
     text-indent: 2em;
     color: #333;
@@ -106,6 +111,10 @@ export default {
   }
   blockquote {
     font-size: 16pt;
+  }
+
+  ol li {
+    font-size: 20px;
   }
 }
 </style>

@@ -46,6 +46,12 @@ export default {
     // 文章详情
     articleDetail: apiHost + '298/2011115320?sys_id=' + sys_id, // apiHost+'298/2011115320',
 
+    hot: apiHost + '497/310429690d?sys_id=' + sys_id,
+
+    latest: apiHost + '498/c7b69d12ea?sys_id=' + sys_id,
+
+    notice_id: apiHost + '499/21105b5f1a',
+
     // 文章评论
     commentDetail: apiHost + '300/3a4c83f64a', // url + 404 + '&M=0',
 

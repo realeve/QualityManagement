@@ -141,3 +141,12 @@ export const setArticleStatus = (params) =>
     url: '/323/5d0c90b2e3.json',
     params
   });
+
+/**
+ *   @database: { 工艺质量管理 }
+ *   @desc:     { 获取质量问题反馈文件ID }
+ */
+export const getArticle = () =>
+  axios({
+    url: '/499/21105b5f1a.json'
+  });

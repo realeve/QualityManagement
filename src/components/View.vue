@@ -1,226 +1,289 @@
 <template>
   <div>
-    <div class="card article">
-      <h1 class="title">{{article.title}}</h1>
-      <h3 class="sub-title">
-        {{article.user}}
-        <span class="time">{{article.datetime}}</span>
-        <p>
-          {{article.prod}} • {{article.proc}} • {{article.machine}} (阅读数:{{article.readnum}})
-        </p>
-      </h3>
-      <div
-        class="content"
-        v-html="article.content"
-      ></div>
-      <blockquote>本问题由
-        <el-button
-          plain
-          v-for="(item,i) in operators"
-          size="small"
-          :key="i"
-          @click="remind(item)"
-        >{{item}}</el-button> 确认
-        <p>类型：{{article.category}}</p>
-        <p v-if="article.cartno">车号:
-          <a
-            class="cart-info"
-            v-for="item in article.cartno.split(',')"
-            :key="item"
-            target="_blank"
-            :href="cartUrl+item"
-          >{{item}}</a>
-        </p>
-        <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
-        <p v-show="article.remark!=''">备注：{{article.remark}}</p>
-        <p v-if="article.read_users!=''">阅读状态：{{article.read_users}}</p>
-        <p v-else>阅读状态：无</p>
-      </blockquote>
-      <div
-        v-if="1 == previewMode"
-        class="submit"
-      >
-        <el-button
-          type="success"
-          @click="closePreview"
-        >返回编辑</el-button>
-      </div>
-      <div
-        v-else
-        class="article-status"
-      >
-        <span>文章状态</span>
-        <el-switch
-          v-model="status"
-          on-color="#13ce66"
-          off-color="#ff4949"
-          on-text="已关闭"
-          off-text="未关闭"
-          :width="72"
-          @change="closeArticle"
-        >
-        </el-switch>
-      </div>
-      <div
-        v-if="0 == previewMode"
-        class="submit reedit"
-      >
-        <el-button
-          type="success"
-          @click="edit"
-        >重新编辑</el-button>
-      </div>
-      <div
-        v-if="showDonate"
-        class="donate"
-      >
-        <div class="verify-reward">
-          <el-button
-            v-if="shouldReward && (article.reward==''|| article.reward_status==0)"
-            type="danger"
-            size="large"
-            @click="donate"
-          >发起奖励</el-button>
-        </div>
-        <template v-if="article.reward">
-          <div class="verify-reward">
-            <el-button
-              v-if="shouldVerify && article.reward_status==1"
-              type="danger"
-              size="large"
-              @click="passDonate(1)"
-            >通过奖励</el-button>
-            <el-button
-              v-if="shouldVerify && article.reward_status==1"
-              type="warning"
-              size="large"
-              @click="passDonate(-1)"
-            >拒绝通过</el-button>
-          </div>
-          <p v-show=" (article.reward_status==1||article.reward_status==0) && shouldVerify">本文由{{article.reward_user}}发起了 ￥
-            <el-input
-              style="width:50px;"
-              v-model="article.reward"
-            ></el-input> 元的奖励</p>
-          <p v-show="article.reward_status == 2">本文由{{article.reward_user}}发起了
-            <el-tag type="danger">￥{{article.reward}}</el-tag> 元的奖励</p>
-        </template>
-      </div>
-    </div>
-    <div v-show="attachList.length">
-      <h2 class="font-thin">附件列表</h2>
-      <div class="card attach">
-        <el-carousel
-          indicator-position="inside"
-          height="500px"
-          v-if="attaches.image.length"
-          arrow="always"
-        >
-          <el-carousel-item
-            v-for="(item,i) in attaches.image"
-            :key="i"
-          >
-            <img
-              :src="item.url"
-              :alt="item.name"
-            >
-          </el-carousel-item>
-        </el-carousel>
-
-        <div
-          v-if="musicList.length"
-          class="center margin-top-20"
-        >
-          <my-player :music="musicList" />
-        </div>
-
-        <div class="center margin-top-20">
-          <div
-            v-for="(item,i) in attaches.video"
-            :key="i"
-          >
-            <video
-              :src="item.url"
-              controls="controls"
-            ></video>
-          </div>
-        </div>
-
-        <ul class="attach-list">
-          <li
-            class="attach-item"
-            v-for="(item,i) in attaches.other"
-            :key="i"
-            :title="'点击下载 '+item.name"
-          >
-            <a
-              :href="item.url"
-              target="_blank"
-              :title="'点击下载 '+item.name"
-            >
-              <i class="el-icon-document"></i> 附件{{i+1}} —— {{item.name}}</a>
-          </li>
-        </ul>
-
-      </div>
-    </div>
-    <div v-show="0 == previewMode">
-      <div v-show="!noComment">
-        <h2 class="font-thin">补充说明</h2>
-        <div class="card comment">
-          <div v-if="noComment">
-            <p class="no-comment">
-              现在还没有人留言.
-            </p>
-          </div>
-          <div v-else>
+    <div class="main">
+      <div class="article-container">
+        <div class="card article">
+          <div :class="isNotice?'noticeFont':null">
             <div
-              v-for="item in comment"
-              :key="item.comment_id"
-              class="entry"
+              v-if="isNotice"
+              class="notice_id"
             >
-              <div class="user float-left center">
-                <img
-                  class="img-header"
-                  :src="item.useravatar"
-                >
-              </div>
-              <div class="info">
+              <img
+                src="/static/image/cbpc.png"
+                alt=""
+              >
+              <p>印钞管理部通知（{{article.datetime.slice(0,4)}}）{{article.notice_id.padLeft(2,'0')}}号</p>
+            </div>
+            <h1 class="title">{{article.title}}</h1>
+            <h3 class="sub-title no-print">
+              {{article.user}}
+              <span class="time">{{article.datetime}}</span>
+              <p class="no-print">
+                <span v-if="article.prod">{{article.prod}} • </span><span v-if="article.proc">{{article.proc}} • </span><span v-if="article.machine">{{article.machine}} </span><span>(阅读数:{{article.readnum}})</span>
+              </p>
+            </h3>
+            <div
+              class="content"
+              v-html="article.content"
+            ></div>
+          </div>
+          <blockquote>本问题由
+            <el-button
+              plain
+              v-for="(item,i) in operators"
+              size="small"
+              :key="i"
+              @click="remind(item)"
+            >{{item}}</el-button> 确认
+            <p>类型：{{article.category}}</p>
+            <p v-if="article.cartno">车号:
+              <a
+                class="cart-info"
+                v-for="item in article.cartno.split(',')"
+                :key="item"
+                target="_blank"
+                :href="cartUrl+item"
+              >{{item}}</a>
+            </p>
+            <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
+            <p v-show="article.remark!=''">备注：{{article.remark}}</p>
+            <p v-if="article.read_users!=''">阅读状态：{{article.read_users}}</p>
+            <p v-else>阅读状态：无</p>
+          </blockquote>
+          <div
+            v-if="1 == previewMode"
+            class="submit"
+          >
+            <el-button
+              class="no-print"
+              type="success"
+              @click="closePreview"
+            >返回编辑</el-button>
+          </div>
+          <div
+            v-else
+            class="article-status no-print"
+          >
+            <span>文章状态</span>
+            <el-switch
+              v-model="status"
+              on-color="#13ce66"
+              off-color="#ff4949"
+              on-text="已关闭"
+              off-text="未关闭"
+              :width="72"
+              @change="closeArticle"
+            >
+            </el-switch>
+          </div>
+          <div
+            v-if="0 == previewMode"
+            class="submit reedit no-print"
+          >
+            <el-button
+              type="success"
+              @click="edit"
+            >重新编辑</el-button>
+            <el-button
+              class="no-print"
+              style="margin-left:20px;"
+              type="primary"
+              @click="print"
+            >打印</el-button>
+          </div>
+          <div
+            v-if="showDonate"
+            class="donate"
+          >
+            <div class="verify-reward">
+              <el-button
+                v-if="shouldReward && (article.reward==''|| article.reward_status==0)"
+                type="danger"
+                size="large"
+                @click="donate"
+              >发起奖励</el-button>
+            </div>
+            <template v-if="article.reward">
+              <div class="verify-reward">
                 <el-button
+                  v-if="shouldVerify && article.reward_status==1"
                   type="danger"
-                  icon="delete"
-                  class="float-right"
-                  v-if="user.username == item.username"
-                  @click="deleteComment(item.comment_id)"
-                ></el-button>
-                <div v-html="item.content"></div>
-                <div class="user-info float-right">
-                  <i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
+                  size="large"
+                  @click="passDonate(1)"
+                >通过奖励</el-button>
+                <el-button
+                  v-if="shouldVerify && article.reward_status==1"
+                  type="warning"
+                  size="large"
+                  @click="passDonate(-1)"
+                >拒绝通过</el-button>
+              </div>
+              <p v-show=" (article.reward_status==1||article.reward_status==0) && shouldVerify">本文由{{article.reward_user}}发起了 ￥
+                <el-input
+                  style="width:50px;"
+                  v-model="article.reward"
+                ></el-input> 元的奖励</p>
+              <p v-show="article.reward_status == 2">本文由{{article.reward_user}}发起了
+                <el-tag type="danger">￥{{article.reward}}</el-tag> 元的奖励</p>
+            </template>
+          </div>
+        </div>
+        <div class="widget no-print">
+          <div class="welcome">
+            <my-card
+              v-if="latestList.length>0"
+              :news="latestList[0]"
+              style="min-height:unset;"
+              bgcolor="rgba(255,255,255,0.7)"
+              fontcolor="#333"
+            />
+          </div>
+          <div class="welcome">
+            <my-card
+              v-if="hotList.length>0"
+              :news="hotList[0]"
+              style="min-height:unset;"
+              bgcolor="rgba(255,255,255,0.7)"
+              fontcolor="#333"
+            />
+          </div>
+          <div class="welcome">
+            <my-card
+              v-if="myWorkList.length>0"
+              :news="myWorkList[0]"
+              style="min-height:unset;"
+              bgcolor="rgba(255,255,255,0.7)"
+              fontcolor="#333"
+            />
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div style="display:flex;justify-content:center">
+      <div style="max-width:1600px;width:100%;">
+        <div
+          v-show="attachList.length"
+          class="no-print"
+        >
+          <h2 class="font-thin">附件列表</h2>
+          <div class="card attach">
+            <el-carousel
+              indicator-position="inside"
+              height="500px"
+              v-if="attaches.image.length"
+              arrow="always"
+            >
+              <el-carousel-item
+                v-for="(item,i) in attaches.image"
+                :key="i"
+              >
+                <img
+                  :src="item.url"
+                  :alt="item.name"
+                >
+              </el-carousel-item>
+            </el-carousel>
+
+            <div
+              v-if="musicList.length"
+              class="center margin-top-20"
+            >
+              <my-player :music="musicList" />
+            </div>
+
+            <div class="center margin-top-20">
+              <div
+                v-for="(item,i) in attaches.video"
+                :key="i"
+              >
+                <video
+                  :src="item.url"
+                  controls="controls"
+                ></video>
+              </div>
+            </div>
+
+            <ul class="attach-list">
+              <li
+                class="attach-item"
+                v-for="(item,i) in attaches.other"
+                :key="i"
+                :title="'点击下载 '+item.name"
+              >
+                <a
+                  :href="item.url"
+                  target="_blank"
+                  :title="'点击下载 '+item.name"
+                >
+                  <i class="el-icon-document"></i> 附件{{i+1}} —— {{item.name}}</a>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+        <div v-show="0 == previewMode">
+          <div v-show="!noComment">
+            <h2 class="font-thin">补充说明</h2>
+            <div class="card comment">
+              <div v-if="noComment">
+                <p class="no-comment">
+                  现在还没有人留言.
+                </p>
+              </div>
+              <div v-else>
+                <div
+                  v-for="item in comment"
+                  :key="item.comment_id"
+                  class="entry"
+                >
+                  <div class="user float-left center">
+                    <img
+                      class="img-header"
+                      :src="item.useravatar"
+                    >
+                  </div>
+                  <div class="info">
+                    <el-button
+                      type="danger"
+                      icon="delete"
+                      class="float-right"
+                      v-if="user.username == item.username"
+                      @click="deleteComment(item.comment_id)"
+                    ></el-button>
+                    <div v-html="item.content"></div>
+                    <div class="user-info float-right">
+                      <i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <template v-show="user.id!=''">
+            <div class="no-print">
+              <h2 class="font-thin">留言</h2>
+              <div class="card editor">
+                <quill-editor
+                  :config="config"
+                  v-model="mycomment"
+                ></quill-editor>
+                <div class="submit">
+                  <el-button
+                    type="primary"
+                    @click="postComment"
+                    :disabled="mycomment==''"
+                  >提交</el-button>
+                </div>
+              </div>
+              <div class="card">
+                <h3>附件管理</h3>
+                <attach :listType="'picture-card'" />
+              </div>
+            </div>
+          </template>
         </div>
+
       </div>
-      <template v-show="user.id!=''">
-        <h2 class="font-thin">留言</h2>
-        <div class="card editor">
-          <quill-editor
-            :config="config"
-            v-model="mycomment"
-          ></quill-editor>
-          <div class="submit">
-            <el-button
-              type="primary"
-              @click="postComment"
-              :disabled="mycomment==''"
-            >提交</el-button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>附件管理</h3>
-          <attach :listType="'picture-card'" />
-        </div>
-      </template>
 
       <el-dialog
         title="原因确认"
@@ -262,6 +325,7 @@ import util from "../config/util";
 import MyPlayer from "./common/Player";
 import * as db from "../config/db";
 import rtx from "../config/rtx";
+import MyCard from "./common/NewsCard";
 
 // php.ini中mssql.textlimit/mssql.textsize被设置为 409600，导致接口输入长度被截取
 
@@ -315,7 +379,8 @@ export default {
   components: {
     quillEditor,
     MyPlayer,
-    Attach
+    Attach,
+    "my-card": MyCard
   },
   data() {
     return {
@@ -327,15 +392,24 @@ export default {
       // 车号/轴号信息搜索接口
       attachList: [],
       musicList: [],
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      myWorkList: [],
+      hotList: [],
+      latestList: []
     };
   },
   watch: {
     "article.status"(val) {
       let label = val ? "已关闭" : "未关闭";
+    },
+    article_id() {
+      this.init();
     }
   },
   computed: {
+    isNotice() {
+      return this.article.notice_id > 0;
+    },
     needUpdateRemark() {
       return (
         this.article.category == "机检异常品" ||
@@ -449,6 +523,9 @@ export default {
             ...this.article.operator.split(",")
           ])
         : [this.article.user];
+    },
+    article_id() {
+      return this.$route.params.id;
     }
   },
   methods: {
@@ -863,6 +940,10 @@ export default {
             .replace(/\n\r/g, "<br>")
             .replace(/\\"/g, "");
           this.article = obj.data[0];
+          this.article.content = this.article.content.replace(
+            /\<p\>\<br\>\<\/p\>/g,
+            ""
+          );
           //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
           this.addReadNum();
@@ -938,6 +1019,9 @@ export default {
       this.$router.push("/edit/" + this.article.id);
       // 进入编辑模式
       this.previewMode = 2;
+    },
+    print() {
+      window.print();
     },
     // 回执
     sendReceipt() {
@@ -1035,10 +1119,94 @@ export default {
         this.loadArticle();
         this.loadComment();
       }
+    },
+    getMyWorklist() {
+      let newsItem = {
+        title: "与我有关的工作事项",
+        more: "/list/与我有关的工作事项",
+        data: [],
+        cateId: -2
+      };
+      this.$http
+        .jsonp(settings.api["workListAboutMe"], {
+          params: {
+            user: "%" + this.user.username + "%"
+          }
+        })
+        .then(res => {
+          let obj = res.data;
+          if (obj.rows == 0) {
+            return;
+          }
+          let avatar;
+
+          newsItem.data = obj.data.map(item => {
+            avatar =
+              item.avatar == 1 ? window.btoa(item.avatarkey) : "Avatar_none";
+            return Object.assign(item, {
+              img: HOST + "/demo/avatar/" + avatar + ".jpg",
+              url: "/view/" + item.id
+            });
+          });
+          this.myWorkList = [newsItem];
+        });
+    },
+    getHot() {
+      let newsItem = {
+        title: "近期热门",
+        more: null,
+        data: [],
+        cateId: -2
+      };
+      this.$http.jsonp(settings.api["hot"]).then(res => {
+        let obj = res.data;
+        if (obj.rows == 0) {
+          return;
+        }
+        let avatar;
+
+        newsItem.data = obj.data.map(item => {
+          avatar =
+            item.avatar == 1 ? window.btoa(item.avatarkey) : "Avatar_none";
+          return Object.assign(item, {
+            img: HOST + "/demo/avatar/" + avatar + ".jpg",
+            url: "/view/" + item.id
+          });
+        });
+        this.hotList = [newsItem];
+      });
+    },
+    getLatest() {
+      let newsItem = {
+        title: "最新文章",
+        more: null,
+        data: [],
+        cateId: -2
+      };
+      this.$http.jsonp(settings.api["latest"]).then(res => {
+        let obj = res.data;
+        if (obj.rows == 0) {
+          return;
+        }
+        let avatar;
+
+        newsItem.data = obj.data.map(item => {
+          avatar =
+            item.avatar == 1 ? window.btoa(item.avatarkey) : "Avatar_none";
+          return Object.assign(item, {
+            img: HOST + "/demo/avatar/" + avatar + ".jpg",
+            url: "/view/" + item.id
+          });
+        });
+        this.latestList = [newsItem];
+      });
     }
   },
   activated() {
     this.init();
+    this.getMyWorklist();
+    this.getHot();
+    this.getLatest();
   }
 };
 </script>
@@ -1146,44 +1314,78 @@ h2 {
     // align-items:center;
   }
 }
+.main {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .article-container {
+    display: flex;
+    flex-direction: row;
+    max-width: 1600px;
+    width: 100%;
+    .article {
+      position: relative;
+      min-height: 300px; //.margin-top-20;
+      flex: 1;
+      .noticeFont {
+        font-family: "华文仿宋", "仿宋";
+      }
+      .notice_id {
+        img {
+          width: 250px;
+        }
+        p {
+          padding-left: 15px;
+          margin-top: -6px;
+        }
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+        border-bottom: #bbb solid 1px;
+      }
+      .title {
+        .font-thin;
+        text-align: center;
+        font-size: 21pt;
+      }
+      .cart-info {
+        margin-right: 10px;
+      }
+      .sub-title {
+        .font-thin;
+        text-align: center;
+        font-size: 12pt;
+        color: @text-color;
+      }
 
-.article {
-  min-height: 300px; //.margin-top-20;
-  .title {
-    .font-thin;
-    text-align: center;
-    font-size: 30pt;
-  }
-  .cart-info {
-    margin-right: 10px;
-  }
-  .sub-title {
-    .font-thin;
-    text-align: center;
-    font-size: 12pt;
-    color: @text-color;
-  }
+      .time {
+        padding-left: 1.5em;
+      }
 
-  .time {
-    padding-left: 1.5em;
-  }
-
-  .content {
-    text-indent: 2em;
-    color: @text-color;
-    line-height: 1.7em;
-    border-top: 1px dotted #eee;
-    padding: 20px 30px;
-    padding-bottom: 10px;
-    max-width: 100%;
-    font-size: 1.3em;
-  }
-
-  .desc {
-    border-top: 1px dotted #eee;
-    padding: 20px 30px 30px 50px;
-    ul li {
-      line-height: 2em;
+      .content {
+        text-indent: 2em;
+        color: @text-color;
+        line-height: 1.7em;
+        border-top: 1px dotted #eee;
+        padding: 20px 30px;
+        padding-bottom: 10px;
+        max-width: 100%;
+        font-size: 1.3em;
+      }
+      .desc {
+        border-top: 1px dotted #eee;
+        padding: 20px 30px 30px 50px;
+        ul li {
+          line-height: 2em;
+        }
+      }
+    }
+    .widget {
+      margin-left: 20px;
+      width: 400px;
+      .welcome {
+        margin-bottom: 20px;
+      }
     }
   }
 }
@@ -1242,5 +1444,23 @@ h2 {
 
 .float-right {
   float: right;
+}
+@media print {
+  .no-print {
+    display: none;
+  }
+  p {
+    margin: 0;
+    padding: 3px 0;
+  }
+  .article {
+    .title {
+      margin: 0 0 10px 0;
+      font-size: 25px !important;
+    }
+    blockquote {
+      display: none;
+    }
+  }
 }
 </style>

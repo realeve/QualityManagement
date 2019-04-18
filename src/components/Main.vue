@@ -7,7 +7,7 @@
       v-for="(item,i) in newsList"
       class=".welcome-center"
       :key="i"
-      :md="6"
+      :md="8"
       :sm="12"
       :xs="12"
     >

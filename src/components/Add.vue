@@ -156,6 +156,7 @@
             </el-option>
           </el-select>
         </el-form-item>
+
         <transition
           name="custom-transition"
           enter-active-class="animated slideInUp"
@@ -180,7 +181,7 @@
           leave-active-class="animated fadeOutDown"
         >
           <el-form-item
-            v-if="value.category == '工艺质量隐患排查'"
+            v-if="categoryText == '工艺质量隐患排查'"
             :label="infoTips.text"
             prop="remark"
           >
@@ -300,17 +301,23 @@ export default {
     };
   },
   computed: {
+    categoryText() {
+      let res = this.options.category.find(
+        item => item.value == this.value.category
+      );
+      return (res && res.name) || "";
+    },
     sys_proc() {
       return db.sys_id == 0;
     },
     infoTips() {
-      if (this.value.category == "质量问题发布") {
+      if (this.categoryText == "质量问题发布") {
         return {
           text: "备注",
           placeholder: "请输入备注信息",
           value: ""
         };
-      } else if (this.value.category == "工艺质量隐患排查") {
+      } else if (this.categoryText == "工艺质量隐患排查") {
         if (this.previewMode != 2) {
           this.value.reward = 5;
           this.value.reward_status = 1;
@@ -403,14 +410,19 @@ export default {
       }
     },
     category(val) {
-      if (val == "质量隐患整改通知") {
-        this.value.title = "关于XXX的整改通知";
+      if (this.categoryText == "质量隐患整改通知") {
+        this.value.title = "关于 XXX 的整改通知";
+      } else if (this.categoryText == "印钞质量问题反馈单") {
+        this.value.title = "关于 XXX 的印钞质量问题反馈";
       }
     },
     title(val) {
-      if (this.category == "质量隐患整改通知") {
+      if (this.categoryText == "质量隐患整改通知") {
         let title = val.match(/关于(\S+)的整改通知/);
-        this.setDefaultData(title != null ? title[1] : "XXX");
+        this.setDefaultData(title != null ? title[1] : "XXX", 0);
+      } else if (this.categoryText == "印钞质量问题反馈单") {
+        let title = val.match(/关于(\S+)的质量问题反馈/);
+        this.setDefaultData(title != null ? title[1] : "XXX", 1);
       }
     }
   },
@@ -429,11 +441,13 @@ export default {
         this.$message.success(data.msg);
       });
     },
-    setDefaultData(title) {
-      if (this.value.content.includes("质量隐患问题描述")) {
-        return;
-      }
-      this.value.content = `
+    setDefaultData(title, type) {
+      this.value.content = this.value.content || "";
+      if (type === 0) {
+        if (this.value.content.includes("质量隐患问题描述")) {
+          return;
+        }
+        let content = `
           <p><strong>项目</strong></p>
           <p>${title}</p>
           <br>
@@ -452,6 +466,31 @@ export default {
           <hr>
           <p style="font-size:13pt;font-weight:lighter;">(注：原因分析、整改措施、达到的效果以附件的形式提交至评论区。)</p>
           `;
+        this.value.content = content;
+      } else if (type === 1) {
+        if (this.value.content.includes("印钞质量问题反馈")) {
+          return;
+        }
+        let content = `
+          <p><strong>填报部门：</strong>${this.$store.state.user.dept}</p>
+          <p><strong>填报日期：</strong>${util.getNow(0)}</p> 
+          <p><strong>项目</strong></p>
+          <p>${title}</p> 
+          <p><strong>质量问题</strong></p>
+          <p>在此输入质量问题</p> 
+          <p><strong>问题描述</strong></p>
+          <p>在此输入问题描述</p>  
+           <strong>原因分析</strong><br>原因分析如下：
+          <ol><li></li><li><br></li><li><br></li><li><br></li></ol> 
+          <strong>措施</strong><br>
+          针对该问题，我们采取了以下措施： 
+          <ol><li></li><li><br></li><li><br></li><li><br></li></ol> 
+          <p><strong>填报部门负责人确认</strong></p>
+          <p> </p>
+          <p><strong>填表人：</strong>${this.$store.state.user.username}</p> 
+          `;
+        this.value.content = content;
+      }
     },
     validFile(file) {
       //const isJPG = file.type === 'image/jpeg';
@@ -590,6 +629,15 @@ export default {
         _id: this.attachList
       });
     },
+    async getNoticeId() {
+      if (this.categoryText !== "印钞质量问题反馈单") {
+        return 0;
+      }
+      let { data } = await db.getArticle();
+      if (data.length) {
+        return data[0].notice_id;
+      }
+    },
     async submitForm() {
       if (!this.getParams()) {
         return;
@@ -642,6 +690,7 @@ export default {
       submitData.cartno = this.cartList.join(",");
 
       let receiver = this.$store.state.rtxlist.join(",");
+      submitData.notice_id = await this.getNoticeId();
 
       let {
         data: [{ affected_rows, id }]

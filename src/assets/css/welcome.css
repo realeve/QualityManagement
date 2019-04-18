@@ -12,6 +12,11 @@ body {
     margin: 0
 }
 
+p {
+    margin: 0;
+    padding: 3px 0;
+}
+
 article,
 aside,
 details,
@@ -1579,7 +1584,7 @@ body {
 }
 
 .welcome .entries {
-    padding: 1.4em
+    padding: 1em 1.4em
 }
 
 .welcome .entry {
@@ -1600,8 +1605,8 @@ body {
 }
 
 .welcome .entry-screenshot-image {
-    width: 3.75em;
-    height: 3.75em;
+    width: 3em;
+    height: 3em;
     border-radius: 2px;
     margin-top: .3em
 }

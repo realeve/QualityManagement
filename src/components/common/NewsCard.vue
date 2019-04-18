@@ -8,7 +8,7 @@
   >
     <div
       class="box-title clearfix"
-      :style="{background:bgcolor}"
+      :style="{background:bgcolor,color:fontcolor}"
     >
       <div class="float-left">{{news.title}}</div>
       <router-link
@@ -32,6 +32,7 @@
           <div
             class="entry clearfix"
             @click="jump(item.url)"
+            :title="item.title"
           >
             <div class="entry-screenshot float-left">
               <img
@@ -65,13 +66,19 @@
                 <div class="action">{{item.datetime}}</div>
                 <div class="action">•</div>
                 <div class="action">{{item.readnum}}</div>
-                <div class="action">
+                <div
+                  class="action"
+                  v-if="!isViewPage"
+                >
                   <el-tag
                     type="danger"
                     v-show="!item.isread && isHomePage"
                   >未读</el-tag>
                 </div>
-                <div class="action">
+                <div
+                  class="action"
+                  v-if="!isViewPage"
+                >
                   <el-tag
                     type="danger"
                     v-if="0 == item.status"
@@ -84,7 +91,7 @@
       </div>
 
       <div
-        v-if="!news.more"
+        v-if="!news.more && !isViewPage"
         @click="loadMore"
         class="entry"
       >
@@ -107,6 +114,9 @@ export default {
     },
     bgcolor: {
       default: "#2196f3"
+    },
+    fontcolor: {
+      default: "#fff"
     }
   },
   computed: {
@@ -129,6 +139,9 @@ export default {
     },
     isHomePage() {
       return this.$route.name == "Main";
+    },
+    isViewPage() {
+      return this.$route.name == "View";
     }
   },
   methods: {

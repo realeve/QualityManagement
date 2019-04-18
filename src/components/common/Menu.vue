@@ -154,4 +154,10 @@ export default {
     border-radius: 50%;
   }
 }
+
+@media print {
+  .el-menu--dark {
+    display: none;
+  }
+}
 </style>
