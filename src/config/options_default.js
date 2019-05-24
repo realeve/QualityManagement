@@ -69,6 +69,9 @@ export default {
         },
         {
           value: '吕树荣'
+        },
+        {
+          value: '周正东'
         }
       ]
     },
@@ -243,9 +246,6 @@ export default {
           value: '陈晶'
         },
         {
-          value: '周正东'
-        },
-        {
           value: '杜煜'
         },
         {
@@ -312,7 +312,7 @@ export default {
       label: '物资管理部',
       options: [
         {
-          value: '贾燕'
+          value: '赵永康'
         },
         {
           value: '赵军'
