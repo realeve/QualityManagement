@@ -388,7 +388,7 @@ export default {
       config,
       comment: [],
       noComment: true,
-      cartUrl: HOST + "/search/#",
+      cartUrl: HOST + ":8000/search/#",
       // 车号/轴号信息搜索接口
       attachList: [],
       musicList: [],
