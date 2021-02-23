@@ -6,23 +6,14 @@
     :close-on-click-modal="false"
     :show-close="false"
   >
-    <div class='avatar'>
-      <img :src="user.avatar">
+    <div class="avatar">
+      <img :src="user.avatar" />
     </div>
     <el-form :model="user">
-      <el-form-item
-        label="用户名"
-        :label-width="formLabelWidth"
-      >
-        <el-input
-          v-model="user.name"
-          auto-complete="off"
-        ></el-input>
+      <el-form-item label="用户名" :label-width="formLabelWidth">
+        <el-input v-model="user.name" auto-complete="off"></el-input>
       </el-form-item>
-      <el-form-item
-        label="密码"
-        :label-width="formLabelWidth"
-      >
+      <el-form-item label="密码" :label-width="formLabelWidth">
         <el-input
           v-model="user.password"
           type="password"
@@ -31,17 +22,10 @@
         ></el-input>
       </el-form-item>
     </el-form>
-    <div
-      slot="footer"
-      class="dialog-footer"
-    >
-      <el-button
-        type="primary"
-        @click="login"
-      >确 定</el-button>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="login">确 定</el-button>
     </div>
   </el-dialog>
-
 </template>
 <script>
 import settings from "../../config/settings";
@@ -52,7 +36,7 @@ export default {
     return {
       formLabelWidth: "80px",
       avatarContent: settings.host + "/demo/avatar/",
-      userList: []
+      userList: [],
     };
   },
   computed: {
@@ -62,7 +46,7 @@ export default {
       },
       set(val) {
         this.$store.commit("setUserInfo", val);
-      }
+      },
     },
     hisData: {
       get() {
@@ -73,7 +57,7 @@ export default {
             id: "",
             avatar: "",
             username: "",
-            unLogin: true
+            unLogin: true,
           };
         } else {
           return JSON.parse(offlineData);
@@ -81,8 +65,8 @@ export default {
       },
       set(val) {
         window.localStorage.setItem("user", JSON.stringify(val));
-      }
-    }
+      },
+    },
   },
   methods: {
     login() {
@@ -90,47 +74,47 @@ export default {
       this.$http
         .jsonp(settings.api.md5, {
           params: {
-            key: this.user.password
-          }
+            key: this.user.password,
+          },
         })
-        .then(res => {
+        .then((res) => {
           return this.$http.jsonp(settings.api.login, {
             params: {
               uid: this.user.id,
-              psw: res.data.key
-            }
+              psw: res.data.key,
+            },
           });
         })
-        .then(res => {
+        .then((res) => {
           if (res.data.rows) {
             this.user.unLogin = false;
             this.hisData = this.user;
             this.$message({
               message: "登录成功",
-              type: "success"
+              type: "success",
             });
           } else {
             this.$message({
               message: "用户名密码错误，请重试",
-              type: "error"
+              type: "error",
             });
           }
         });
     },
     loadUserList() {
-      this.$http.jsonp(settings.api.userList).then(res => {
+      this.$http.jsonp(settings.api.userList).then((res) => {
         this.userList = res.data.data;
         this.setAvatar();
       });
     },
-    setAvatar: _.debounce(function() {
+    setAvatar: _.debounce(function () {
       let username = this.user.name;
       if (username == "" || typeof this.userList == "undefined") {
         this.user.avatar = "Avatar_none.jpg";
         return;
       }
       let user = this.userList.filter(
-        res => res.name.substring(0, username.length) == username
+        (res) => res.name.substring(0, username.length) == username
       )[0];
       this.user = Object.assign(this.user, user);
       if (user && user.avatar == 1) {
@@ -147,7 +131,7 @@ export default {
       if (this.user.unLogin) {
         this.loadUserList();
       }
-    }
+    },
   },
   watch: {
     "user.name"() {
@@ -156,14 +140,14 @@ export default {
       // }
       this.loadUserList();
       this.setAvatar();
-      if (["印钞管理部", "经理部"].includes(this.user.dept.trim())) {
+      if (["印钞管理部", "经理部"].includes((this.user.dept || "").trim())) {
         this.$store.commit("updatePartyUrl", true);
       }
-    }
+    },
   },
   created() {
     this.init();
-  }
+  },
 };
 </script>
 <style lang="less" scoped>

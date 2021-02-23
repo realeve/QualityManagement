@@ -3,67 +3,70 @@
     <div class="main">
       <div class="article-container">
         <div class="card article">
-          <div :class="isNotice?'noticeFont':null">
-            <div
-              v-if="isNotice"
-              class="notice_id"
-            >
-              <img
-                src="/static/image/cbpc.png"
-                alt=""
-              >
-              <p>印钞管理部通知（{{article.datetime.slice(0,4)}}）{{article.notice_id.padLeft(2,'0')}}号</p>
+          <div :class="isNotice ? 'noticeFont' : null">
+            <div v-if="isNotice" class="notice_id">
+              <img src="/static/image/cbpc.png" alt="" />
+              <p>
+                印钞管理部通知（{{ article.datetime.slice(0, 4) }}）{{
+                  article.notice_id.padLeft(2, "0")
+                }}号
+              </p>
             </div>
-            <h1 class="title">{{article.title}}</h1>
+            <h1 class="title">{{ article.title }}</h1>
             <h3 class="sub-title no-print">
-              {{article.user}}
-              <span class="time">{{article.datetime}}</span>
+              {{ article.user }}
+              <span class="time">{{ article.datetime }}</span>
               <p class="no-print">
-                <span v-if="article.prod">{{article.prod}} • </span><span v-if="article.proc">{{article.proc}} • </span><span v-if="article.machine">{{article.machine}} </span><span>(阅读数:{{article.readnum}})</span>
+                <span v-if="article.prod">{{ article.prod }} • </span
+                ><span v-if="article.proc">{{ article.proc }} • </span
+                ><span v-if="article.machine">{{ article.machine }} </span
+                ><span>(阅读数:{{ article.readnum }})</span>
               </p>
             </h3>
-            <div
-              class="content"
-              v-html="article.content"
-            ></div>
+            <div class="content" v-html="article.content"></div>
           </div>
-          <blockquote>本问题由
+          <blockquote>
+            本问题由
             <el-button
               plain
-              v-for="(item,i) in operators"
+              v-for="(item, i) in operators"
               size="small"
               :key="i"
               @click="remind(item)"
-            >{{item}}</el-button> 确认
-            <p>类型：{{article.category}}</p>
-            <p v-if="article.cartno">车号:
+              >{{ item }}</el-button
+            >
+            确认
+            <p>类型：{{ article.category }}</p>
+            <p v-if="article.cartno">
+              车号:
               <a
                 class="cart-info"
                 v-for="item in article.cartno.split(',')"
                 :key="item"
                 target="_blank"
-                :href="cartUrl+item"
-              >{{item}}</a>
+                :href="cartUrl + item"
+                >{{ item }}</a
+              >
             </p>
-            <p v-show="article.status_username!='' && 0 == previewMode">文章状态：{{article.status_username}} 于 {{status_time}}{{status==1?'关闭':'重新打开'}}</p>
-            <p v-show="article.remark!=''">备注：{{article.remark}}</p>
-            <p v-if="article.read_users!=''">阅读状态：{{article.read_users}}</p>
+            <p v-show="article.status_username != '' && 0 == previewMode">
+              文章状态：{{ article.status_username }} 于 {{ status_time
+              }}{{ status == 1 ? "关闭" : "重新打开" }}
+            </p>
+            <p v-show="article.remark != ''">备注：{{ article.remark }}</p>
+            <p v-if="article.read_users != ''">
+              阅读状态：{{ article.read_users }}
+            </p>
             <p v-else>阅读状态：无</p>
+            <p v-if="article.read_users != ''">
+              首次阅读时间：<span style="font-size: 12px">{{ logs }}</span>
+            </p>
           </blockquote>
-          <div
-            v-if="1 == previewMode"
-            class="submit"
-          >
-            <el-button
-              class="no-print"
-              type="success"
-              @click="closePreview"
-            >返回编辑</el-button>
+          <div v-if="1 == previewMode" class="submit">
+            <el-button class="no-print" type="success" @click="closePreview"
+              >返回编辑</el-button
+            >
           </div>
-          <div
-            v-else
-            class="article-status no-print"
-          >
+          <div v-else class="article-status no-print">
             <span>文章状态</span>
             <el-switch
               v-model="status"
@@ -76,96 +79,100 @@
             >
             </el-switch>
           </div>
-          <div
-            v-if="0 == previewMode"
-            class="submit reedit no-print"
-          >
-            <el-button
-              type="success"
-              @click="edit"
-            >重新编辑</el-button>
+          <div v-if="0 == previewMode" class="submit reedit no-print">
+            <el-button type="success" @click="edit">重新编辑</el-button>
             <el-button
               class="no-print"
-              style="margin-left:20px;"
+              style="margin-left: 20px"
               type="primary"
               @click="print"
-            >打印</el-button>
+              >打印</el-button
+            >
           </div>
-          <div
-            v-if="showDonate"
-            class="donate"
-          >
+          <div v-if="showDonate" class="donate">
             <div class="verify-reward">
               <el-button
-                v-if="shouldReward && (article.reward==''|| article.reward_status==0)"
+                v-if="
+                  shouldReward &&
+                  (article.reward == '' || article.reward_status == 0)
+                "
                 type="danger"
                 size="large"
                 @click="donate"
-              >发起奖励</el-button>
+                >发起奖励</el-button
+              >
             </div>
             <template v-if="article.reward">
               <div class="verify-reward">
                 <el-button
-                  v-if="shouldVerify && article.reward_status==1"
+                  v-if="shouldVerify && article.reward_status == 1"
                   type="danger"
                   size="large"
                   @click="passDonate(1)"
-                >通过奖励</el-button>
+                  >通过奖励</el-button
+                >
                 <el-button
-                  v-if="shouldVerify && article.reward_status==1"
+                  v-if="shouldVerify && article.reward_status == 1"
                   type="warning"
                   size="large"
                   @click="passDonate(-1)"
-                >拒绝通过</el-button>
+                  >拒绝通过</el-button
+                >
               </div>
-              <p v-show=" (article.reward_status==1||article.reward_status==0) && shouldVerify">本文由{{article.reward_user}}发起了 ￥
+              <p
+                v-show="
+                  (article.reward_status == 1 || article.reward_status == 0) &&
+                  shouldVerify
+                "
+              >
+                本文由{{ article.reward_user }}发起了 ￥
                 <el-input
-                  style="width:50px;"
+                  style="width: 50px"
                   v-model="article.reward"
-                ></el-input> 元的奖励</p>
-              <p v-show="article.reward_status == 2">本文由{{article.reward_user}}发起了
-                <el-tag type="danger">￥{{article.reward}}</el-tag> 元的奖励</p>
+                ></el-input>
+                元的奖励
+              </p>
+              <p v-show="article.reward_status == 2">
+                本文由{{ article.reward_user }}发起了
+                <el-tag type="danger">￥{{ article.reward }}</el-tag> 元的奖励
+              </p>
             </template>
           </div>
         </div>
         <div class="widget no-print">
           <div class="welcome">
             <my-card
-              v-if="latestList.length>0"
+              v-if="latestList.length > 0"
               :news="latestList[0]"
-              style="min-height:unset;"
+              style="min-height: unset"
               bgcolor="rgba(255,255,255,0.7)"
               fontcolor="#333"
             />
           </div>
           <div class="welcome">
             <my-card
-              v-if="hotList.length>0"
+              v-if="hotList.length > 0"
               :news="hotList[0]"
-              style="min-height:unset;"
+              style="min-height: unset"
               bgcolor="rgba(255,255,255,0.7)"
               fontcolor="#333"
             />
           </div>
           <div class="welcome">
             <my-card
-              v-if="myWorkList.length>0"
+              v-if="myWorkList.length > 0"
               :news="myWorkList[0]"
-              style="min-height:unset;"
+              style="min-height: unset"
               bgcolor="rgba(255,255,255,0.7)"
               fontcolor="#333"
             />
           </div>
         </div>
       </div>
-
     </div>
-    <div style="display:flex;justify-content:center">
-      <div style="max-width:1600px;width:100%;">
-        <div
-          v-show="attachList.length"
-          class="no-print"
-        >
+    <div style="display: flex; justify-content: center">
+      <div style="max-width: 1600px; width: 100%">
+        <div v-show="attachList.length" class="no-print">
           <h2 class="font-thin">附件列表</h2>
           <div class="card attach">
             <el-carousel
@@ -174,52 +181,38 @@
               v-if="attaches.image.length"
               arrow="always"
             >
-              <el-carousel-item
-                v-for="(item,i) in attaches.image"
-                :key="i"
-              >
-                <img
-                  :src="item.url"
-                  :alt="item.name"
-                >
+              <el-carousel-item v-for="(item, i) in attaches.image" :key="i">
+                <img :src="item.url" :alt="item.name" />
               </el-carousel-item>
             </el-carousel>
 
-            <div
-              v-if="musicList.length"
-              class="center margin-top-20"
-            >
+            <div v-if="musicList.length" class="center margin-top-20">
               <my-player :music="musicList" />
             </div>
 
             <div class="center margin-top-20">
-              <div
-                v-for="(item,i) in attaches.video"
-                :key="i"
-              >
-                <video
-                  :src="item.url"
-                  controls="controls"
-                ></video>
+              <div v-for="(item, i) in attaches.video" :key="i">
+                <video :src="item.url" controls="controls"></video>
               </div>
             </div>
 
             <ul class="attach-list">
               <li
                 class="attach-item"
-                v-for="(item,i) in attaches.other"
+                v-for="(item, i) in attaches.other"
                 :key="i"
-                :title="'点击下载 '+item.name"
+                :title="'点击下载 ' + item.name"
               >
                 <a
                   :href="item.url"
                   target="_blank"
-                  :title="'点击下载 '+item.name"
+                  :title="'点击下载 ' + item.name"
                 >
-                  <i class="el-icon-document"></i> 附件{{i+1}} —— {{item.name}}</a>
+                  <i class="el-icon-document"></i> 附件{{ i + 1 }} ——
+                  {{ item.name }}</a
+                >
               </li>
             </ul>
-
           </div>
         </div>
         <div v-show="0 == previewMode">
@@ -227,9 +220,7 @@
             <h2 class="font-thin">补充说明</h2>
             <div class="card comment">
               <div v-if="noComment">
-                <p class="no-comment">
-                  现在还没有人留言.
-                </p>
+                <p class="no-comment">现在还没有人留言.</p>
               </div>
               <div v-else>
                 <div
@@ -238,10 +229,7 @@
                   class="entry"
                 >
                   <div class="user float-left center">
-                    <img
-                      class="img-header"
-                      :src="item.useravatar"
-                    >
+                    <img class="img-header" :src="item.useravatar" />
                   </div>
                   <div class="info">
                     <el-button
@@ -253,13 +241,15 @@
                     ></el-button>
                     <div v-html="item.content"></div>
                     <div class="user-info float-right">
-                      <i class="el-icon-edit"></i>{{item.username}} 发表于 {{item.rec_time}}</div>
+                      <i class="el-icon-edit"></i>{{ item.username }} 发表于
+                      {{ item.rec_time }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <template v-show="user.id!=''">
+          <template v-show="user.id != ''">
             <div class="no-print">
               <h2 class="font-thin">留言</h2>
               <div class="card editor">
@@ -271,8 +261,9 @@
                   <el-button
                     type="primary"
                     @click="postComment"
-                    :disabled="mycomment==''"
-                  >提交</el-button>
+                    :disabled="mycomment == ''"
+                    >提交</el-button
+                  >
                 </div>
               </div>
               <div class="card">
@@ -282,18 +273,11 @@
             </div>
           </template>
         </div>
-
       </div>
 
-      <el-dialog
-        title="原因确认"
-        v-model="dialogFormVisible"
-      >
+      <el-dialog title="原因确认" v-model="dialogFormVisible">
         <el-form :model="article">
-          <el-form-item
-            label="问题原因"
-            :label-width="'120px'"
-          >
+          <el-form-item label="问题原因" :label-width="'120px'">
             <el-input
               v-model="article.remark"
               placeholder="请输入问题原因，如：机检系统异常，胶印质量、凹印质量、印码质量、成像异常等"
@@ -301,15 +285,9 @@
             ></el-input>
           </el-form-item>
         </el-form>
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
+        <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button
-            type="primary"
-            @click="updateRemark"
-          >确 定</el-button>
+          <el-button type="primary" @click="updateRemark">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -339,39 +317,39 @@ let config = {
       ["blockquote"],
       [
         {
-          header: [1, 2, 3, 4, 5, 6, false]
-        }
+          header: [1, 2, 3, 4, 5, 6, false],
+        },
       ],
       [
         {
-          list: "ordered"
+          list: "ordered",
         },
         {
-          list: "bullet"
-        }
+          list: "bullet",
+        },
       ],
       [
         {
-          size: ["small", false, "large", "huge"]
-        }
+          size: ["small", false, "large", "huge"],
+        },
       ],
       [
         {
-          color: []
+          color: [],
         },
         {
-          background: []
-        }
+          background: [],
+        },
       ],
       [
         {
-          align: []
-        }
+          align: [],
+        },
       ],
       ["clean"],
-      ["link"]
-    ]
-  }
+      ["link"],
+    ],
+  },
 };
 
 export default {
@@ -380,7 +358,7 @@ export default {
     quillEditor,
     MyPlayer,
     Attach,
-    "my-card": MyCard
+    "my-card": MyCard,
   },
   data() {
     return {
@@ -395,7 +373,8 @@ export default {
       dialogFormVisible: false,
       myWorkList: [],
       hotList: [],
-      latestList: []
+      latestList: [],
+      logs: [],
     };
   },
   watch: {
@@ -403,8 +382,12 @@ export default {
       let label = val ? "已关闭" : "未关闭";
     },
     article_id() {
+      console.log(this.article_id);
+      if (!this.article_id) {
+        return;
+      }
       this.init();
-    }
+    },
   },
   computed: {
     isNotice() {
@@ -428,7 +411,7 @@ export default {
       },
       set(val) {
         this.article.status = val ? 1 : 0;
-      }
+      },
     },
     user() {
       return this.$store.state.user;
@@ -439,7 +422,7 @@ export default {
       },
       set(val) {
         this.$store.commit("enterPreview", val);
-      }
+      },
     },
     preview: {
       get() {
@@ -447,14 +430,14 @@ export default {
       },
       set(val) {
         this.$store.commit("setPreviewData", val);
-      }
+      },
     },
     commentSettings() {
       return {
         article_id: this.$route.params.id,
         username: this.user.username,
         uid: this.user.id,
-        useravatar: this.user.avatar
+        useravatar: this.user.avatar,
       };
     },
     attaches() {
@@ -463,15 +446,15 @@ export default {
         image: [],
         video: [],
         audio: [],
-        other: []
+        other: [],
       };
 
-      this.attachList.forEach(item => {
+      this.attachList.forEach((item) => {
         var type = item.type;
         var url = settings.uploadContent + item.url;
         var item = {
           url,
-          name: item.name
+          name: item.name,
         };
         if (type.includes("image")) {
           //图片
@@ -487,11 +470,11 @@ export default {
           obj.other.push(item);
         }
       });
-      this.musicList = obj.audio.map(item => {
+      this.musicList = obj.audio.map((item) => {
         return {
           title: item.name.split(".")[0],
           author: "未知艺术家",
-          url: item.url
+          url: item.url,
         };
       });
       return obj;
@@ -514,19 +497,19 @@ export default {
       },
       set(val) {
         this.$store.commit("setCommentContent", val);
-      }
+      },
     },
     operators() {
       return this.article.operator
         ? util.unionArr([
             this.article.user,
-            ...this.article.operator.split(",")
+            ...this.article.operator.split(","),
           ])
         : [this.article.user];
     },
     article_id() {
       return this.$route.params.id;
-    }
+    },
   },
   methods: {
     remind(username) {
@@ -536,11 +519,11 @@ export default {
       let rtxList = Object.values(settings.rtxInfo);
 
       let users = [];
-      rtxList.forEach(item => {
+      rtxList.forEach((item) => {
         users = [...users, ...item];
       });
       users = util.unionArr(users);
-      let res = users.find(item => item.value === username.trim());
+      let res = users.find((item) => item.value === username.trim());
       if (typeof res == "undefined") {
         return;
       }
@@ -549,18 +532,18 @@ export default {
         receiver: res.id,
         title:
           db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
-        delaytime: 0
+        delaytime: 0,
       });
     },
     receiver(mode = "reward") {
       let users;
       if (mode == "reward") {
         users = settings.rtxInfo.reward.filter(
-          item => item.name == item.reward_user
+          (item) => item.name == item.reward_user
         );
         users = users.id;
       } else {
-        users = settings.rtxInfo.verify.map(item => item.id);
+        users = settings.rtxInfo.verify.map((item) => item.id);
       }
 
       return users.join(",");
@@ -577,10 +560,10 @@ export default {
         tblname: "tbl_article",
         id: this.article.id,
         reward_status: val,
-        reward
+        reward,
       };
       return this.$http.jsonp(settings.api.update, {
-        params
+        params,
       });
     },
     updateDonateInfo(reward) {
@@ -590,10 +573,10 @@ export default {
         reward_status: 1,
         utf2gbk: ["reward_user"],
         reward_user: this.user.username,
-        reward
+        reward,
       };
       return this.$http.jsonp(settings.api.update, {
-        params
+        params,
       });
     },
     passDonate(val) {
@@ -612,22 +595,22 @@ export default {
       this.$confirm(tip.text, tip.title, {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => this.verifyDonate(val, reward))
         .then(() => {
           this.$message({
             type: "success",
-            message: "操作成功"
+            message: "操作成功",
           });
           this.article.reward_status = val;
           let passInfo = val ? "已经通过" : "拒绝通过";
 
           let msg = `${this.$store.state.user.username}对[(${
             this.article.title
-          })|${settings.rtxJmpLink +
-            "/view/" +
-            this.article.id}]的奖励申请${passInfo}`;
+          })|${
+            settings.rtxJmpLink + "/view/" + this.article.id
+          }]的奖励申请${passInfo}`;
           //反馈至奖励发起人员
 
           this.pushMsgByRtx({
@@ -637,10 +620,10 @@ export default {
                 ? "工艺质量管理交互平台"
                 : "印钞党支部信息管理平台",
             delaytime: 0,
-            receiver: this.receiver()
+            receiver: this.receiver(),
           });
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
@@ -651,7 +634,7 @@ export default {
         cancelButtonText: "取消",
         inputPattern: /^(\d*\.)?\d+$/,
         inputErrorMessage: "金额格式不正确",
-        inputValue: this.article.reward
+        inputValue: this.article.reward,
       })
         .then(({ value }) => {
           this.updateDonateInfo(value);
@@ -668,19 +651,19 @@ export default {
                 ? "工艺质量管理交互平台"
                 : "印钞党支部信息管理平台",
             delaytime: 0,
-            receiver: this.receiver("verify")
+            receiver: this.receiver("verify"),
           });
         })
         .then(() => {
           this.$message({
             type: "success",
-            message: "赞赏成功,金额:￥" + curValue
+            message: "赞赏成功,金额:￥" + curValue,
           });
           this.article.reward_user = this.user.username;
           this.article.reward = curValue;
           this.article.reward_status = 1;
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
@@ -690,7 +673,7 @@ export default {
         status_username: this.user.username,
         status_rectime: util.getNow(),
         remark: this.article.remark,
-        _id: this.article.id
+        _id: this.article.id,
       });
     },
     updateRemark() {
@@ -698,14 +681,14 @@ export default {
       this.changeArticleStatus(1).then(() => {
         this.handleArticleClose({
           message: "关闭成功!",
-          status: 1
+          status: 1,
         });
       });
     },
     handleArticleClose(tip) {
       this.$message({
         type: "success",
-        message: tip.message
+        message: tip.message,
       });
       this.article.status = tip.status;
 
@@ -720,13 +703,13 @@ export default {
         tip = {
           title: "此操作将文章重新置为未关闭状态, 是否继续?",
           message: "打开成功!",
-          status: 0
+          status: 0,
         };
       } else {
         tip = {
           title: "是否关闭该文章?",
           message: "关闭成功!",
-          status: 1
+          status: 1,
         };
         if (this.needUpdateRemark) {
           this.dialogFormVisible = true;
@@ -737,7 +720,7 @@ export default {
       this.$confirm(tip.title, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           return this.changeArticleStatus(this.status ? 1 : 0);
@@ -745,7 +728,7 @@ export default {
         .then(() => {
           this.handleArticleClose(tip);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
@@ -757,13 +740,13 @@ export default {
       this.$confirm("你确定要删除该条评论?", "删除评论", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       }).then(() => {
         db.delArticleComment(comment_id)
-          .then(_ => {
+          .then((_) => {
             this.$message({
               type: "success",
-              message: "删除成功"
+              message: "删除成功",
             });
             this.comment.forEach((item, i) => {
               if (item.comment_id == comment_id) {
@@ -771,10 +754,10 @@ export default {
               }
             });
           })
-          .catch(e => {
+          .catch((e) => {
             this.$message({
               type: "success",
-              message: "删除失败"
+              message: "删除失败",
             });
           });
       });
@@ -785,10 +768,10 @@ export default {
       this.$http
         .jsonp(settings.api.commentDetail, {
           params: {
-            aid: id
-          }
+            aid: id,
+          },
         })
-        .then(res => {
+        .then((res) => {
           let obj = res.data;
           if (obj.rows == 0) {
             this.comment = [];
@@ -796,7 +779,7 @@ export default {
           }
           this.noComment = false;
           obj.data = util.handleContent(obj.data);
-          this.comment = obj.data.map(item => {
+          this.comment = obj.data.map((item) => {
             item.content = item.content
               .replace(/\\t/g, " ")
               .replace(/\n\r/g, "<br>");
@@ -839,15 +822,15 @@ export default {
 
       let comment = {
         rec_time: util.getNow(1),
-        content: util.parseHtml(this.mycomment)
+        content: util.parseHtml(this.mycomment),
       };
 
       let params = Object.assign(comment, this.commentSettings);
-      let { data } = await db.addArticleComment(params).catch(e => {
+      let { data } = await db.addArticleComment(params).catch((e) => {
         console.log(e);
         this.$message({
           message: "发表评论失败，请刷新重试",
-          type: "error"
+          type: "error",
         });
       });
       if (data.length == 0) {
@@ -875,12 +858,12 @@ export default {
       let users = content
         .split("@")
         .slice(1)
-        .map(item => {
+        .map((item) => {
           return item.slice(0, item.indexOf(" "));
         });
       let remUsers = rtx.users
-        .filter(item => users.includes(item.value))
-        .map(item => item.id);
+        .filter((item) => users.includes(item.value))
+        .map((item) => item.id);
       return remUsers.join(",");
     },
     rtxRemindUser(content) {
@@ -890,15 +873,15 @@ export default {
       }
       let msg = `${this.$store.state.user.username}在文章[(${
         this.article.title
-      })|${settings.rtxJmpLink +
-        "/view/" +
-        this.article.id}]的评论中提到了你。`;
+      })|${
+        settings.rtxJmpLink + "/view/" + this.article.id
+      }]的评论中提到了你。`;
       this.pushMsgByRtx({
         msg,
         receiver,
         title:
           db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
-        delaytime: 0
+        delaytime: 0,
       });
     },
     // 腾讯通更新用户发送评论状态
@@ -918,7 +901,7 @@ export default {
         receiver,
         title:
           db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
-        delaytime: 0
+        delaytime: 0,
       });
     },
     loadArticle() {
@@ -927,10 +910,10 @@ export default {
       this.$http
         .jsonp(settings.api.articleDetail, {
           params: {
-            aid: id
-          }
+            aid: id,
+          },
         })
-        .then(res => {
+        .then((res) => {
           let obj = res.data;
           if (obj.rows == 0) {
             return;
@@ -947,14 +930,14 @@ export default {
           //this.article.content = util.handleAttach(this.article.content);
           this.loadAttachList();
           this.addReadNum();
-          this.setReadStatus();
+          this.setReadStatus(res.body.ip);
           if (this.article.category == "质量隐患整改通知") {
             this.loadDefaultCommentTpl();
           } else {
             this.mycomment = "";
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
@@ -982,10 +965,10 @@ export default {
       this.$http
         .jsonp(settings.api.attachList, {
           params: {
-            attachid: this.article.attach_list.split(",")
-          }
+            attachid: this.article.attach_list.split(","),
+          },
         })
-        .then(res => {
+        .then((res) => {
           let obj = res.data;
           if (obj.rows == 0) {
             this.attachList = [];
@@ -999,8 +982,8 @@ export default {
         this.$http.jsonp(settings.api.readnum, {
           params: {
             aid: this.article.id,
-            aid2: this.article.id
-          }
+            aid2: this.article.id,
+          },
         });
       }
     },
@@ -1009,8 +992,8 @@ export default {
         this.$http.jsonp(settings.api.commentnum, {
           params: {
             aid: this.article.id,
-            aid2: this.article.id
-          }
+            aid2: this.article.id,
+          },
         });
       }
     },
@@ -1034,8 +1017,8 @@ export default {
       }
       let rtxList = Object.values(settings.rtxInfo);
       let receiver = "";
-      rtxList.forEach(userList => {
-        userList.forEach(item => {
+      rtxList.forEach((userList) => {
+        userList.forEach((item) => {
           if (item.value == this.article.user) {
             receiver = item.id;
           }
@@ -1056,11 +1039,11 @@ export default {
         receiver,
         delaytime: 0,
         title:
-          db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台"
+          db.sys_id == 0 ? "工艺质量管理交互平台" : "印钞党支部信息管理平台",
       });
     },
     // 阅读状态
-    setReadStatus() {
+    setReadStatus(ip = "") {
       // let status = Reflect.has(this.$route.query, 'read');
       // if (!status || this.article.read_users.includes(this.user.username)) {
       //   return;
@@ -1070,6 +1053,7 @@ export default {
         this.article.read_users = readUsers.replace("0、", "");
         return;
       }
+
       readUsers = this.article.read_users.split("、");
       if (readUsers[0] == "") {
         readUsers[0] = this.user.username;
@@ -1077,7 +1061,7 @@ export default {
         readUsers.push(this.user.username);
       }
       readUsers = util.unionArr(readUsers);
-      readUsers = readUsers.filter(item => item != "0");
+      readUsers = readUsers.filter((item) => item != "0");
       this.article.read_users = readUsers.join("、");
 
       //更新文章阅读状态
@@ -1085,16 +1069,24 @@ export default {
         .jsonp(settings.api.updateUserInfo, {
           params: {
             read_users: this.article.read_users,
-            _id: this.article.id
-          }
+            _id: this.article.id,
+          },
         })
-        .then(res => {
+        .then((res) => {
+          // 记录用户IP地址，阅读时间
           console.info("文章阅读状态更新成功");
+
+          const params = {
+            username: this.user.username,
+            ip,
+            article_id: this.article_id,
+          };
+          this.$http.jsonp(settings.api.readLog, { params });
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         })
-        .finally(e => {
+        .finally((e) => {
           this.sendReceipt();
         });
     },
@@ -1115,37 +1107,51 @@ export default {
         if (2 == this.previewMode) {
           this.previewMode = 0;
         }
-
+        this.getReadLog();
         this.loadArticle();
         this.loadComment();
       }
+    },
+    getReadLog() {
+      this.$http
+        .jsonp(settings.api.getReadLog, {
+          params: {
+            article_id: this.article_id,
+          },
+        })
+        .then((res) => {
+          let logs = res.data.data;
+          this.logs = logs
+            .map((item) => `${item.username}(${item.ip} ${item.rec_time})`)
+            .join("\t");
+        });
     },
     getMyWorklist() {
       let newsItem = {
         title: "与我有关的工作事项",
         more: "/list/与我有关的工作事项",
         data: [],
-        cateId: -2
+        cateId: -2,
       };
       this.$http
         .jsonp(settings.api["workListAboutMe"], {
           params: {
-            user: "%" + this.user.username + "%"
-          }
+            user: "%" + this.user.username + "%",
+          },
         })
-        .then(res => {
+        .then((res) => {
           let obj = res.data;
           if (obj.rows == 0) {
             return;
           }
           let avatar;
 
-          newsItem.data = obj.data.map(item => {
+          newsItem.data = obj.data.map((item) => {
             avatar =
               item.avatar == 1 ? window.btoa(item.avatarkey) : "Avatar_none";
             return Object.assign(item, {
               img: HOST + "/demo/avatar/" + avatar + ".jpg",
-              url: "/view/" + item.id
+              url: "/view/" + item.id,
             });
           });
           this.myWorkList = [newsItem];
@@ -1156,21 +1162,21 @@ export default {
         title: "近期热门",
         more: null,
         data: [],
-        cateId: -2
+        cateId: -2,
       };
-      this.$http.jsonp(settings.api["hot"]).then(res => {
+      this.$http.jsonp(settings.api["hot"]).then((res) => {
         let obj = res.data;
         if (obj.rows == 0) {
           return;
         }
         let avatar;
 
-        newsItem.data = obj.data.map(item => {
+        newsItem.data = obj.data.map((item) => {
           avatar =
             item.avatar == 1 ? window.btoa(item.avatarkey) : "Avatar_none";
           return Object.assign(item, {
             img: HOST + "/demo/avatar/" + avatar + ".jpg",
-            url: "/view/" + item.id
+            url: "/view/" + item.id,
           });
         });
         this.hotList = [newsItem];
@@ -1181,33 +1187,37 @@ export default {
         title: "最新文章",
         more: null,
         data: [],
-        cateId: -2
+        cateId: -2,
       };
-      this.$http.jsonp(settings.api["latest"]).then(res => {
+      this.$http.jsonp(settings.api["latest"]).then((res) => {
         let obj = res.data;
         if (obj.rows == 0) {
           return;
         }
         let avatar;
 
-        newsItem.data = obj.data.map(item => {
+        newsItem.data = obj.data.map((item) => {
           avatar =
             item.avatar == 1 ? window.btoa(item.avatarkey) : "Avatar_none";
           return Object.assign(item, {
             img: HOST + "/demo/avatar/" + avatar + ".jpg",
-            url: "/view/" + item.id
+            url: "/view/" + item.id,
           });
         });
         this.latestList = [newsItem];
       });
-    }
+    },
   },
   activated() {
-    this.init();
+    // console.log(this.article_id);
+    // this.init();
     this.getMyWorklist();
     this.getHot();
     this.getLatest();
-  }
+  },
+  mounted() {
+    this.init();
+  },
 };
 </script>
 
